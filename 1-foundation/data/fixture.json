@@ -1,0 +1,101 @@
+{
+  "name": "Test data",
+  "about": "Six made-up controls and a £1,000,000 budget, used by the automated tests. It is not part of the challenge.",
+  "budget": 1000000,
+  "controls": [
+    {
+      "id": "T1",
+      "name": "Test Prevent 1",
+      "category": "Prevent",
+      "cost": 200000
+    },
+    {
+      "id": "T2",
+      "name": "Test Detect 2",
+      "category": "Detect",
+      "cost": 150000
+    },
+    {
+      "id": "T3",
+      "name": "Test Respond 3",
+      "category": "Respond",
+      "cost": 100000
+    },
+    {
+      "id": "T4",
+      "name": "Test Prevent 4",
+      "category": "Prevent",
+      "cost": 400000
+    },
+    {
+      "id": "T5",
+      "name": "Test Detect 5",
+      "category": "Detect",
+      "cost": 500000
+    },
+    {
+      "id": "T6",
+      "name": "Test Respond 6",
+      "category": "Respond",
+      "cost": 600000
+    }
+  ],
+  "phases": [
+    {
+      "id": "phase-1",
+      "title": "Test phase 1",
+      "local_time": "Monday 09:00",
+      "story": "Test story for phase 1.",
+      "scores": {
+        "T1": 0,
+        "T2": 1,
+        "T3": 2,
+        "T4": 3,
+        "T5": 0,
+        "T6": 1
+      }
+    },
+    {
+      "id": "phase-2",
+      "title": "Test phase 2",
+      "local_time": "Monday 12:00",
+      "story": "Test story for phase 2.",
+      "scores": {
+        "T1": 1,
+        "T2": 2,
+        "T3": 3,
+        "T4": 0,
+        "T5": 1,
+        "T6": 2
+      }
+    },
+    {
+      "id": "phase-3",
+      "title": "Test phase 3",
+      "local_time": "Monday 15:00",
+      "story": "Test story for phase 3.",
+      "scores": {
+        "T1": 2,
+        "T2": 3,
+        "T3": 0,
+        "T4": 1,
+        "T5": 2,
+        "T6": 3
+      }
+    },
+    {
+      "id": "phase-4",
+      "title": "Test phase 4",
+      "local_time": "Monday 18:00",
+      "story": "Test story for phase 4.",
+      "scores": {
+        "T1": 3,
+        "T2": 0,
+        "T3": 1,
+        "T4": 2,
+        "T5": 3,
+        "T6": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cyber Awareness challenge: artwork</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.tools{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;margin:1.25rem 0 .5rem}
+.tools select{font:inherit;padding:.55rem .8rem;border:2px solid var(--line);border-radius:10px;background:var(--white);color:var(--text);max-width:100%}
+#count{margin:.25rem 0 1rem;font-weight:600;color:var(--deep)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(11.5rem,1fr));gap:.9rem;list-style:none;padding:0;margin:0;max-width:none}
+.card{border:1px solid var(--line);border-radius:14px;padding:.75rem;margin:0;display:flex;flex-direction:column;gap:.35rem;background:var(--white)}
+.shot{aspect-ratio:1;border-radius:10px;background:#f1f4f2;display:grid;place-items:center;overflow:hidden}
+.shot img{max-width:100%;max-height:100%;object-fit:contain}
+.shot model-viewer{width:100%;height:100%}
+.shot span{font-size:.9rem;color:#5c6660;padding:.5rem;text-align:center}
+.card b{font-size:1rem;line-height:1.3;color:var(--deep);overflow-wrap:anywhere}
+.card small{font-size:.82rem;color:#5c6660;overflow-wrap:anywhere}
+.card .links{display:flex;flex-wrap:wrap;gap:.25rem .8rem;font-size:.9rem;align-items:center}
+.other{columns:18rem;font-size:.92rem;max-width:none;padding-left:1.2rem}
+.other li{overflow-wrap:anywhere}
+#pick,#save,#saved,#problem,#missing{margin:1rem 0}
+#missing summary{cursor:pointer;font-weight:600}
+#missingDetail{font-size:.92rem;overflow-wrap:anywhere}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <h1>Artwork</h1>
+  <p>The 2D pieces, 3D models and assembled scenes in this pack, from both the Foundation and Extend folders. All of it is optional.</p>
+  <nav aria-label="Pack pages"><a href="../BRIEF.html">The challenge</a><a href="../README.md">Technical start</a><a href="../1.%20Foundation%20challenge/demo.html">Demo</a></nav>
+</div></header>
+<main class="wrap">
+  <div id="pick" class="note" hidden="">
+    <p><strong>This page does not have a list of the artwork yet.</strong> A page opened by double-click is not allowed to look inside folders by itself, so it needs to be shown the folder once.</p>
+    <p><label>Choose the whole pack folder, named "Student teams resource pack". Do not choose a folder inside it, or some of the artwork will be missed. <input id="folder" type="file" webkitdirectory="" multiple=""></label></p>
+    <p>Your browser may ask whether to upload the files. Nothing leaves this computer. Say yes.</p>
+  </div>
+  <div id="save" class="note" hidden="">
+    <p><strong>Make this page work for everyone.</strong> Save a copy of this page with the list built in, then put the saved file in the <code>2-extend</code> folder in place of <code>artwork.html</code>. After that it opens by double-click with no questions, wherever the pack folder is copied to.</p>
+    <p><button id="saveButton" type="button">Save this page with the list built in</button></p>
+  </div>
+  <p id="saved" hidden=""></p>
+  <p id="problem" class="note" role="alert" hidden=""></p>
+  <details id="missing" class="note" hidden=""><summary></summary><div id="missingDetail"></div></details>
+  <div class="tools" id="tools" hidden="">
+    <label>Search <input id="search" type="search" placeholder="Name or folder"></label>
+    <label>Folder <select id="category"><option value="">All folders</option></select></label>
+  </div>
+  <p id="count" role="status" aria-live="polite">Looking for artwork…</p>
+  <ul class="grid" id="grid"></ul>
+  <section id="otherSection" hidden="">
+    <h2>Other files</h2>
+    <p>Data and notes that sit alongside the artwork.</p>
+    <ul class="other" id="other"></ul>
+  </section>
+</main>
+<script id="builtin-list" type="application/json">{"savedOn":"8 October 2026","files":[{"path":"1-foundation/artwork/brand/extended_palette.css","bytes":691},{"path":"1-foundation/artwork/brand/extended_palette.json","bytes":656},{"path":"1-foundation/artwork/brand/scottishpower_brand_mark.svg","bytes":89189},{"path":"1-foundation/artwork/brand/scottishpower_logo_cropped.png","bytes":311757},{"path":"1-foundation/artwork/brand/scottishpower_logo.jpg","bytes":116845},{"path":"1-foundation/artwork/brand/style_guide.png","bytes":574760},{"path":"1-foundation/artwork/everyday/email.png","bytes":6408},{"path":"1-foundation/artwork/everyday/email.svg","bytes":1096},{"path":"1-foundation/artwork/everyday/laptop.png","bytes":9848},{"path":"1-foundation/artwork/everyday/laptop.svg","bytes":1070},{"path":"1-foundation/artwork/everyday/phone.png","bytes":3875},{"path":"1-foundation/artwork/everyday/phone.svg","bytes":1050},{"path":"1-foundation/artwork/everyday/usb_stick.png","bytes":6259},{"path":"1-foundation/artwork/everyday/usb_stick.svg","bytes":1376},{"path":"1-foundation/artwork/icons/D1_siem.png","bytes":1191},{"path":"1-foundation/artwork/icons/D1_siem.svg","bytes":671},{"path":"1-foundation/artwork/icons/D2_intrusion_detection_and_prevention.png","bytes":2349},{"path":"1-foundation/artwork/icons/D2_intrusion_detection_and_prevention.svg","bytes":534},{"path":"1-foundation/artwork/icons/D3_threat_hunting_and_honeypots.png","bytes":3142},{"path":"1-foundation/artwork/icons/D3_threat_hunting_and_honeypots.svg","bytes":387},{"path":"1-foundation/artwork/icons/D4_managed_detection_and_response.png","bytes":2284},{"path":"1-foundation/artwork/icons/D4_managed_detection_and_response.svg","bytes":497},{"path":"1-foundation/artwork/icons/D5_network_behaviour_analysis.png","bytes":2621},{"path":"1-foundation/artwork/icons/D5_network_behaviour_analysis.svg","bytes":636},{"path":"1-foundation/artwork/icons/IP_firewall_and_ddos_protection.png","bytes":821},{"path":"1-foundation/artwork/icons/IP_firewall_and_ddos_protection.svg","bytes":806},{"path":"1-foundation/artwork/icons/IP_penetration_testing.png","bytes":2336},{"path":"1-foundation/artwork/icons/IP_penetration_testing.svg","bytes":513},{"path":"1-foundation/artwork/icons/IP_vulnerability_scanning.png","bytes":4561},{"path":"1-foundation/artwork/icons/IP_vulnerability_scanning.svg","bytes":452},{"path":"1-foundation/artwork/icons/P1_endpoint_protection.png","bytes":1868},{"path":"1-foundation/artwork/icons/P1_endpoint_protection.svg","bytes":492},{"path":"1-foundation/artwork/icons/P2_network_segmentation.png","bytes":1057},{"path":"1-foundation/artwork/icons/P2_network_segmentation.svg","bytes":641},{"path":"1-foundation/artwork/icons/P3_patching_and_updates.png","bytes":2023},{"path":"1-foundation/artwork/icons/P3_patching_and_updates.svg","bytes":427},{"path":"1-foundation/artwork/icons/P4_secure_by_design.png","bytes":1780},{"path":"1-foundation/artwork/icons/P4_secure_by_design.svg","bytes":558},{"path":"1-foundation/artwork/icons/P5_training_and_awareness.png","bytes":2903},{"path":"1-foundation/artwork/icons/P5_training_and_awareness.svg","bytes":580},{"path":"1-foundation/artwork/icons/P6_email_security.png","bytes":2892},{"path":"1-foundation/artwork/icons/P6_email_security.svg","bytes":472},{"path":"1-foundation/artwork/icons/P7_multi_factor_authentication.png","bytes":2385},{"path":"1-foundation/artwork/icons/P7_multi_factor_authentication.svg","bytes":435},{"path":"1-foundation/artwork/icons/R1_incident_response_plan.png","bytes":1477},{"path":"1-foundation/artwork/icons/R1_incident_response_plan.svg","bytes":674},{"path":"1-foundation/artwork/icons/R2_incident_response_team_24_7.png","bytes":3761},{"path":"1-foundation/artwork/icons/R2_incident_response_team_24_7.svg","bytes":530},{"path":"1-foundation/artwork/icons/R3_incident_response_team_office_hours.png","bytes":3569},{"path":"1-foundation/artwork/icons/R3_incident_response_team_office_hours.svg","bytes":529},{"path":"1-foundation/artwork/icons/R4_backup_restores.png","bytes":4386},{"path":"1-foundation/artwork/icons/R4_backup_restores.svg","bytes":514},{"path":"1-foundation/artwork/icons/R5_digital_forensics.png","bytes":3260},{"path":"1-foundation/artwork/icons/R5_digital_forensics.svg","bytes":441},{"path":"1-foundation/artwork/icons/R6_incident_response_retainer.png","bytes":1341},{"path":"1-foundation/artwork/icons/R6_incident_response_retainer.svg","bytes":471},{"path":"2-extend/artwork/3d/cars/car_1.glb","bytes":828052},{"path":"2-extend/artwork/3d/cars/car_2.glb","bytes":855452},{"path":"2-extend/artwork/3d/cars/car_3.glb","bytes":832984},{"path":"2-extend/artwork/3d/cars/car_4.glb","bytes":831580},{"path":"2-extend/artwork/3d/cars/car_5.glb","bytes":832576},{"path":"2-extend/artwork/3d/cars/car_6.glb","bytes":833440},{"path":"2-extend/artwork/3d/cars/car_7.glb","bytes":831572},{"path":"2-extend/artwork/3d/cars/car_8.glb","bytes":834364},{"path":"2-extend/artwork/3d/controls/D1_siem.glb","bytes":11528},{"path":"2-extend/artwork/3d/controls/D2_intrusion_detection_and_prevention.glb","bytes":13864},{"path":"2-extend/artwork/3d/controls/D3_threat_hunting_and_honeypots.glb","bytes":14960},{"path":"2-extend/artwork/3d/controls/D4_managed_detection_and_response.glb","bytes":22368},{"path":"2-extend/artwork/3d/controls/D5_network_behaviour_analysis.glb","bytes":21264},{"path":"2-extend/artwork/3d/controls/IP_firewall_and_ddos_protection.glb","bytes":12380},{"path":"2-extend/artwork/3d/controls/IP_penetration_testing.glb","bytes":34444},{"path":"2-extend/artwork/3d/controls/IP_vulnerability_scanning.glb","bytes":24088},{"path":"2-extend/artwork/3d/controls/P1_endpoint_protection.glb","bytes":34448},{"path":"2-extend/artwork/3d/controls/P2_network_segmentation.glb","bytes":32624},{"path":"2-extend/artwork/3d/controls/P3_patching_and_updates.glb","bytes":14200},{"path":"2-extend/artwork/3d/controls/P4_secure_by_design.glb","bytes":8980},{"path":"2-extend/artwork/3d/controls/P5_training_and_awareness.glb","bytes":17384},{"path":"2-extend/artwork/3d/controls/P6_email_security.glb","bytes":15128},{"path":"2-extend/artwork/3d/controls/P7_multi_factor_authentication.glb","bytes":28108},{"path":"2-extend/artwork/3d/controls/R1_incident_response_plan.glb","bytes":6880},{"path":"2-extend/artwork/3d/controls/R2_incident_response_team_24_7.glb","bytes":48560},{"path":"2-extend/artwork/3d/controls/R3_incident_response_team_office_hours.glb","bytes":15608},{"path":"2-extend/artwork/3d/controls/R4_backup_restores.glb","bytes":15996},{"path":"2-extend/artwork/3d/controls/R5_digital_forensics.glb","bytes":18660},{"path":"2-extend/artwork/3d/controls/R6_incident_response_retainer.glb","bytes":17392},{"path":"2-extend/artwork/3d/manifest.json","bytes":23111},{"path":"2-extend/artwork/3d/map/city_backup.glb","bytes":202840},{"path":"2-extend/artwork/3d/map/city_casework.glb","bytes":247564},{"path":"2-extend/artwork/3d/map/city_documents.glb","bytes":278428},{"path":"2-extend/artwork/3d/map/city_identity.glb","bytes":215736},{"path":"2-extend/artwork/3d/map/city_monitor.glb","bytes":366640},{"path":"2-extend/artwork/3d/map/city_outside.glb","bytes":199032},{"path":"2-extend/artwork/3d/map/city_partner.glb","bytes":219588},{"path":"2-extend/artwork/3d/map/city_workorders.glb","bytes":232308},{"path":"2-extend/artwork/3d/map/city_workstation.glb","bytes":234240},{"path":"2-extend/artwork/3d/race_parts/D1_pit_wall_screens.glb","bytes":15536},{"path":"2-extend/artwork/3d/race_parts/D2_warning_lights_and_cut_outs.glb","bytes":8312},{"path":"2-extend/artwork/3d/race_parts/D3_trackside_spotters.glb","bytes":17908},{"path":"2-extend/artwork/3d/race_parts/D4_live_sensors_on_every_system.glb","bytes":22828},{"path":"2-extend/artwork/3d/race_parts/D5_track_position_tracking.glb","bytes":7780},{"path":"2-extend/artwork/3d/race_parts/IP_firewall_and_ddos_protection.glb","bytes":2080},{"path":"2-extend/artwork/3d/race_parts/IP_penetration_testing.glb","bytes":123068},{"path":"2-extend/artwork/3d/race_parts/IP_vulnerability_scanning.glb","bytes":18776},{"path":"2-extend/artwork/3d/race_parts/P1_engine_air_filter.glb","bytes":10556},{"path":"2-extend/artwork/3d/race_parts/P2_bulkheads.glb","bytes":4188},{"path":"2-extend/artwork/3d/race_parts/P3_scheduled_servicing.glb","bytes":23072},{"path":"2-extend/artwork/3d/race_parts/P4_chassis.glb","bytes":14004},{"path":"2-extend/artwork/3d/race_parts/P5_driver_training.glb","bytes":15988},{"path":"2-extend/artwork/3d/race_parts/P6_front_grille.glb","bytes":11500},{"path":"2-extend/artwork/3d/race_parts/P7_immobiliser.glb","bytes":22904},{"path":"2-extend/artwork/3d/race_parts/R1_pit_stop_plan.glb","bytes":6868},{"path":"2-extend/artwork/3d/race_parts/R2_full_night_crew.glb","bytes":48560},{"path":"2-extend/artwork/3d/race_parts/R3_day_crew.glb","bytes":15608},{"path":"2-extend/artwork/3d/race_parts/R4_spare_parts_in_the_garage.glb","bytes":30148},{"path":"2-extend/artwork/3d/race_parts/R5_data_recorder.glb","bytes":6632},{"path":"2-extend/artwork/3d/race_parts/R6_recovery_truck_on_call.glb","bytes":21788},{"path":"2-extend/artwork/3d/scenery/battery_store.glb","bytes":5628},{"path":"2-extend/artwork/3d/scenery/electric_van.glb","bytes":17576},{"path":"2-extend/artwork/3d/scenery/ev_charger.glb","bytes":10836},{"path":"2-extend/artwork/3d/scenery/everyday_E1-email.glb","bytes":12784},{"path":"2-extend/artwork/3d/scenery/everyday_E2-laptop.glb","bytes":32084},{"path":"2-extend/artwork/3d/scenery/everyday_E3-phone.glb","bytes":6640},{"path":"2-extend/artwork/3d/scenery/everyday_E4-usb.glb","bytes":46060},{"path":"2-extend/artwork/3d/scenery/incident_desk.glb","bytes":5068},{"path":"2-extend/artwork/3d/scenery/incident_monitor.glb","bytes":11528},{"path":"2-extend/artwork/3d/scenery/incident_operator.glb","bytes":13688},{"path":"2-extend/artwork/3d/scenery/mountain.glb","bytes":44684},{"path":"2-extend/artwork/3d/scenery/office.glb","bytes":184704},{"path":"2-extend/artwork/3d/scenery/river_bend.glb","bytes":10256},{"path":"2-extend/artwork/3d/scenery/river_s_bend.glb","bytes":12444},{"path":"2-extend/artwork/3d/scenery/river_segment.glb","bytes":10064},{"path":"2-extend/artwork/3d/scenery/rock_cluster.glb","bytes":40840},{"path":"2-extend/artwork/3d/scenery/small_building.glb","bytes":28012},{"path":"2-extend/artwork/3d/scenery/solar_array.glb","bytes":26720},{"path":"2-extend/artwork/3d/scenery/substation.glb","bytes":65584},{"path":"2-extend/artwork/3d/scenery/transmission_pylon.glb","bytes":88204},{"path":"2-extend/artwork/3d/scenery/tree_broadleaf.glb","bytes":169692},{"path":"2-extend/artwork/3d/scenery/tree_conifer.glb","bytes":17112},{"path":"2-extend/artwork/3d/scenery/turbine_rotor.glb","bytes":8028},{"path":"2-extend/artwork/3d/scenery/wind_turbine.glb","bytes":56864},{"path":"2-extend/artwork/3d/track/pylon_bridge.glb","bytes":452068},{"path":"2-extend/artwork/3d/track/pylon_gate.glb","bytes":202412},{"path":"2-extend/artwork/3d/track/pylon_tunnel.glb","bytes":1002456},{"path":"2-extend/artwork/3d/track/track_chicane.glb","bytes":9648},{"path":"2-extend/artwork/3d/track/track_curve.glb","bytes":8448},{"path":"2-extend/artwork/3d/track/track_hairpin.glb","bytes":8436},{"path":"2-extend/artwork/3d/track/track_straight.glb","bytes":8352},{"path":"2-extend/artwork/incident/call.png","bytes":57339},{"path":"2-extend/artwork/incident/call.svg","bytes":1608},{"path":"2-extend/artwork/incident/chat.png","bytes":52461},{"path":"2-extend/artwork/incident/chat.svg","bytes":1558},{"path":"2-extend/artwork/incident/email.png","bytes":57142},{"path":"2-extend/artwork/incident/email.svg","bytes":1901},{"path":"2-extend/artwork/incident/recovery.png","bytes":57361},{"path":"2-extend/artwork/incident/recovery.svg","bytes":1572},{"path":"2-extend/artwork/map/attacker_route.png","bytes":195},{"path":"2-extend/artwork/map/attacker_route.svg","bytes":230},{"path":"2-extend/artwork/map/marker_coordinates.png","bytes":1823},{"path":"2-extend/artwork/map/marker_coordinates.svg","bytes":388},{"path":"2-extend/artwork/map/marker_recovers.png","bytes":2077},{"path":"2-extend/artwork/map/marker_recovers.svg","bytes":433},{"path":"2-extend/artwork/map/marker_reduces.png","bytes":1695},{"path":"2-extend/artwork/map/marker_reduces.svg","bytes":293},{"path":"2-extend/artwork/map/marker_sees.png","bytes":1749},{"path":"2-extend/artwork/map/marker_sees.svg","bytes":313},{"path":"2-extend/artwork/map/outside_node.png","bytes":2919},{"path":"2-extend/artwork/map/outside_node.svg","bytes":535},{"path":"2-extend/artwork/map/platform.png","bytes":19557},{"path":"2-extend/artwork/map/platform.svg","bytes":539},{"path":"2-extend/artwork/map/system_node.png","bytes":2978},{"path":"2-extend/artwork/map/system_node.svg","bytes":535},{"path":"2-extend/artwork/race/part_marker.png","bytes":1054},{"path":"2-extend/artwork/race/part_marker.svg","bytes":189},{"path":"2-extend/artwork/race/pit_wall.png","bytes":8837},{"path":"2-extend/artwork/race/pit_wall.svg","bytes":1123},{"path":"2-extend/artwork/race/spare_parts.png","bytes":5054},{"path":"2-extend/artwork/race/spare_parts.svg","bytes":853},{"path":"2-extend/artwork/race/track_straight.png","bytes":29335},{"path":"2-extend/artwork/race/track_straight.svg","bytes":6027},{"path":"2-extend/artwork/scenery/energy_scene.png","bytes":123094},{"path":"2-extend/artwork/scenery/energy_scene.svg","bytes":30120},{"path":"2-extend/artwork/scenery/ev_charger.png","bytes":2471},{"path":"2-extend/artwork/scenery/ev_charger.svg","bytes":793},{"path":"2-extend/artwork/scenery/ground_tile.png","bytes":14684},{"path":"2-extend/artwork/scenery/ground_tile.svg","bytes":539},{"path":"2-extend/artwork/scenery/office.png","bytes":14902},{"path":"2-extend/artwork/scenery/office.svg","bytes":4859},{"path":"2-extend/artwork/scenery/pylons_with_lines.png","bytes":16269},{"path":"2-extend/artwork/scenery/pylons_with_lines.svg","bytes":6703},{"path":"2-extend/artwork/scenery/solar_array.png","bytes":10202},{"path":"2-extend/artwork/scenery/solar_array.svg","bytes":3657},{"path":"2-extend/artwork/scenery/substation.png","bytes":21738},{"path":"2-extend/artwork/scenery/substation.svg","bytes":6405},{"path":"2-extend/artwork/scenery/transmission_pylon.png","bytes":6681},{"path":"2-extend/artwork/scenery/transmission_pylon.svg","bytes":3203},{"path":"2-extend/artwork/scenery/tree_broadleaf.png","bytes":2528},{"path":"2-extend/artwork/scenery/tree_broadleaf.svg","bytes":477},{"path":"2-extend/artwork/scenery/tree_conifer.png","bytes":2377},{"path":"2-extend/artwork/scenery/tree_conifer.svg","bytes":563},{"path":"2-extend/artwork/scenery/wind_turbine.png","bytes":6751},{"path":"2-extend/artwork/scenery/wind_turbine.svg","bytes":1006},{"path":"2-extend/previews/Cars_Smooth_Contact_Sheet.png","bytes":149255},{"path":"2-extend/previews/cars/car_1.png","bytes":83203},{"path":"2-extend/previews/cars/car_2.png","bytes":87681},{"path":"2-extend/previews/cars/car_3.png","bytes":85281},{"path":"2-extend/previews/cars/car_4.png","bytes":83299},{"path":"2-extend/previews/cars/car_5.png","bytes":80466},{"path":"2-extend/previews/cars/car_6.png","bytes":85067},{"path":"2-extend/previews/cars/car_7.png","bytes":86003},{"path":"2-extend/previews/cars/car_8.png","bytes":77490},{"path":"2-extend/previews/Citadels_Smooth_Contact_Sheet.png","bytes":462838},{"path":"2-extend/previews/Controls_Smooth_Contact_Sheet.png","bytes":223780},{"path":"2-extend/previews/controls/D1_siem.png","bytes":7329},{"path":"2-extend/previews/controls/D2_intrusion_detection_and_prevention.png","bytes":10137},{"path":"2-extend/previews/controls/D3_threat_hunting_and_honeypots.png","bytes":22572},{"path":"2-extend/previews/controls/D4_managed_detection_and_response.png","bytes":12576},{"path":"2-extend/previews/controls/D5_network_behaviour_analysis.png","bytes":30484},{"path":"2-extend/previews/controls/IP_firewall_and_ddos_protection.png","bytes":11445},{"path":"2-extend/previews/controls/IP_penetration_testing.png","bytes":13010},{"path":"2-extend/previews/controls/IP_vulnerability_scanning.png","bytes":18532},{"path":"2-extend/previews/controls/P1_endpoint_protection.png","bytes":12755},{"path":"2-extend/previews/controls/P2_network_segmentation.png","bytes":9423},{"path":"2-extend/previews/controls/P3_patching_and_updates.png","bytes":12629},{"path":"2-extend/previews/controls/P4_secure_by_design.png","bytes":8074},{"path":"2-extend/previews/controls/P5_training_and_awareness.png","bytes":10296},{"path":"2-extend/previews/controls/P6_email_security.png","bytes":14095},{"path":"2-extend/previews/controls/P7_multi_factor_authentication.png","bytes":12919},{"path":"2-extend/previews/controls/R1_incident_response_plan.png","bytes":4778},{"path":"2-extend/previews/controls/R2_incident_response_team_24_7.png","bytes":15537},{"path":"2-extend/previews/controls/R3_incident_response_team_office_hours.png","bytes":25618},{"path":"2-extend/previews/controls/R4_backup_restores.png","bytes":5675},{"path":"2-extend/previews/controls/R5_digital_forensics.png","bytes":21561},{"path":"2-extend/previews/controls/R6_incident_response_retainer.png","bytes":10748},{"path":"2-extend/previews/endurance_circuit_overview.png","bytes":230749},{"path":"2-extend/previews/incident_room_overview.png","bytes":260859},{"path":"2-extend/previews/map_landscape_overview.png","bytes":226261},{"path":"2-extend/previews/map/city_backup.png","bytes":36544},{"path":"2-extend/previews/map/city_casework.png","bytes":43883},{"path":"2-extend/previews/map/city_documents.png","bytes":41162},{"path":"2-extend/previews/map/city_identity.png","bytes":41076},{"path":"2-extend/previews/map/city_monitor.png","bytes":42237},{"path":"2-extend/previews/map/city_outside.png","bytes":43461},{"path":"2-extend/previews/map/city_partner.png","bytes":42714},{"path":"2-extend/previews/map/city_workorders.png","bytes":40456},{"path":"2-extend/previews/map/city_workstation.png","bytes":36991},{"path":"2-extend/previews/Race_Parts_Smooth_Contact_Sheet.png","bytes":276378},{"path":"2-extend/previews/race_parts/D1_pit_wall_screens.png","bytes":9496},{"path":"2-extend/previews/race_parts/D2_warning_lights_and_cut_outs.png","bytes":6382},{"path":"2-extend/previews/race_parts/D3_trackside_spotters.png","bytes":12237},{"path":"2-extend/previews/race_parts/D4_live_sensors_on_every_system.png","bytes":18113},{"path":"2-extend/previews/race_parts/D5_track_position_tracking.png","bytes":10040},{"path":"2-extend/previews/race_parts/IP_firewall_and_ddos_protection.png","bytes":5326},{"path":"2-extend/previews/race_parts/IP_penetration_testing.png","bytes":36262},{"path":"2-extend/previews/race_parts/IP_vulnerability_scanning.png","bytes":14269},{"path":"2-extend/previews/race_parts/P1_engine_air_filter.png","bytes":17049},{"path":"2-extend/previews/race_parts/P2_bulkheads.png","bytes":7283},{"path":"2-extend/previews/race_parts/P3_scheduled_servicing.png","bytes":28470},{"path":"2-extend/previews/race_parts/P4_chassis.png","bytes":15062},{"path":"2-extend/previews/race_parts/P5_driver_training.png","bytes":37568},{"path":"2-extend/previews/race_parts/P6_front_grille.png","bytes":9070},{"path":"2-extend/previews/race_parts/P7_immobiliser.png","bytes":13081},{"path":"2-extend/previews/race_parts/R1_pit_stop_plan.png","bytes":9324},{"path":"2-extend/previews/race_parts/R2_full_night_crew.png","bytes":15537},{"path":"2-extend/previews/race_parts/R3_day_crew.png","bytes":25618},{"path":"2-extend/previews/race_parts/R4_spare_parts_in_the_garage.png","bytes":48481},{"path":"2-extend/previews/race_parts/R5_data_recorder.png","bytes":10404},{"path":"2-extend/previews/race_parts/R6_recovery_truck_on_call.png","bytes":13360},{"path":"2-extend/previews/Scenery_Smooth_Contact_Sheet.png","bytes":299307},{"path":"2-extend/previews/scenery/battery_store.png","bytes":7991},{"path":"2-extend/previews/scenery/electric_van.png","bytes":14363},{"path":"2-extend/previews/scenery/ev_charger.png","bytes":6901},{"path":"2-extend/previews/scenery/everyday_E1-email.png","bytes":13162},{"path":"2-extend/previews/scenery/everyday_E2-laptop.png","bytes":10505},{"path":"2-extend/previews/scenery/everyday_E3-phone.png","bytes":4695},{"path":"2-extend/previews/scenery/everyday_E4-usb.png","bytes":14979},{"path":"2-extend/previews/scenery/incident_desk.png","bytes":8380},{"path":"2-extend/previews/scenery/incident_monitor.png","bytes":7329},{"path":"2-extend/previews/scenery/incident_operator.png","bytes":10481},{"path":"2-extend/previews/scenery/mountain.png","bytes":38071},{"path":"2-extend/previews/scenery/office.png","bytes":18935},{"path":"2-extend/previews/scenery/river_bend.png","bytes":7523},{"path":"2-extend/previews/scenery/river_s_bend.png","bytes":7903},{"path":"2-extend/previews/scenery/river_segment.png","bytes":6727},{"path":"2-extend/previews/scenery/rock_cluster.png","bytes":51009},{"path":"2-extend/previews/scenery/small_building.png","bytes":12396},{"path":"2-extend/previews/scenery/solar_array.png","bytes":14022},{"path":"2-extend/previews/scenery/substation.png","bytes":17309},{"path":"2-extend/previews/scenery/transmission_pylon.png","bytes":44259},{"path":"2-extend/previews/scenery/tree_broadleaf.png","bytes":38373},{"path":"2-extend/previews/scenery/tree_conifer.png","bytes":28330},{"path":"2-extend/previews/scenery/turbine_rotor.png","bytes":9159},{"path":"2-extend/previews/scenery/wind_turbine.png","bytes":9542},{"path":"2-extend/previews/Track_Smooth_Contact_Sheet.png","bytes":222256},{"path":"2-extend/previews/track/pylon_bridge.png","bytes":85486},{"path":"2-extend/previews/track/pylon_gate.png","bytes":59880},{"path":"2-extend/previews/track/pylon_tunnel.png","bytes":179709},{"path":"2-extend/previews/track/track_chicane.png","bytes":6329},{"path":"2-extend/previews/track/track_curve.png","bytes":6004},{"path":"2-extend/previews/track/track_hairpin.png","bytes":6617},{"path":"2-extend/previews/track/track_straight.png","bytes":6057},{"path":"2-extend/worlds/circuit_centreline.json","bytes":115410},{"path":"2-extend/worlds/circuit_placements.json","bytes":66619},{"path":"2-extend/worlds/circuit_surface.glb","bytes":555064},{"path":"2-extend/worlds/circuit_terrain.glb","bytes":20684},{"path":"2-extend/worlds/endurance_circuit.glb","bytes":4805356},{"path":"2-extend/worlds/incident_room_placements.json","bytes":4040},{"path":"2-extend/worlds/incident_room_shell.glb","bytes":13932},{"path":"2-extend/worlds/incident_room.glb","bytes":142932},{"path":"2-extend/worlds/map_landscape.glb","bytes":1321340},{"path":"2-extend/worlds/map_paths.glb","bytes":110464},{"path":"2-extend/worlds/map_placements.json","bytes":46757},{"path":"2-extend/worlds/map_routes.json","bytes":85413},{"path":"2-extend/worlds/map_terrain.glb","bytes":39328},{"path":"2-extend/worlds/README.md","bytes":365}],"titles":[["car_1","Team 1 endurance car"],["car_2","Team 2 endurance car"],["car_3","Team 3 endurance car"],["car_4","Team 4 endurance car"],["car_5","Team 5 endurance car"],["car_6","Team 6 endurance car"],["car_7","Team 7 endurance car"],["car_8","Team 8 endurance car"],["city_outside","Outside citadel"],["city_workstation","Workstation citadel"],["city_identity","Identity citadel"],["city_documents","Documents citadel"],["city_casework","Casework citadel"],["city_workorders","Work orders citadel"],["city_backup","Backups citadel"],["city_partner","Partner exchange citadel"],["city_monitor","Monitoring citadel"],["tree_conifer","Conifer tree"],["tree_broadleaf","Broadleaf tree"],["wind_turbine","Wind Turbine"],["transmission_pylon","Transmission Pylon"],["rock_cluster","Rock Cluster"],["mountain","Mountain"],["small_building","Small Building"],["office","Office"],["substation","Substation"],["solar_array","Solar Array"],["ev_charger","Ev Charger"],["battery_store","Battery Store"],["electric_van","Electric Van"],["river_segment","River Segment"],["river_bend","River Bend"],["river_s_bend","River S Bend"],["track_straight","Track Straight"],["track_chicane","Track Chicane"],["track_hairpin","Track Hairpin"],["track_curve","Track Curve"],["pylon_bridge","Pylon Bridge"],["pylon_tunnel","Pylon Tunnel"],["pylon_gate","Pylon Gate"],["p1_endpoint_protection","Endpoint protection platform"],["p1_engine_air_filter","Engine air filter"],["p2_network_segmentation","Network segmentation"],["p2_bulkheads","Bulkheads"],["p3_patching_and_updates","Software patching and updates"],["p3_scheduled_servicing","Scheduled servicing"],["p4_secure_by_design","Secure by design"],["p4_chassis","Chassis"],["p5_training_and_awareness","Training and awareness"],["p5_driver_training","Driver training"],["p6_email_security","Email security"],["p6_front_grille","Front grille"],["p7_multi_factor_authentication","Multi-factor authentication and identity management"],["p7_immobiliser","Immobiliser"],["d1_siem","Security information and event management (SIEM)"],["d1_pit_wall_screens","Pit wall screens"],["d2_intrusion_detection_and_prevention","Intrusion detection and prevention"],["d2_warning_lights_and_cut_outs","Warning lights and cut-outs"],["d3_threat_hunting_and_honeypots","Threat hunting and honeypots"],["d3_trackside_spotters","Trackside spotters"],["d4_managed_detection_and_response","Managed detection and response (EDR/MDR)"],["d4_live_sensors_on_every_system","Live sensors on every system"],["d5_network_behaviour_analysis","Network behaviour analysis"],["d5_track_position_tracking","Track position tracking"],["r1_incident_response_plan","Incident response plan"],["r1_pit_stop_plan","Pit stop plan"],["r2_incident_response_team_24_7","Incident response team - 24/7"],["r2_full_night_crew","Full night crew"],["r3_incident_response_team_office_hours","Incident response team - office hours"],["r3_day_crew","Day crew"],["r4_backup_restores","Backup restores"],["r4_spare_parts_in_the_garage","Spare parts in the garage"],["r5_digital_forensics","Digital forensics services"],["r5_data_recorder","Data recorder"],["r6_incident_response_retainer","Incident response retainer"],["r6_recovery_truck_on_call","Recovery truck on call"],["ip_firewall_and_ddos_protection","Firewall and DDoS protection"],["ip_vulnerability_scanning","Vulnerability scanning"],["ip_penetration_testing","Penetration testing"],["everyday_e1-email","E1 Email"],["everyday_e2-laptop","E2 Laptop"],["everyday_e3-phone","E3 Phone"],["everyday_e4-usb","E4 Usb"],["incident_desk","Desk"],["incident_monitor","Monitor"],["incident_operator","Operator"],["turbine_rotor","Turbine rotor"]],"pictures":[]}</script>
+<script>
+// A copy of this page as it was loaded, kept so the page can save itself with a list built in.
+const ORIGINAL = document.documentElement.outerHTML;
+
+const IMAGE = ['png','jpg','jpeg','webp','gif','svg'];
+const MODEL = ['glb','gltf'];
+const AUDIO = ['wav','mp3','ogg','m4a','flac'];
+const ROOTS = ['artwork', 'previews', 'worlds'];   // the folders that hold artwork, wherever they sit in the pack
+const BASE = '../';                                  // this page sits in 2-extend, one level below the pack folder
+const VIEWER = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@4.3.1/dist/model-viewer.min.js';
+const $ = id => document.getElementById(id);
+const ext = p => (p.split('.').pop() || '').toLowerCase();
+const stem = p => p.split('/').pop().replace(/\.[^.]+$/, '');
+const folderOf = p => p.split('/').slice(0, -1).join('/');
+const tidy = s => s.replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+const link = p => BASE + p.split('/').map(encodeURIComponent).join('/');
+let cards = [], current = null, viewerLoading = null;
+
+/* Where the list of files comes from. There are three ways:
+   1. the local server (npm start), which always shows what is in the folders now;
+   2. a list built into this page, which works by double-click;
+   3. a folder the person chooses, which is how the built-in list gets made. */
+async function fromServer() {
+  if (!location.protocol.startsWith('http')) throw new Error('not served');
+  const r = await fetch(BASE + 'api/assets'); if (!r.ok) throw new Error('no list from the server');
+  const {files} = await r.json();
+  return {kind: 'server', files, url: link, text: async p => (await fetch(link(p))).text(), canView3d: true};
+}
+function fromBuiltIn() {
+  const text = $('builtin-list').textContent.trim();
+  if (!text) throw new Error('no built-in list');
+  const saved = JSON.parse(text);
+  return {kind: 'built-in', files: saved.files, url: link, savedOn: saved.savedOn, titles: new Map(saved.titles), pictures: new Map(saved.pictures), canView3d: location.protocol.startsWith('http')};
+}
+function fromFolder(fileList) {
+  const picked = new Map();
+  for (const f of fileList) {
+    // The browser gives paths that start with the chosen folder's name. Drop that, so paths are relative to the pack folder.
+    const parts = (f.webkitRelativePath || f.name).split('/').slice(1);
+    if (!parts.some(part => ROOTS.includes(part)) || parts.some(part => part.startsWith('.'))) continue;
+    picked.set(parts.join('/'), f);
+  }
+  const LEVELS = ['1-foundation', '2-extend'];
+  if (picked.size && ![...picked.keys()].some(p => LEVELS.includes(p.split('/')[0]))) {
+    throw new Error('That looks like a folder inside the pack. Choose the whole pack folder instead, the one that contains 1-foundation, 2-extend and 3-stretch.');
+  }
+  const urls = new Map();
+  const url = p => { if (!urls.has(p)) urls.set(p, URL.createObjectURL(picked.get(p))); return urls.get(p); };
+  return {kind: 'folder', files: [...picked].map(([path, f]) => ({path, bytes: f.size})).sort((a, b) => a.path.localeCompare(b.path)), url, text: p => picked.get(p).text(), canView3d: true};
+}
+
+/* Names and pictures: if a manifest file names its models or says which picture goes with which model, use that.
+   It returns the model and picture files mentioned anywhere inside the part of the manifest it was given. */
+function readManifest(node, titles, pictures) {
+  const found = {models: [], images: []};
+  if (!node || typeof node !== 'object') return found;
+  for (const value of Object.values(node)) {
+    if (typeof value === 'string') {
+      if (/\.(glb|gltf)$/i.test(value)) found.models.push(value);
+      else if (/\.(png|jpe?g|webp|svg)$/i.test(value)) found.images.push(value);
+    } else {
+      const inner = readManifest(value, titles, pictures);
+      found.models.push(...inner.models); found.images.push(...inner.images);
+    }
+  }
+  if (Array.isArray(node)) return found;
+  // An entry that mentions exactly one model describes that model.
+  const title = [node.title, node.name, node.label, node.display_name].find(v => typeof v === 'string' && v.trim());
+  const subject = found.models.length === 1 ? stem(found.models[0])
+    : found.models.length === 0 && found.images.length >= 1 ? stem(found.images[0])
+    : typeof node.id === 'string' ? node.id : null;
+  if (title && subject && !titles.has(subject.toLowerCase())) titles.set(subject.toLowerCase(), title.trim());
+  if (found.models.length === 1 && found.images.length >= 1) {
+    const key = stem(found.models[0]).toLowerCase();
+    const picture = found.images.find(p => /\.(png|jpe?g|webp)$/i.test(p)) || found.images[0];
+    if (!pictures.has(key)) pictures.set(key, picture);
+  }
+  return found;
+}
+
+/* Compare file names loosely: "Car_Team-1_preview" and "car team 1" are the same thing. */
+const EXTRA_WORDS = ['preview', 'previews', 'thumb', 'thumbnail', 'render', 'smooth', 'image', 'img', 'picture', 'png', 'glb', 'model', '3d'];
+function plainName(name) {
+  const words = name.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+  return words.filter(word => !EXTRA_WORDS.includes(word)).join('') || words.join('');
+}
+const inPreviewFolder = folder => folder.split('/').some(part => /preview|thumb/i.test(part));
+const lastFolder = folder => folder.split('/').pop();
+
+async function show(source) {
+  current = source;
+  if (!source.titles) {
+    source.titles = new Map(); source.pictures = new Map();
+    for (const f of source.files.filter(f => /manifest[^/]*\.json$/i.test(f.path))) {
+      try { const text = await source.text(f.path); if (text) readManifest(JSON.parse(text), source.titles, source.pictures); } catch {}
+    }
+  }
+  const {titles, pictures} = source;
+  const groups = new Map(), other = [];
+  for (const f of source.files) {
+    const e = ext(f.path);
+    if (AUDIO.includes(e)) continue;
+    if (!IMAGE.includes(e) && !MODEL.includes(e)) { other.push(f); continue; }
+    const key = folderOf(f.path) + '/' + stem(f.path);
+    if (!groups.has(key)) groups.set(key, {folder: folderOf(f.path), stem: stem(f.path), files: []});
+    groups.get(key).files.push(f);
+  }
+  /* A model's picture may sit in another folder, such as previews/. Find it and show the two as one card.
+     Pictures are only taken from a previews folder, or where a manifest names them, so that a 2D asset
+     with the same name as a 3D model keeps its own card. */
+  const all = [...groups.values()];
+  const hasModel = g => g.files.some(f => MODEL.includes(ext(f.path)));
+  const hasImage = g => g.files.some(f => IMAGE.includes(ext(f.path)));
+  const pictureOnly = all.filter(g => !hasModel(g));
+  const previewPictures = pictureOnly.filter(g => inPreviewFolder(g.folder));
+  const used = new Set();
+  const sameKind = (model, list) => list.filter(p => lastFolder(p.folder) === lastFolder(model.folder));
+  const firstFree = list => list.find(p => !used.has(p));
+  const unmatched = [];
+  for (const g of all) {
+    if (!hasModel(g) || hasImage(g)) continue;
+    const named = pictures.get(g.stem.toLowerCase());
+    const byManifest = named ? pictureOnly.filter(p => p.stem.toLowerCase() === stem(named).toLowerCase()) : [];
+    const exact = previewPictures.filter(p => p.stem.toLowerCase() === g.stem.toLowerCase());
+    const loose = previewPictures.filter(p => plainName(p.stem) === plainName(g.stem));
+    const partial = sameKind(g, previewPictures).filter(p => { const a = plainName(p.stem), b = plainName(g.stem); return b.length >= 4 && a.length >= 4 && (a.includes(b) || b.includes(a)); });
+    const match = firstFree(sameKind(g, byManifest)) || firstFree(byManifest) || firstFree(sameKind(g, exact)) || firstFree(exact) || firstFree(sameKind(g, loose)) || firstFree(loose) || (partial.filter(p => !used.has(p)).length === 1 ? firstFree(partial) : undefined);
+    if (match) { g.files.push(...match.files); used.add(match); } else unmatched.push(g);
+  }
+  explainMissing(source, unmatched, previewPictures.filter(p => !used.has(p)));
+
+  cards = all.filter(g => !used.has(g)).map(g => {
+    const by = e => g.files.find(f => ext(f.path) === e);
+    const preview = IMAGE.map(by).find(Boolean);
+    const model = MODEL.map(by).find(Boolean);
+    const category = g.folder.replace(/^[^/]+\/artwork\/?/, '').replace(/^[^/]+\//, '').split('/').filter(Boolean).join(' / ') || 'artwork';
+    return {title: titles.get(g.stem.toLowerCase()) || tidy(g.stem), category, files: g.files, preview, model};
+  }).sort((a, b) => a.category.localeCompare(b.category) || a.title.localeCompare(b.title, undefined, {numeric: true}));
+
+  const select = $('category');
+  select.length = 1;
+  for (const c of [...new Set(cards.map(c => c.category))]) select.add(new Option(c, c));
+  $('other').replaceChildren(...other.map(f => { const li = document.createElement('li'), a = document.createElement('a'); a.href = source.url(f.path); a.textContent = f.path; li.append(a); return li; }));
+  $('otherSection').hidden = other.length === 0;
+  $('tools').hidden = cards.length === 0;
+  $('pick').hidden = cards.length > 0;
+  $('save').hidden = !(source.kind === 'folder' && cards.length > 0);
+  $('saved').hidden = source.kind !== 'built-in';
+  if (source.kind === 'built-in') {
+    $('saved').textContent = 'This list of artwork was saved on ' + source.savedOn + '. If artwork has been added or removed since, ';
+    const again = document.createElement('button'); again.type = 'button'; again.className = 'quiet'; again.textContent = 'make the list again';
+    again.addEventListener('click', () => { $('pick').hidden = false; $('folder').focus(); });
+    $('saved').append(again);
+  }
+  draw();
+}
+
+/* If some models have no picture, say why in plain words. */
+function explainMissing(source, unmatched, sparePictures) {
+  // Only shown while the list is being made, so people using the finished page are not distracted by it.
+  $('missing').hidden = unmatched.length === 0 || source.kind !== 'folder';
+  if ($('missing').hidden) return;
+  const anyPreviews = source.files.some(f => inPreviewFolder(folderOf(f.path)));
+  $('missing').querySelector('summary').textContent = unmatched.length + ' 3D models have no picture. Why?';
+  const lines = [];
+  if (!anyPreviews) lines.push(source.kind === 'server' ? 'There is no previews folder in the pack.' : 'No previews folder was in the list. This usually means a folder inside the pack was chosen. Choose the whole pack folder instead, the one that contains 1-foundation, 2-extend and 3-stretch.');
+  else {
+    lines.push('A previews folder was found, but no picture in it has a name that matches these models.');
+    lines.push('Models without a picture, for example: ' + unmatched.slice(0, 4).map(g => g.folder + '/' + g.stem).join(', ') + '.');
+    lines.push(sparePictures.length ? 'Pictures in previews that match no model, for example: ' + sparePictures.slice(0, 4).map(p => p.folder + '/' + p.stem).join(', ') + '.' : 'Every picture in previews is already matched to another model.');
+  }
+  $('missingDetail').replaceChildren(...lines.map(text => { const p = document.createElement('p'); p.textContent = text; return p; }));
+  if (!anyPreviews) $('missing').open = true;
+}
+
+function draw() {
+  const q = $('search').value.trim().toLowerCase(), cat = $('category').value;
+  const visible = cards.filter(c => (!cat || c.category === cat) && (!q || (c.title + ' ' + c.category + ' ' + c.files.map(f => f.path).join(' ')).toLowerCase().includes(q)));
+  $('count').textContent = cards.length === 0 ? 'No artwork found. Check that you chose the whole pack folder.' : visible.length === cards.length ? cards.length + ' assets' : visible.length + ' of ' + cards.length + ' assets';
+  $('grid').replaceChildren(...visible.map(card));
+}
+
+function card(c) {
+  const li = document.createElement('li'); li.className = 'card';
+  const shot = document.createElement('div'); shot.className = 'shot';
+  if (c.preview) { const img = document.createElement('img'); img.loading = 'lazy'; img.alt = ''; img.src = current.url(c.preview.path); shot.append(img); }
+  else { const s = document.createElement('span'); s.textContent = '3D model, no preview picture'; shot.append(s); }
+  const title = document.createElement('b'); title.textContent = c.title;
+  const where = document.createElement('small'); where.textContent = (c.model || c.files[0]).path.replace(/\.[^.]+$/, '');
+  const links = document.createElement('div'); links.className = 'links';
+  for (const f of c.files) { const a = document.createElement('a'); a.href = current.url(f.path); a.textContent = ext(f.path).toUpperCase(); a.setAttribute('aria-label', c.title + ' ' + ext(f.path).toUpperCase() + ' file'); links.append(a); }
+  if (c.model && current.canView3d) { const b = document.createElement('button'); b.type = 'button'; b.className = 'quiet'; b.textContent = 'View in 3D'; b.addEventListener('click', () => view3d(c, shot, b)); links.append(b); }
+  li.append(shot, title, where, links); return li;
+}
+
+function view3d(c, shot, button) {
+  button.disabled = true;
+  const fail = message => { const s = document.createElement('span'); s.textContent = message; shot.replaceChildren(s); };
+  viewerLoading ??= new Promise((resolve, reject) => { const s = document.createElement('script'); s.type = 'module'; s.src = VIEWER; s.onload = resolve; s.onerror = reject; document.head.append(s); });
+  viewerLoading.then(() => {
+    const mv = document.createElement('model-viewer');
+    mv.setAttribute('src', current.url(c.model.path)); mv.setAttribute('camera-controls', ''); mv.setAttribute('auto-rotate', ''); mv.setAttribute('alt', c.title);
+    mv.addEventListener('error', () => fail('Could not open this model here. The GLB link still opens the file.'));
+    shot.replaceChildren(mv);
+  }).catch(() => fail('The 3D viewer needs an internet connection. The GLB link still opens the file.'));
+}
+
+/* Save a copy of this page with the current list written into it. */
+function savePage() {
+  const list = {savedOn: new Date().toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'}), files: current.files, titles: [...current.titles], pictures: [...current.pictures]};
+  const json = JSON.stringify(list).replace(/</g, '\\u003c');
+  const open = '<scr' + 'ipt id="builtin-list" type="application/json">', close = '</scr' + 'ipt>';
+  const start = ORIGINAL.indexOf(open), end = ORIGINAL.indexOf(close, start);
+  const page = '<!doctype html>\n' + ORIGINAL.slice(0, start + open.length) + json + ORIGINAL.slice(end);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([page], {type: 'text/html'})); a.download = 'artwork.html';
+  document.body.append(a); a.click(); a.remove();
+  $('save').querySelector('p').textContent = 'Saved to your Downloads folder as artwork.html. Move it into the 2-extend folder and replace the artwork.html that is there. If it saved as "artwork (1).html", rename it to artwork.html first.';
+}
+
+function problem(error) { $('problem').hidden = false; $('problem').textContent = error.message; $('count').textContent = ''; $('pick').hidden = false; }
+
+$('search').addEventListener('input', draw);
+$('category').addEventListener('change', draw);
+$('saveButton').addEventListener('click', savePage);
+$('folder').addEventListener('change', e => { $('problem').hidden = true; if (e.target.files.length) { try { show(fromFolder(e.target.files)).catch(problem); } catch (error) { problem(error); } } });
+fromServer().catch(fromBuiltIn).then(show).catch(() => { $('count').textContent = ''; $('pick').hidden = false; });
+</script></body></html>

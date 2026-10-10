@@ -1,0 +1,122 @@
+{
+  "theme": "The Map Room",
+  "idea": "The business is shown as a map of connected systems. Players place controls where they act, then watch the attacker's route across the four phases.",
+  "nodes": [
+    {
+      "id": "outside",
+      "name": "Outside the business",
+      "x": 5,
+      "y": 50
+    },
+    {
+      "id": "workstation",
+      "name": "Employee workstation",
+      "x": 25,
+      "y": 50
+    },
+    {
+      "id": "identity",
+      "name": "Identity service",
+      "x": 50,
+      "y": 25
+    },
+    {
+      "id": "documents",
+      "name": "Document store",
+      "x": 50,
+      "y": 75
+    },
+    {
+      "id": "casework",
+      "name": "Customer casework",
+      "x": 75,
+      "y": 15
+    },
+    {
+      "id": "workorders",
+      "name": "Field work-order administration",
+      "x": 75,
+      "y": 40
+    },
+    {
+      "id": "backup",
+      "name": "Backup store",
+      "x": 75,
+      "y": 90
+    },
+    {
+      "id": "partner",
+      "name": "Partner exchange",
+      "x": 25,
+      "y": 88
+    },
+    {
+      "id": "monitor",
+      "name": "Monitoring service",
+      "x": 90,
+      "y": 65
+    }
+  ],
+  "coordinates": "x and y are positions from 0 to 100 across and down the map. They are a starting layout. Move them if you like.",
+  "scripted_route": [
+    {
+      "phase_id": "phase_1",
+      "local_time": "Monday 16:40",
+      "attacker_moves": [
+        [
+          "outside",
+          "workstation"
+        ]
+      ],
+      "people_moment_at": "workstation"
+    },
+    {
+      "phase_id": "phase_2",
+      "local_time": "Tuesday 02:00",
+      "attacker_moves": [
+        [
+          "workstation",
+          "identity"
+        ],
+        [
+          "workstation",
+          "documents"
+        ]
+      ],
+      "people_moment_at": "workstation"
+    },
+    {
+      "phase_id": "phase_3",
+      "local_time": "Tuesday 03:30",
+      "attacker_moves": [
+        [
+          "identity",
+          "casework"
+        ],
+        [
+          "identity",
+          "workorders"
+        ]
+      ],
+      "people_moment_at": "workorders"
+    },
+    {
+      "phase_id": "phase_4",
+      "local_time": "Tuesday 06:30",
+      "attacker_moves": [],
+      "encrypted": [
+        "documents",
+        "casework"
+      ],
+      "people_moment_at": "casework"
+    }
+  ],
+  "questions": "Use the question bank at the system where each phase's people moment happens (people_moment_at).",
+  "rules": [
+    "Label each fictional business system by name. The map is an illustration, not a real company's network.",
+    "Use the four phase routes as a starting point. The attack continues even when controls score points.",
+    "Describe what each control actually does. Detecting an attack is not the same as stopping it.",
+    "Keep the control score equal to the scoring module's result for the same purchases, and show it.",
+    "Citadel walls are scenery. They do not show that a defence is in place."
+  ]
+}

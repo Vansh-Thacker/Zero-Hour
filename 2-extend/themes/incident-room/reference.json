@@ -1,0 +1,33 @@
+{
+  "theme": "The Incident Room",
+  "idea": "The player lives through the attack in the messages, calls and updates a real employee would see.",
+  "channels": [
+    {
+      "phase_id": "phase_1",
+      "local_time": "Monday 16:40",
+      "setting": "The player's inbox, late in the working day"
+    },
+    {
+      "phase_id": "phase_2",
+      "local_time": "Tuesday 02:00",
+      "setting": "The incident chat after the night alert"
+    },
+    {
+      "phase_id": "phase_3",
+      "local_time": "Tuesday 03:30",
+      "setting": "A phone call to the night-shift work-order desk"
+    },
+    {
+      "phase_id": "phase_4",
+      "local_time": "Tuesday 06:30",
+      "setting": "The incident update as the day shift arrives"
+    }
+  ],
+  "questions": "Use the question bank for the decisions the player faces in each channel. Show the explanation and a visible consequence.",
+  "rules": [
+    "Keep the phase clock visible.",
+    "Build incident updates, decisions, status changes and a debrief.",
+    "Keep the control score and the question results visible separately.",
+    "Use real text and real buttons for anything the player must read or press. Give pictures a text alternative."
+  ]
+}

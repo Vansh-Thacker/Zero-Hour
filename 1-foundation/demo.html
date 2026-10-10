@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cyber Awareness challenge: demo</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.file{border:2px solid var(--line);border-radius:14px;padding:.25rem 1.25rem 1.25rem;margin:1.5rem 0;max-width:none}
+.file h2{margin-top:1.25rem}
+.file h2 code{font-size:.8em;background:var(--wash);color:var(--deep)}
+.row{display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center;margin:.75rem 0}
+.row label{display:flex;flex-direction:column;font-size:.9rem;font-weight:600;color:var(--deep);gap:.15rem;max-width:100%;min-width:0}
+.row label.wide{flex:1 1 24rem}
+.row input[type=text], .row select{width:100%;font:inherit;padding:.5rem .7rem;border:2px solid var(--line);border-radius:10px;background:var(--white);color:var(--text);min-width:9rem;max-width:100%}
+.error{background:#fdf1e3;border-radius:12px;padding:.8rem 1rem;font-weight:600;color:#6b3c00;max-width:44rem}
+.total{font-size:1.3rem;font-weight:700;color:var(--deep)}
+.q{background:var(--wash);border-radius:12px;padding:1rem 1.1rem;max-width:44rem}
+.q ol{list-style:upper-alpha;margin:.5rem 0 .75rem 1.2rem;padding:0}
+details{max-width:44rem;margin:.75rem 0}
+summary{cursor:pointer;font-weight:600;color:#006b9e}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <h1>Demo</h1>
+  <p>A short tour of what is in the pack and what each file is for. It is not the game.</p>
+  <nav aria-label="Pack pages"><a href="../BRIEF.html">The challenge</a><a href="../README.md">Technical start</a><a href="../2.%20Extend%20challenge/artwork.html">Artwork</a></nav>
+</div></header>
+<main class="wrap">
+  <p id="loading" class="error" hidden></p>
+
+  <section class="file">
+    <h2>1. The scenario <code>1-foundation/data/challenge.json</code></h2>
+    <p>Everything about the attack and the controls is data in this one file. Your game should read it, not copy it into code.</p>
+    <p id="scenarioSummary"></p>
+    <details><summary>See the 18 controls</summary><div class="scroll"><table id="controls"><thead><tr><th>ID</th><th>Control</th><th>Category</th><th class="num">Price</th></tr></thead><tbody></tbody></table></div></details>
+    <details><summary>See the four phases</summary><div class="scroll"><table id="phases"><thead><tr><th>Phase</th><th>Time</th><th>Story</th></tr></thead><tbody></tbody></table></div></details>
+    <details><summary>The code that loads it</summary><pre>import {validateData} from './1-foundation/starter/controls.mjs';
+const data = await (await fetch('./1-foundation/data/challenge.json')).json();
+validateData(data);   // throws a readable error if the file is wrong</pre></details>
+  </section>
+
+  <section class="file">
+    <h2>2. The scoring module <code>1-foundation/starter/controls.mjs</code></h2>
+    <p>Players choose all their controls once, before the attack starts. You give the module the scenario and the chosen control IDs. It checks the rules and gives back the money spent and the points for each phase. Try an example, or type control IDs yourself.</p>
+    <div class="row">
+      <label>Example <select id="preset"></select></label>
+      <label>Phases played so far <select id="played"><option>1</option><option>2</option><option>3</option><option selected>4</option></select></label>
+    </div>
+    <div class="row"><label class="wide">Chosen controls <input type="text" id="selection" placeholder="for example P5, P6, P7, D1, R1, R2, R4" autocomplete="off"></label></div>
+    <p id="engineError" class="error" role="status" aria-live="polite" hidden></p>
+    <div id="engineResult">
+      <p id="spend"></p>
+      <div class="scroll"><table id="result"><thead><tr><th>Phase</th><th>Time</th><th>Points from each chosen control</th><th class="num">Phase points</th></tr></thead><tbody></tbody></table></div>
+      <p class="total" id="total"></p>
+    </div>
+    <details><summary>The code that produced this</summary><pre id="engineCode"></pre></details>
+    <p>The module keeps no state and has no screens. Confirming the choice, revealing each phase, the checkpoint questions and the final outcome are your game.</p>
+  </section>
+
+  <section class="file">
+    <h2>3. The questions <code>1-foundation/data/questions.json</code></h2>
+    <p>40 behaviour questions. Each has a topic, a difficulty tier, one correct answer and an explanation. 16 match a phase of the attack story.</p>
+    <div class="row">
+      <label>Show questions for <select id="qPhase"></select></label>
+      <label>Question <select id="qPick"></select></label>
+    </div>
+    <div class="q" id="question"></div>
+    <p>Nothing here scores an answer. Your game asks them at a checkpoint after each phase. How many points a secure answer earns, and how the checkpoint looks, is yours to design.</p>
+  </section>
+
+  <section class="file">
+    <h2>4. A theme file <code>2-extend/themes/…/reference.json</code></h2>
+    <p>A theme is a different way of showing the same game. This reads the result from section 2 and describes it in the words of each theme. The scoring does not change.</p>
+    <p id="themeMissing" class="error" hidden></p>
+    <p id="themeNote"></p>
+    <div class="row"><label>Theme <select id="theme"><option value="incident-room">The Incident Room</option><option value="endurance-race">The Endurance Race</option><option value="map-room">The Map Room</option></select></label></div>
+    <div class="scroll"><table id="themeTable"><thead><tr></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section class="file">
+    <h2>What is not here</h2>
+    <ul>
+      <li>The game itself: the screens, choosing and confirming controls, revealing the four phases, the final outcome and the debrief.</li>
+      <li>The checkpoint questions after each phase, their time limit, and the points for secure answers.</li>
+      <li>The theme: this page only prints words in a table.</li>
+      <li>Any stretch capability.</li>
+      <li>Tests for what you add.</li>
+    </ul>
+    <p>The code for this page is at the bottom of <code>1-foundation/demo.html</code>. Read it as an example. Build your game alongside this page or replace it.</p>
+  </section>
+</main>
+
+<script>
+// Pages opened by double-click cannot load the other files. Say so plainly.
+if (location.protocol === 'file:') { const el = document.getElementById('loading'); el.hidden = false; el.textContent = 'This page needs the local server. Run "npm start" in the pack folder and open http://127.0.0.1:8080 instead.'; }
+</script>
+<script type="module">
+// This script is the code example. It shows how to load each file in the pack and use it.
+import {validateData, scoreSelection} from './starter/controls.mjs';
+
+const $ = id => document.getElementById(id);
+const money = n => '£' + n.toLocaleString('en-GB');
+const loadJson = async path => { const r = await fetch(path); if (!r.ok) throw new Error('Could not load ' + path); return r.json(); };
+const cell = (text, className) => { const td = document.createElement('td'); td.textContent = text; if (className) td.className = className; return td; };
+const row = cells => { const tr = document.createElement('tr'); tr.append(...cells); return tr; };
+
+let data, bank, themes = {}, latest = null;
+
+// Examples for section 2. Each is the list of control IDs chosen before the attack starts.
+const presets = [
+  {label: 'A sensible first try',                   selection: ['P5', 'P6', 'P7', 'D1', 'R1', 'R2', 'R4']},
+  {label: 'The cheapest valid choice',              selection: ['P3', 'D3', 'R1']},
+  {label: 'Both £1m controls',                      selection: ['P2', 'D4', 'R1', 'R2', 'P3']},
+  {label: 'The highest-scoring choice',             selection: ['P1', 'P3', 'P4', 'P7', 'D3', 'D4', 'R1', 'R2', 'R5']},
+  {label: 'Rule broken: over budget',               selection: ['P2', 'D4', 'D1', 'R2']},
+  {label: 'Rule broken: no Respond control',        selection: ['P3', 'D3']},
+  {label: 'Rule broken: a control chosen twice',    selection: ['P3', 'D3', 'R1', 'P3']},
+];
+
+try {
+  data = await loadJson('./data/challenge.json');
+  validateData(data);
+  bank = await loadJson('./data/questions.json');
+  // The theme files are optional, so a missing one only affects section 4.
+  const missingThemes = [];
+  for (const name of ['incident-room', 'endurance-race', 'map-room']) {
+    try { themes[name] = await loadJson('../2-extend/themes/' + name + '/reference.json'); }
+    catch { missingThemes.push(name); $('theme').querySelector('option[value="' + name + '"]').disabled = true; }
+  }
+  if (missingThemes.length) { $('themeMissing').hidden = false; $('themeMissing').textContent = 'Could not load the theme file for: ' + missingThemes.join(', ') + '. The rest of this page still works.'; }
+  const firstTheme = [...$('theme').options].find(o => !o.disabled);
+  if (firstTheme) $('theme').value = firstTheme.value;
+  showScenario(); setUpEngine(); setUpQuestions(); $('theme').addEventListener('change', showTheme); runEngine();
+} catch (error) {
+  $('loading').hidden = false;
+  $('loading').textContent = error.message + '. If you opened this page by double-clicking it, run "npm start" in the pack folder and open http://127.0.0.1:8080 instead.';
+}
+
+// 1. The scenario file
+function showScenario() {
+  $('scenarioSummary').textContent = data.controls.length + ' controls and ' + data.phases.length + ' phases. Players have ' + money(data.budget) + ' to spend, all chosen before the attack starts.';
+  $('controls').tBodies[0].append(...data.controls.map(c => { const chip = document.createElement('span'); chip.className = 'chip ' + c.category; chip.textContent = c.category; const td = document.createElement('td'); td.append(chip); return row([cell(c.id), cell(c.name), td, cell(money(c.cost), 'num')]); }));
+  $('phases').tBodies[0].append(...data.phases.map(p => row([cell(p.title), cell(p.local_time), cell(p.story)])));
+}
+
+// 2. The scoring module
+function setUpEngine() {
+  presets.forEach((p, i) => $('preset').add(new Option(p.label, i)));
+  $('preset').addEventListener('change', () => { usePreset(); runEngine(); });
+  $('selection').addEventListener('input', runEngine);
+  $('played').addEventListener('change', runEngine);
+  usePreset();
+}
+function usePreset() {
+  $('selection').value = presets[$('preset').value].selection.join(', ');
+}
+function runEngine() {
+  const selection = $('selection').value.toUpperCase().split(/[\s,]+/).filter(Boolean);
+  const played = Number($('played').value);
+  $('engineCode').textContent = 'const result = scoreSelection(data, ' + JSON.stringify(selection) + ');';
+  try {
+    latest = scoreSelection(data, selection);
+    $('engineError').hidden = true; $('engineResult').hidden = false;
+    $('spend').textContent = 'Spent ' + money(latest.spent) + ' of ' + money(latest.budget) + '. Unspent: ' + money(latest.unspent) + '.';
+    const shown = latest.phases.slice(0, played);
+    $('result').tBodies[0].replaceChildren(...shown.map((p, i) => row([
+      cell(data.phases[i].title), cell(data.phases[i].local_time),
+      cell(p.contributions.map(c => c.id + ' ' + c.points).join(', ')), cell(p.score, 'num')])));
+    const soFar = shown.reduce((sum, p) => sum + p.score, 0);
+    $('total').textContent = played === 4 ? 'Control score: ' + latest.total + ' (all four phases played)' : 'Control score so far: ' + soFar + ' (' + played + ' of 4 phases played)';
+  } catch (error) {
+    latest = null;
+    $('engineError').hidden = false; $('engineResult').hidden = true;
+    $('engineError').textContent = 'The scoring module refused this: ' + error.message;
+  }
+  showTheme();
+}
+
+// 3. The question file
+function setUpQuestions() {
+  $('qPhase').add(new Option('Any checkpoint (general questions)', ''));
+  data.phases.forEach(p => $('qPhase').add(new Option(p.title, p.id)));
+  $('qPhase').value = 'phase_1';
+  $('qPhase').addEventListener('change', listQuestions); $('qPick').addEventListener('change', showQuestion);
+  listQuestions();
+}
+function listQuestions() {
+  const phase = $('qPhase').value || null;
+  $('qPick').replaceChildren(...bank.questions.filter(q => q.phase_id === phase).map(q => new Option(q.id + ', ' + q.category + ', tier ' + q.tier, q.id)));
+  showQuestion();
+}
+function showQuestion() {
+  const q = bank.questions.find(x => x.id === $('qPick').value);
+  const p = text => { const el = document.createElement('p'); el.textContent = text; return el; };
+  const options = document.createElement('ol');
+  for (const text of Object.values(q.options)) { const li = document.createElement('li'); li.textContent = text; options.append(li); }
+  const controls = q.related_controls.map(id => id + ' ' + data.controls.find(c => c.id === id).name).join(', ');
+  const answer = document.createElement('details'); const summary = document.createElement('summary'); summary.textContent = 'Show the answer and explanation';
+  answer.append(summary, p('Correct answer: ' + q.correct + '. ' + q.explanation));
+  const head = p(q.id + ', ' + q.category + ', tier ' + q.tier + ' (' + q.tier_label + ')'); head.style.fontWeight = '600';
+  $('question').replaceChildren(head, p(q.question), options, p('Related controls: ' + controls), answer);
+}
+
+// 4. A theme file: the same result, described in the words of a theme
+function showTheme() {
+  const theme = themes[$('theme').value]; if (!theme) return;   // no theme files loaded: section 4 just stays empty
+  const phases = latest ? latest.phases.slice(0, Number($('played').value)) : [];
+  let headings, rows, note = '';
+  if ($('theme').value === 'incident-room') {
+    headings = ['Phase', 'Where the player is', 'Phase points'];
+    rows = phases.map((p, i) => [i + 1, theme.channels[i].local_time + ': ' + theme.channels[i].setting, p.score]);
+  } else if ($('theme').value === 'endurance-race') {
+    headings = ['Stint', 'Phase points'];
+    rows = phases.map((p, i) => [theme.stints[i].label, p.score]);
+    if (latest) note = 'Parts fitted for the whole race: ' + latest.chosen.map(id => theme.parts[id].part).join(', ') + '.';
+  } else {
+    const place = id => theme.nodes.find(n => n.id === id).name;
+    headings = ['Phase', "The attacker's moves on the map", 'Phase points'];
+    rows = phases.map((p, i) => {
+      const step = theme.scripted_route[i];
+      const moves = step.attacker_moves.map(([from, to]) => place(from) + ' to ' + place(to));
+      if (step.encrypted) moves.push('Files locked on: ' + step.encrypted.map(place).join(', '));
+      return [i + 1, moves.join('; '), p.score];
+    });
+  }
+  $('themeNote').textContent = note;
+  $('themeNote').hidden = !note;
+  const head = $('themeTable').tHead.rows[0];
+  head.replaceChildren(...headings.map(h => { const th = document.createElement('th'); th.textContent = h; return th; }));
+  $('themeTable').tBodies[0].replaceChildren(...(rows.length ? rows.map(cells => row(cells.map(c => cell(c)))) : [row([cell('Choose a valid set of controls in section 2 to see it here.')])]));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+/* Shared styles for the pack's own pages (brief, setup check, asset viewer). Your game does not need to use them. */
+:root{
+  --green:#008c39; --deep:#00402a; --blue:#0792e5; --orange:#e3850d;
+  --mint:#5bd38c; --wash:#eef8f1; --line:#d5ddd8; --text:#3a3735; --white:#fff;
+  --font:"Segoe UI","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:Consolas,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:1rem}
+body{margin:0;background:var(--white);color:var(--text);font:1.0625rem/1.6 var(--font)}
+.wrap{max-width:60rem;margin:0 auto;padding:0 1.25rem}
+.top{background:var(--deep);color:var(--white);padding:2.5rem 0 2rem}
+.top h1{font-size:clamp(2rem,6vw,3.25rem);line-height:1.05;margin:0 0 .5rem;font-weight:700;letter-spacing:-.01em}
+.top p{margin:0;max-width:38rem;font-size:1.2rem;line-height:1.4;color:#d8f3e2}
+.top nav{margin-top:1.25rem;display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;font-size:1rem}
+.top a{color:var(--white)}
+main{padding:1rem 0 4rem}
+h2{font-size:1.6rem;line-height:1.2;color:var(--green);margin:2.75rem 0 .75rem;font-weight:700}
+h3{font-size:1.15rem;line-height:1.3;color:var(--deep);margin:1.75rem 0 .4rem}
+p,ul,ol{max-width:44rem;margin:.6rem 0}
+li{margin:.3rem 0}
+a{color:#006b9e}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+code{font-family:var(--mono);font-size:.92em;background:#f1f4f2;padding:.1em .3em;border-radius:4px;overflow-wrap:anywhere}
+pre{background:#f1f4f2;border-radius:10px;padding:1rem;overflow-x:auto;font:0.95rem/1.5 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+.scroll{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;margin:.9rem 0;font-size:1rem}
+th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-bottom:1px solid var(--line)}
+thead th{background:var(--deep);color:var(--white);font-weight:600}
+tbody th{color:var(--deep);font-weight:700;white-space:nowrap}
+td.num,th.num{text-align:right}
+.note{background:var(--wash);border-radius:12px;padding:.9rem 1.1rem;max-width:44rem;margin:1rem 0}
+.banner{background:var(--green);color:var(--white);border-radius:12px;padding:.9rem 1.1rem;font-weight:600;margin:1rem 0;max-width:44rem}
+
+/* The overnight clock: the four phases placed by their real time gaps */
+.clock{margin:1.5rem 0 .5rem}
+.track{position:relative;height:3.2rem;margin:0 .6rem}
+.track::before{content:"";position:absolute;left:0;right:0;top:1.1rem;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--orange),var(--blue) 45%,var(--green) 75%,var(--deep))}
+.track span{position:absolute;top:.55rem;width:1.3rem;height:1.3rem;margin-left:-.65rem;border-radius:50%;border:4px solid var(--white);box-shadow:0 0 0 2px var(--deep);background:var(--deep)}
+.track small{position:absolute;top:2rem;transform:translateX(-50%);white-space:nowrap;font-size:.8rem;color:var(--deep)}
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.75rem;margin:.5rem 0 0;padding:0;list-style:none;max-width:none}
+.phases li{border-radius:14px;padding:1rem;color:var(--white);margin:0}
+.phases li:nth-child(1){background:var(--orange)} .phases li:nth-child(2){background:var(--blue)}
+.phases li:nth-child(3){background:var(--green)} .phases li:nth-child(4){background:var(--deep)}
+.phases b{display:block;font-size:1.15rem;line-height:1.25;margin:.1rem 0 .35rem}
+.phases time{font-size:.95rem;font-weight:600}
+.phases p{margin:0;font-size:.98rem;line-height:1.45}
+.phases li:nth-child(1), .phases li:nth-child(2){color:#10221a}
+
+.cap{border:2px solid var(--line);border-radius:14px;padding:.25rem 1.25rem 1rem;margin:1rem 0;max-width:48rem}
+.cap h3{margin-top:1rem;font-size:1.25rem}
+.cap h4{margin:1rem 0 .2rem;font-size:1rem;color:var(--green)}
+.chip{display:inline-block;border-radius:999px;padding:.05rem .6rem;font-size:.85rem;font-weight:600;color:var(--white);background:var(--deep)}
+.chip.Prevent{background:var(--green)} .chip.Detect{background:var(--blue);color:#06263a} .chip.Respond{background:var(--orange);color:#3a2203}
+button{font:inherit;padding:.6rem 1rem;border-radius:10px;border:2px solid var(--green);background:var(--green);color:var(--white);font-weight:600;cursor:pointer}
+button.quiet{background:var(--white);color:var(--deep);border-color:var(--line);font-weight:500;padding:.35rem .7rem;font-size:.9rem}
+button[aria-pressed="true"]{background:var(--deep);border-color:var(--deep);color:var(--white)}
+input[type=search]{font:inherit;padding:.55rem .8rem;border:2px solid var(--line);border-radius:10px;width:min(100%,22rem)}
+@media (max-width:40rem){.track small{display:none}.track{height:2.4rem}}

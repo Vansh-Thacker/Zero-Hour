@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cyber Awareness challenge: the brief</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <h1>Cyber Awareness challenge</h1>
+  <p>Build a digital game that raises cyber security awareness in our business teams.</p>
+  <nav aria-label="Pack pages"><a href="README.md">Technical start</a><a href="1.%20Foundation%20challenge/demo.html">Demo</a><a href="2.%20Extend%20challenge/artwork.html">Artwork</a><a href="OUR_GAME.md">Hand-in note</a></nav>
+</div></header>
+
+<main class="wrap">
+
+<h2 id="challenge">The challenge</h2>
+<p>ScottishPower's Cyber team has a tabletop game. It is used at graduate onboarding events and in some team training sessions. Players run a fictional energy business, spend a budget on cyber defences, and watch a realistic attack play out.</p>
+<p>Alongside it, the team has a set of questions about everyday cyber behaviour, such as what to do with a suspicious email. Today these are a separate quiz.</p>
+<p>We think there is a much bigger digital opportunity. Your job is to turn the tabletop game into a digital game that is engaging, accessible and ready to scale, with the questions built into it.</p>
+<p>You do not need any cyber security knowledge. All the cyber content is written by our Cyber team and supplied in this pack. You bring the software and the game design.</p>
+<p>Your players are colleagues learning together, often around one screen with a facilitator (the person running the session). The game should still explain itself clearly without one.</p>
+<p><strong>Name your game.</strong> The digital game does not have a name yet, so give yours a name of your own. Name the fictional business too. Set each name in one place in your code or data, so that it can be changed later without searching for it.</p>
+
+<h2 id="story">The attack, hour by hour</h2>
+<p>Players choose their defences once, before the attack starts. Then the attack plays out in four phases, from late on Monday afternoon to just before the day shift on Tuesday. After each phase, players see how their choices performed and answer a few behaviour questions.</p>
+<div class="clock">
+  <div class="track" aria-hidden="true">
+    <span style="left:0%"></span><small style="left:4%">Mon 16:40</small>
+    <span style="left:67.5%"></span><small style="left:64%">Tue 02:00</small>
+    <span style="left:78.3%"></span><small style="left:80%">03:30</small>
+    <span style="left:100%"></span><small style="left:96%">06:30</small>
+  </div>
+  <ol class="phases">
+    <li><time>Phase 1, Monday 16:40</time><b>Delivery</b><p>A convincing email. Someone clicks.</p></li>
+    <li><time>Phase 2, Tuesday 02:00</time><b>Discovery</b><p>The attacker explores while almost nobody is watching.</p></li>
+    <li><time>Phase 3, Tuesday 03:30</time><b>Command and control</b><p>A call from "IT" asks the night desk for a sign-in code.</p></li>
+    <li><time>Phase 4, Tuesday 06:30</time><b>Encryption and ransom</b><p>Files are locked just before the day shift.</p></li>
+  </ol>
+</div>
+<p>The full story text for each phase is in <code>1-foundation/data/challenge.json</code>.</p>
+
+<h2 id="rules">Rules of the core game</h2>
+<p>Players choose controls. A control is a cyber defence, such as email security or a backup service. There are 18 to choose from, in three categories: <span class="chip Prevent">Prevent</span> <span class="chip Detect">Detect</span> <span class="chip Respond">Respond</span>. Each has a price, and each scores different points in each phase.</p>
+<ol>
+  <li><strong>Choose up front.</strong> The business has a budget of £3 million for controls. Players choose all their controls before the attack starts, setting up their business to be as secure as they can. They can spend up to £3 million. They do not have to spend it all.</li>
+  <li><strong>Cover all three categories.</strong> Players must choose at least one Prevent, one Detect and one Respond control. They can choose as many more as they can afford. Each control can be chosen once.</li>
+  <li><strong>Confirm.</strong> Players can change their choice until they confirm it. After that it is fixed for the whole game.</li>
+  <li><strong>Already in place.</strong> Three controls are already in place in the business: a firewall, vulnerability scanning and penetration testing. Show them to players. They cannot be chosen, they score nothing, and they do not count towards rule 2.</li>
+  <li><strong>The attack unfolds.</strong> The game plays the four phases in order. For each phase, show the story, then reveal how many points each chosen control scores in that phase. Every chosen control scores in every phase.</li>
+  <li><strong>Behaviour checkpoint.</strong> At the end of each phase, players answer behaviour questions. A secure answer earns extra points. See "Foundation: the behaviour questions" below.</li>
+  <li><strong>Final outcome.</strong> After phase 4, show the control score, the behaviour points and the two added together, with a debrief explaining what happened and why. A reset starts a new game.</li>
+</ol>
+<p>The supplied scoring module checks the budget, the three categories and the choose-once rule, and works out the control score for each phase. Confirming, the story, revealing each phase, the checkpoints, the final outcome and reset are yours to build.</p>
+<p class="note">This is a teaching game. The controls, prices and points are simplified for learning, not advice on what to buy. The business, its systems and its people are fictional.</p>
+
+<h2 id="levels">Three levels. All three can win.</h2>
+<div class="scroll"><table>
+  <thead><tr><th>Level</th><th>What it means</th></tr></thead>
+  <tbody>
+    <tr><th>Foundation</th><td>The full core game: choosing controls, the four phases, a behaviour checkpoint after each phase, the final outcome, and a debrief (the review at the end of what happened and why).</td></tr>
+    <tr><th>Extend</th><td>The Foundation game in a theme.</td></tr>
+    <tr><th>Stretch</th><td>The themed game, plus one extra capability.</td></tr>
+  </tbody>
+</table></div>
+<p class="banner">A Foundation game done really well can beat a Stretch game done poorly.</p>
+<p>The levels are a suggested order to build in. They are not a scoring scale. Marks come from the judging areas further down this page.</p>
+<h3>The pack is arranged by level</h3>
+<div class="scroll"><table>
+  <thead><tr><th>Folder</th><th>What is in it</th></tr></thead>
+  <tbody>
+    <tr><th><code>1-foundation</code></th><td>Everything for the core game: the scenario, the 40 questions, the scoring code with its tests, the demo page, and the control icons and everyday pictures.</td></tr>
+    <tr><th><code>2-extend</code></th><td>Everything for a theme: a guide and starting file for each of the three themes, the rest of the artwork, the 3D models and scenes, and the artwork viewer.</td></tr>
+    <tr><th><code>3-stretch</code></th><td>A guide for each of the four capabilities. They build on the Foundation files, so there is no extra code or data here.</td></tr>
+  </tbody>
+</table></div>
+<p>The brief, the technical start, the hand-in note and <code>package.json</code> stay in the pack folder itself.</p>
+
+<h2 id="questions">Foundation: the behaviour questions</h2>
+<p>The controls game teaches how an organisation defends itself. People also need to know how to behave safely as individuals. Our Cyber team has written 40 questions for this. Each has four options, one correct answer and an explanation.</p>
+<ul>
+  <li>There are 10 topics, such as phishing, passwords and physical security.</li>
+  <li>Each topic has one question at each of four tiers of difficulty: Spot the Risk, Read the Signs, Choose Your Response and Pressure Test.</li>
+  <li>16 questions match a phase of the attack story. The other 24 are general and can be used at any checkpoint.</li>
+</ul>
+<p>They are all in <code>1-foundation/data/questions.json</code>. The <a href="1.%20Foundation%20challenge/demo.html">demo page</a> shows them one at a time.</p>
+<h3>What Foundation needs</h3>
+<ul>
+  <li>A behaviour checkpoint at the end of each of the four phases, with at least one question.</li>
+  <li>Any question can be used at any checkpoint, and questions do not need to get harder from phase to phase. Where you can, choose questions that fit what has just happened in the story. The table below shows which fit each phase.</li>
+  <li>The questions can be set in advance, or picked at random. Every player could get the same ones.</li>
+  <li>Each checkpoint takes no more than 2 minutes, so the game fits a facilitated session. A timer for the whole checkpoint, or 30 seconds a question, both work as long as the checkpoint stays within 2 minutes.</li>
+  <li>When time runs out, any unanswered question earns no points, the game still shows its explanation, and play moves on. A facilitator can pause the timer, for example while a group reads a long question aloud.</li>
+  <li>After each answer, the game shows the explanation.</li>
+  <li>A secure (correct) answer earns extra points. A wrong answer earns none. You decide how many points.</li>
+  <li>Show the behaviour points separately from the control score, then add the two together for the final outcome after phase 4.</li>
+</ul>
+<h3>Which questions fit which phase</h3>
+<p>This is a guide, not a rule. The story questions fit best. The other questions on the same topics fit too. Within each topic, the question IDs run from tier 1 to tier 4, so Q01 is the easiest phishing question and Q04 the hardest.</p>
+<div class="scroll"><table>
+  <thead><tr><th>Phase</th><th>Story questions</th><th>Topics that fit</th></tr></thead>
+  <tbody>
+    <tr><td>1 Delivery and exploitation, Monday 16:40</td><td>Q01, Q02, Q03, Q04, Q29</td><td>Phishing (Q01 to Q04)<br>Safe Data Handling (Q29 to Q32)</td></tr>
+    <tr><td>2 Discovery, Tuesday 02:00</td><td>Q09, Q10, Q11, Q37</td><td>Multi-Factor Authentication (MFA) (Q09 to Q12)<br>Remote Working &amp; Secure Connectivity (Q37 to Q40)</td></tr>
+    <tr><td>3 Command and control, Tuesday 03:30</td><td>Q08, Q12, Q15, Q16</td><td>Passwords (Q05 to Q08)<br>Multi-Factor Authentication (MFA) (Q09 to Q12)<br>Vishing &amp; Smishing (Q13 to Q16)</td></tr>
+    <tr><td>4 Encryption and ransom demand, Tuesday 06:30</td><td>Q22, Q30, Q32</td><td>Social Engineering (Q21 to Q24)<br>Safe Data Handling (Q29 to Q32)</td></tr>
+  </tbody>
+</table></div>
+<p>Three topics do not match a phase of this story: QR Codes &amp; Mobile Threats (Q17 to Q20), Physical Security (Q25 to Q28) and Online Safety &amp; Digital Footprint (Q33 to Q36). Use them at any checkpoint, or leave them out.</p>
+<h3>An idea, if you want it: a harder question on the same topic</h3>
+<p>Start a checkpoint with an easier question. If the player answers it correctly, offer them a harder question on the same topic for more points, and so on up to tier 4. This is a design choice for your team, not a requirement. If you try it:</p>
+<ul>
+  <li>Tell the player the rule before the checkpoint starts.</li>
+  <li>A wrong answer still earns no points.</li>
+  <li>The whole checkpoint still takes no more than 2 minutes. Tier 4 questions take longer to read, so leave time for them.</li>
+</ul>
+<p>This is different from the Reactive questions capability in Stretch. Here, the player's answers decide the next question. In Reactive questions, the controls the player chose decide which questions they get.</p>
+<h3>Rules for using the questions</h3>
+<ul>
+  <li>Keep each question, its correct answer and its explanation exactly as written.</li>
+  <li>There is one correct answer. A wrong answer is never partly right.</li>
+  <li>You decide how many points a secure answer earns, and whether answers change anything else in the game. Tell the player what the rule is.</li>
+  <li>Keep the control score from the supplied scoring module visible on its own, so we can check it.</li>
+</ul>
+
+<h2 id="extend">Extend: a theme</h2>
+<p>Choose one of our three ideas, or bring your own. If you bring your own, check it with us when we visit your desk on Saturday.</p>
+<div class="scroll"><table>
+  <thead><tr><th>Theme</th><th>The idea</th><th>The least that counts</th><th>Effort</th></tr></thead>
+  <tbody>
+    <tr><th>The Incident Room</th><td>Live through the attack in emails, chat, calls and updates.</td><td>Incident updates the player can act on, status that changes with their choices, and a debrief.</td><td>Lower</td></tr>
+    <tr><th>The Endurance Race</th><td>The business is the car. Each control fits a part. Most laps wins.</td><td>A 2D track where progress changes with the player's choices, and a finish result. Explain how choices map to the race.</td><td>Medium</td></tr>
+    <tr><th>The Map Room</th><td>Place your defences on a map and watch the attacker's route.</td><td>Named business systems the player can select, an attack that visibly moves, and consequences for choices.</td><td>Higher</td></tr>
+  </tbody>
+</table></div>
+<ul>
+  <li>The player's choices must change what happens in the theme. A background picture alone is not a theme.</li>
+  <li>Simple 2D is fine. 3D is optional.</li>
+  <li>Always show each control's real name alongside any theme name, so the cyber learning is not lost.</li>
+  <li>Each theme has a guide and a starting reference file in <code>2-extend/themes/</code>. The artwork is optional: 2D and 3D pieces in <code>2-extend/artwork/</code>, and a ready-assembled 3D scene for each theme in <code>2-extend/worlds/</code>. Browse it all in the <a href="2.%20Extend%20challenge/artwork.html">artwork viewer</a>.</li>
+</ul>
+
+<h2 id="stretch">Stretch: one extra capability</h2>
+<p>Add one major feature on top of the game. One that works reliably is worth more than several unfinished. Each has a guide in the <code>3-stretch</code> folder with what you start with, what counts as done, and the hard cases your build must handle.</p>
+<div class="scroll"><table>
+  <thead><tr><th>Capability</th><th>In one line</th><th>Guide</th></tr></thead>
+  <tbody>
+    <tr><th>Reactive questions</th><td>The controls the players chose change the type and difficulty of the questions at each checkpoint.</td><td><code>3-stretch/reactive-questions.md</code></td></tr>
+    <tr><th>Multiplayer</th><td>Players on separate devices play one shared game with one shared budget.</td><td><code>3-stretch/multiplayer.md</code></td></tr>
+    <tr><th>Rewind and compare</th><td>After a game, change an earlier decision and see the two outcomes side by side.</td><td><code>3-stretch/rewind-and-compare.md</code></td></tr>
+    <tr><th>Scenario studio</th><td>A way for our Cyber team to update the game later without writing code.</td><td><code>3-stretch/scenario-studio.md</code></td></tr>
+  </tbody>
+</table></div>
+
+
+<h2 id="ai">AI tools</h2>
+<p>You can use AI coding tools, and we expect most teams will. We judge your thinking, your design and your problem solving.</p>
+<ul>
+  <li><strong>You own:</strong> how the system is structured, where the game's state lives, keeping the theme separate from the scoring, what gets tested, and being able to explain the code you hand in.</li>
+  <li><strong>AI can help with:</strong> writing the code, interface components and styling, the tests you have designed, and the repetitive parts.</li>
+  <li>Your finished game must not call an online AI service while it runs.</li>
+  <li>Tell us in your hand-in note where AI tools helped.</li>
+</ul>
+
+<h2 id="judging">How we will judge</h2>
+<div class="scroll"><table>
+  <thead><tr><th>Area</th><th class="num">Marks</th><th>What we look for</th></tr></thead>
+  <tbody>
+    <tr><th>Architecture and design</th><td class="num">25</td><td>A clear design. State, rules and presentation organised sensibly. Decisions you can explain.</td></tr>
+    <tr><th>Engineering and testing</th><td class="num">25</td><td>A reliable game: correct budget and category checks, phase scores and checkpoint points. Useful tests. Invalid actions handled.</td></tr>
+    <tr><th>Learning and cyber accuracy</th><td class="num">20</td><td>Accurate explanations, real trade-offs, answers that change the game, and a useful debrief.</td></tr>
+    <tr><th>Player experience</th><td class="num">15</td><td>Clear and usable. Readable text. Feedback that does not rely on colour alone. If you built a theme, it responds to the player's choices. A Foundation game without a theme can still score full marks here.</td></tr>
+    <tr><th>Communication and honesty</th><td class="num">15</td><td>A clear demo, a clear account of your work, and honest limitations.</td></tr>
+  </tbody>
+</table></div>
+<p>On Saturday evening our technical experts will come to your desk and ask you to show them your code. This is an early view, not a score: if you fix something overnight, you get the credit. On Sunday we will see your work at a desk visit in the morning and in the questions after your presentation. Be ready to:</p>
+<ul>
+  <li><strong>Show it working.</strong> The core rules, a checkpoint with points for a secure answer, the final outcome, and your theme if you built one.</li>
+  <li><strong>Explain a design decision and a test.</strong> We may ask any member of the team.</li>
+  <li><strong>Be honest about limits and AI use.</strong> Tell us what does not work yet.</li>
+</ul>
+<p>Your score inside the game does not affect your judging score. Extra features earn credit only where they work.</p>
+
+<h2 id="handin">What to hand in</h2>
+<ul>
+  <li>Your game, in your team's GitHub repository, with all code committed by <strong>12:00 on Sunday</strong>.</li>
+  <li><code>OUR_GAME.md</code> or <code>OUR_GAME.docx</code>, filled in. It covers your game's name and where to change it, how to run the game, a walkthrough that works, your design, your tests, what does not work yet and where AI helped.</li>
+  <li>A presentation of 8 minutes, followed by 2 minutes of questions.</li>
+</ul>
+
+<h2 id="times">Key times</h2>
+<div class="scroll"><table>
+  <thead><tr><th>When</th><th>What</th></tr></thead>
+  <tbody>
+    <tr><th>Saturday 10 October</th><td>Planning from 12:00. Coding from 12:30 to 21:00. We visit your desk during the afternoon to talk through your design. In the evening, our technical experts look at your code and colleagues try your game.</td></tr>
+    <tr><th>Sunday 11 October</th><td>Start at 09:00. Desk visits during the morning. All code committed by 12:00. Presentations from 12:15. Results at 14:10.</td></tr>
+  </tbody>
+</table></div>
+<p>Our table is at the side of the coding room all weekend. Our Cyber team is there to answer questions.</p>
+<p class="note">Everyone on your team must have signed the ScottishPower participant agreement to take part in this challenge.</p>
+
+</main>
+</body>
+</html>
