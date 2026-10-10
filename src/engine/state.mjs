@@ -7,7 +7,14 @@
 //            so the engine stays pure and one clock (the server's) can drive every screen.
 
 import {scoreSelection} from '../../1-foundation/starter/controls.mjs';
-import {CHECKPOINT_SECONDS, POINTS_PER_SECURE_ANSWER, QUESTIONS_PER_CHECKPOINT} from '../config.mjs';
+import {QUESTIONS_PER_CHECKPOINT} from '../config.mjs';
+import {
+  pickQuestions, markAnswer, teamBehaviourPoints,
+  startTimer, timeLeft, pauseTimer, resumeTimer, isPaused, isExpired,
+} from '../checkpoint/checkpoint.mjs';
+
+// The screens read the countdown through the engine, so they only import one module.
+export {timeLeft};
 
 export function createInitialState() {
   return {
@@ -37,40 +44,6 @@ function selectProblem(data, state, id) {
   if (control.cost > left) return `Not enough budget for ${control.name}: it costs ${pounds(control.cost)} and ${pounds(left)} is left.`;
   return null;
 }
-
-// --- Stand-ins for Ghassan's checkpoint module, with the names agreed in TEAM_PLAN.md. ---
-// TODO: import these from ../checkpoint/checkpoint.mjs once they land.
-const LIMIT_MS = CHECKPOINT_SECONDS * 1000;
-
-function pickQuestions(bank, phaseId, count) {
-  return bank.questions.filter(q => q.phase_id === phaseId).slice(0, count);
-}
-
-function markAnswer(question, choice) {
-  const correct = choice === question.correct;
-  return {correct, points: correct ? POINTS_PER_SECURE_ANSWER : 0, explanation: question.explanation};
-}
-
-function startTimer(now) {
-  return {startedAt: now, pausedAt: null, pausedMs: 0};
-}
-
-export function timeLeft(timer, now) {
-  const pausedFor = timer.pausedMs + (timer.pausedAt === null ? 0 : now - timer.pausedAt);
-  return Math.max(0, LIMIT_MS - (now - timer.startedAt - pausedFor));
-}
-
-// Team average per question, so the number of players does not change the score.
-function teamBehaviourPoints(answers) {
-  const byQuestion = new Map();
-  for (const a of answers) byQuestion.set(a.questionId, [...(byQuestion.get(a.questionId) ?? []), a]);
-  let points = 0;
-  for (const given of byQuestion.values()) {
-    points += POINTS_PER_SECURE_ANSWER * given.filter(a => a.correct).length / given.length;
-  }
-  return points;
-}
-// --- End of stand-ins. ---
 
 function startCheckpoint(game, state, now) {
   const phaseId = game.data.phases[state.phase].id;
@@ -104,7 +77,7 @@ function answer(game, state, action) {
   if (state.stage !== 'checkpoint' || typeof action.now !== 'number') return state;
   if (!checkpoint.questionIds.includes(action.questionId)) return {...state, error: 'That question is not part of this checkpoint.'};
   if (!['A', 'B', 'C', 'D'].includes(action.choice)) return {...state, error: 'Choose one of the four answers.'};
-  if (checkpoint.expired || timeLeft(checkpoint.timer, action.now) === 0) {
+  if (checkpoint.expired || isExpired(checkpoint.timer, action.now)) {
     return {...state, checkpoint: {...checkpoint, expired: true}, error: 'Time is up for this checkpoint.'};
   }
   const player = action.player ?? null;
@@ -127,14 +100,14 @@ function timerAction(state, action) {
   const {timer} = checkpoint;
   switch (action.type) {
     case 'pause':
-      if (timer.pausedAt !== null) return state;
-      return {...state, checkpoint: {...checkpoint, timer: {...timer, pausedAt: action.now}}};
+      if (isPaused(timer)) return state;
+      return {...state, checkpoint: {...checkpoint, timer: pauseTimer(timer, action.now)}};
     case 'resume':
-      if (timer.pausedAt === null) return state;
-      return {...state, checkpoint: {...checkpoint, timer: {...timer, pausedAt: null, pausedMs: timer.pausedMs + action.now - timer.pausedAt}}};
+      if (!isPaused(timer)) return state;
+      return {...state, checkpoint: {...checkpoint, timer: resumeTimer(timer, action.now)}};
     case 'timeout':
       // Only believed if the time really has run out, so no screen can end a checkpoint early.
-      if (timeLeft(timer, action.now) > 0) return state;
+      if (!isExpired(timer, action.now)) return state;
       return {...state, checkpoint: {...checkpoint, expired: true}};
   }
 }
