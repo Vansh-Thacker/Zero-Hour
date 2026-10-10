@@ -1,28 +1,39 @@
-// Outcome screen: the scores, kept separate and then added together. The night report and
-// the debrief of each phase open as pop-ups from two buttons, so the page stays short.
+// Outcome screen: stars, the scores (kept separate, then added together) and badges.
+// The night report and the debrief of each phase open as pop-ups, so the page stays short.
 // TODO: swap the debrief section for Mo's buildDebrief() once it lands.
 
 import {el, points, hostOnly} from './dom.mjs';
 import {nightReport, outcomeVault} from './nightReport.mjs';
+import {badges, nightStars} from './fun.mjs';
 
 export function outcomeScreen(state, {data, bank}, dispatch, extras, room) {
   const control = state.result.total;
   const behaviour = state.behaviourPoints.reduce((sum, p) => sum + p, 0);
   const total = control + behaviour;
   const ending = extras.heistOutcome?.(data, state);
+  const night = nightStars(data, bank, state);
 
   const hero = el('section', {class: 'verdict-hero'},
     el('div', {},
-      el('span', {class: 'eyebrow'}, 'Tuesday, morning · Debrief'),
+      el('span', {class: 'eyebrow'}, '☀️ Tuesday morning · The night is over'),
+      el('div', {class: 'stars', 'data-stars': night.stars, role: 'img', 'aria-label': `${night.stars} out of 3 stars`},
+        [1, 2, 3].map(n => el('span', {class: n <= night.stars ? 'is-on' : '', style: `--n:${n}`}, n <= night.stars ? '★' : '☆'))),
       el('h1', {class: 'screen-title'},
-        ending ? (ending.result === 'foiled' ? '✓ Heist foiled' : '✗ The crew got away') : 'The night is over'),
-      el('p', {class: 'lead'}, ending?.reason
-        ?? 'Here is how your defences and your people did across the four phases of the attack.')),
+        ending ? (ending.result === 'foiled' ? '✓ Heist foiled' : '✗ The crew got away') : night.title),
+      el('p', {class: 'lead'}, ending?.reason ?? night.line)),
     outcomeVault(data, bank, state));
+
+  const earned = badges(data, bank, state);
+  const shelf = el('section', {class: 'badges', 'aria-labelledby': 'badges-title'},
+    el('h2', {id: 'badges-title'}, `🏅 Badges · ${earned.filter(b => b.earned).length} of ${earned.length}`),
+    el('ul', {}, earned.map((b, i) => el('li', {class: `badge${b.earned ? ' is-earned' : ''}`, style: `--i:${i}`},
+      el('span', {class: 'badge-icon', 'aria-hidden': 'true'}, b.earned ? b.icon : '🔒'),
+      el('strong', {}, b.name),
+      el('span', {}, b.earned ? '✓ Earned' : b.how)))));
 
   const scores = el('section', {class: 'scores', 'aria-label': 'Final scores'},
     scoreCard('Control score', control, 'from your defences'),
-    scoreCard('Behaviour points', behaviour, 'from the checkpoints'),
+    scoreCard('Behaviour points', behaviour, 'from the quizzes'),
     scoreCard('Total', total, 'control + behaviour', 'is-total'));
 
   const debrief = el('section', {'aria-labelledby': 'debrief-title'},
@@ -43,7 +54,7 @@ export function outcomeScreen(state, {data, bank}, dispatch, extras, room) {
   el('span', {class: 'report-go', 'aria-hidden': 'true'}, 'Open →'));
 
   return [
-    hero, scores,
+    hero, scores, shelf,
     el('section', {class: 'report-buttons', 'aria-label': 'Reports'}, open(report, 'open-report'), open(details, 'open-debrief')),
     report, details,
     el('div', {class: 'actions'}, hostOnly(room,

@@ -49,3 +49,51 @@ export function countUp(root) {
     requestAnimationFrame(step);
   }
 }
+
+// A burst of confetti from the middle of an element. Decorative, and skipped under reduced motion.
+export function confetti(target, count = 30) {
+  if (reduceMotion() || !target?.isConnected) return;
+  const box = target.getBoundingClientRect();
+  const layer = document.createElement('div');
+  layer.className = 'confetti';
+  layer.setAttribute('aria-hidden', 'true');
+  layer.style.left = `${box.left + box.width / 2}px`;
+  layer.style.top = `${box.top + box.height / 2}px`;
+  const colours = ['#26bf64', '#ffb536', '#3cc2ff', '#ff9c1a', '#f3f4f3'];
+  for (let i = 0; i < count; i++) {
+    const bit = document.createElement('i');
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 70 + Math.random() * 130;
+    bit.style.setProperty('--x', `${(Math.cos(angle) * distance).toFixed(0)}px`);
+    bit.style.setProperty('--y', `${(Math.sin(angle) * distance - 70).toFixed(0)}px`);
+    bit.style.setProperty('--r', `${(Math.random() * 720 - 360).toFixed(0)}deg`);
+    bit.style.background = colours[i % colours.length];
+    bit.style.animationDelay = `${(Math.random() * 0.1).toFixed(2)}s`;
+    layer.append(bit);
+  }
+  document.body.append(layer);
+  setTimeout(() => layer.remove(), 1500);
+}
+
+// Text that floats up from an element and fades, like "+2" or "−£350k".
+// The same news is always shown in words on the screen too, so this is extra.
+export function floatText(target, text, kind = '') {
+  if (!target?.isConnected) return;
+  const box = target.getBoundingClientRect();
+  const tag = document.createElement('span');
+  tag.className = `float-text ${kind}`;
+  tag.setAttribute('aria-hidden', 'true');
+  tag.textContent = text;
+  tag.style.left = `${box.left + box.width / 2}px`;
+  tag.style.top = `${box.top + 12}px`;
+  document.body.append(tag);
+  setTimeout(() => tag.remove(), reduceMotion() ? 900 : 1300);
+}
+
+// Restart a one-off CSS animation on an element (a pop or a shake).
+export function bump(target, className) {
+  if (!target || reduceMotion()) return;
+  target.classList.remove(className);
+  void target.offsetWidth;
+  target.classList.add(className);
+}

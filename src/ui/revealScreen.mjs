@@ -26,8 +26,8 @@ export function revealScreen(state, {data}, dispatch, extras, room) {
   return [
     el('section', {class: 'reveal-head'},
       el('div', {},
-        el('span', {class: 'eyebrow'}, `Phase ${state.phase + 1} · ${phase.local_time}`),
-        el('h1', {class: 'screen-title'}, 'How your defences did'),
+        el('span', {class: 'eyebrow'}, `⚔️ Attack ${state.phase + 1} · ${phase.local_time}`),
+        el('h1', {class: 'screen-title'}, 'Did your defences hold?'),
         el('p', {class: 'lead'}, phase.title)),
       el('div', {class: 'bigscore', 'aria-live': 'polite'},
         el('div', {class: 'num', 'data-count-to': scored.score}, String(scored.score)),
@@ -37,7 +37,7 @@ export function revealScreen(state, {data}, dispatch, extras, room) {
     el('div', {class: 'theme-slot', id: 'theme-slot'}),
     el('div', {class: 'actions'}, hostOnly(room,
       el('button', {class: 'btn btn-primary', type: 'button', 'data-key': 'next', onclick: () => dispatch({type: 'next'})},
-        'Behaviour checkpoint →'),
+        '❓ Quiz time!'),
       'Waiting for the host to start the behaviour checkpoint.')),
   ];
 }
