@@ -55,8 +55,8 @@ export function render(root, state, game, dispatch, extras, room = null) {
 
   root.replaceChildren(el('div', {class: 'shell'},
     topbar(state, game.data),
-    howToPlay(game.data),
-    room ? roomBar(room) : null,
+    howToPlay(game.data, room),
+    room ? roomBar(room, game.data) : null,
     state.confirmed ? phaseTrack(state, game.data) : null,
     screen,
     el('p', {class: 'footer-note'},

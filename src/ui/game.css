@@ -744,15 +744,10 @@ a.btn { text-decoration: none; }
 .room-you { color: var(--text); font-weight: 700; }
 .room-join { color: var(--muted); font-size: 0.85rem; overflow-wrap: anywhere; }
 .room-join a { color: var(--detect); display: block; }
-.room-team, .room-log { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 0.92rem; }
-.room-team li { display: flex; align-items: center; gap: 8px; }
-.room-team .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--cat, var(--muted)); flex: none; }
-.room-team li[data-cat="Prevent"] { --cat: var(--prevent); }
-.room-team li[data-cat="Detect"] { --cat: var(--detect); }
-.room-team li[data-cat="Respond"] { --cat: var(--respond); }
+.room-log { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 0.92rem; }
 .room-log li { padding: 5px 10px; border-radius: 8px; background: rgba(0, 0, 0, 0.25); color: var(--muted); }
 .room-log li.is-refused { color: #ffe3c4; background: rgba(227, 133, 13, 0.18); border: 1px solid rgba(227, 133, 13, 0.5); }
-.room-team .is-empty, .room-log .is-empty { color: var(--muted); font-style: italic; background: none; }
+.room-log .is-empty { color: var(--muted); font-style: italic; background: none; }
 .room-bar .alert { grid-column: 1 / -1; margin: 0; }
 .room-leave { grid-column: 1 / -1; justify-self: start; min-height: 40px; padding: 8px 16px; }
 
@@ -767,13 +762,8 @@ a.btn { text-decoration: none; }
 .verdict-line.is-team { color: var(--detect); }
 .option:disabled { cursor: default; }
 
-@media (max-width: 860px) {
-  .room-bar { grid-template-columns: 1fr; }
-}
 @media (max-width: 600px) {   /* phones: keep the room bar short, so the game starts on the first screen */
   .room-bar { gap: 10px; padding: 12px 14px; }
-  .room-code { font-size: 1.4rem; }
-  .room-team { display: flex; flex-wrap: wrap; gap: 4px 14px; }
   .room-log li:nth-child(n + 2) { display: none; }
 }
 
@@ -986,6 +976,91 @@ dialog.htp { width: min(880px, calc(100vw - 32px)); text-align: center; }
   .badges ul { grid-template-columns: repeat(2, 1fr); }
   .htp-steps { grid-template-columns: 1fr; gap: 22px; }
   .stars { font-size: 2.6rem; }
+}
+
+/* Multiplayer team lobby (roomBar.mjs): squad slots, avatars, live status and feed. */
+[data-cat="Prevent"] { --cat: var(--prevent); }
+[data-cat="Detect"] { --cat: var(--detect); }
+[data-cat="Respond"] { --cat: var(--respond); }
+
+.room-bar {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "seat feed" "squads squads";
+  border: 2px solid rgba(38, 191, 100, 0.4); border-radius: 22px;
+}
+.room-seat { grid-area: seat; }
+.room-squads { grid-area: squads; }
+.room-log { grid-area: feed; align-self: start; }
+.room-seat .eyebrow { font-size: 0.7rem; }
+.room-code {
+  display: inline-block; margin: 4px 0; padding: 6px 14px; border-radius: 14px; font-size: 2rem;
+  background: rgba(255, 181, 54, 0.12); border: 2px dashed rgba(255, 181, 54, 0.6);
+}
+.room-join { font-size: 0.9rem; overflow-wrap: anywhere; }
+.room-join a { display: inline; font-weight: 700; }
+.room-you { display: flex; align-items: center; gap: 8px; }
+
+.avatar {
+  flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+  font-weight: 700; color: #00140c; background: var(--cat, var(--brand-light));
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--cat, var(--brand-light)) 45%, #000);
+}
+
+.room-squads { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.squad-slot {
+  display: grid; align-content: start; gap: 8px; padding: 10px 12px; border-radius: 16px;
+  border: 2px dashed color-mix(in srgb, var(--cat) 45%, transparent); background: rgba(0, 0, 0, 0.18);
+}
+.squad-slot.is-filled { border-style: solid; background: color-mix(in srgb, var(--cat) 10%, var(--panel)); }
+.squad-name { font-weight: 700; color: var(--cat); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.squad-slot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.member { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 8px; align-items: center; }
+.member .avatar { grid-row: span 2; }
+.member-name { font-weight: 700; color: var(--text); line-height: 1.1; }
+.member-status { font-size: 0.8rem; color: var(--muted); }
+.squad-empty { color: var(--muted); font-size: 0.85rem; font-style: italic; animation: waiting 1.6s ease-in-out infinite; }
+@keyframes waiting { 50% { opacity: 0.45; } }
+
+.room-log li { display: flex; gap: 6px; align-items: baseline; font-size: 0.85rem; }
+
+/* Join and host start pages. */
+.field-code { font: 700 1.6rem/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; text-align: center; color: var(--gold); }
+.join-form .btn-big { flex: 1; }
+.squad-strip { list-style: none; padding: 0; margin: 14px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 760px; }
+.squad-strip li {
+  display: grid; justify-items: center; text-align: center; gap: 4px; padding: 14px 10px; border-radius: 18px;
+  background: color-mix(in srgb, var(--cat) 10%, var(--panel)); border: 2px solid color-mix(in srgb, var(--cat) 50%, transparent);
+  font-size: 0.85rem; color: var(--muted);
+}
+.squad-strip strong { color: var(--text); font-size: 1rem; }
+.squad-strip .squad-icon { width: 48px; height: 48px; font-size: 1.6rem; }
+.host-steps { list-style: none; padding: 0; margin: 16px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; counter-reset: step; }
+.host-steps li {
+  position: relative; display: grid; justify-items: center; text-align: center; gap: 2px; padding: 14px 8px;
+  border-radius: 18px; background: var(--panel-2); border: 2px solid var(--line-strong); color: var(--muted); font-size: 0.85rem;
+}
+.host-steps strong { color: var(--text); font-size: 1rem; }
+.host-step-icon { font-size: 2rem; }
+
+@media (max-width: 860px) {
+  .room-bar { grid-template-columns: 1fr; grid-template-areas: "seat" "squads" "feed"; }
+}
+@media (max-width: 600px) {
+  .room-squads { gap: 6px; }
+  .squad-slot { gap: 4px; padding: 6px; justify-items: center; text-align: center; }
+  .squad-name { font-size: 0.68rem; letter-spacing: 0.02em; }
+  .member { grid-template-columns: 1fr; justify-items: center; row-gap: 2px; }
+  .member .avatar { grid-row: auto; width: 28px; height: 28px; }
+  .member-name { font-size: 0.82rem; }
+  .member-status, .squad-empty { font-size: 0.7rem; }
+  .room-seat { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+  .room-seat .eyebrow { display: none; }
+  .room-code { font-size: 1.15rem; padding: 4px 10px; margin: 0; }
+  .squad-strip, .host-steps { grid-template-columns: 1fr; }
+  .squad-strip li, .host-steps li { grid-template-columns: auto 1fr; justify-items: start; text-align: left; align-items: center; column-gap: 12px; }
+  .squad-strip li .squad-icon, .host-steps .host-step-icon { grid-row: span 2; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .squad-empty { animation: none; }
 }
 
 /* ---------- Small screens ---------- */

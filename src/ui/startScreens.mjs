@@ -6,6 +6,7 @@ import {GAME_NAME, BUSINESS_NAME} from '../config.mjs';
 import {SCENE} from './assets.mjs';
 import {el, img} from './dom.mjs';
 import {brandBar} from './app.mjs';
+import {SQUADS} from './fun.mjs';
 
 const MODES = {
   single: {
@@ -131,46 +132,54 @@ export function nameProblem(name) {
 
 // Phone: room code and username. join(code, name) tries to join; `error` is a readable message.
 export function joinScreen({code = '', name = '', error = null, busy = false}, join) {
-  const codeInput = el('input', {id: 'room-code', class: 'field', name: 'code', value: code, autocomplete: 'off',
-    autocapitalize: 'characters', spellcheck: 'false', required: true, placeholder: 'e.g. VAULT-54', 'data-key': 'code'});
+  const codeInput = el('input', {id: 'room-code', class: 'field field-code', name: 'code', value: code, autocomplete: 'off',
+    autocapitalize: 'characters', spellcheck: 'false', required: true, placeholder: 'VAULT-00', 'data-key': 'code'});
   const nameInput = el('input', {id: 'player-name', class: 'field', name: 'name', value: name, maxlength: NAME_LIMIT,
     autocomplete: 'nickname', required: true, placeholder: 'e.g. Sam', 'data-key': 'name'});
 
-  const form = el('form', {class: 'panel name-form', novalidate: true, onsubmit: event => {
+  const form = el('form', {class: 'panel name-form join-form', novalidate: true, onsubmit: event => {
     event.preventDefault();
     join(codeInput.value.trim(), nameInput.value.trim());
   }},
-  el('label', {for: 'room-code'}, 'Room code'),
+  el('label', {for: 'room-code'}, '🔑 Room code'),
   codeInput,
-  el('label', {for: 'player-name'}, 'Your username'),
+  el('label', {for: 'player-name'}, '😎 Your name'),
   nameInput,
   error ? el('p', {class: 'alert', role: 'alert'}, error) : null,
   el('div', {class: 'actions'},
     el('a', {class: 'btn btn-ghost', href: '/index.html', 'data-key': 'back'}, '← Home'),
-    el('button', {class: 'btn btn-primary', type: 'submit', 'data-key': 'go', disabled: busy}, busy ? 'Joining…' : 'Join the team →')));
+    el('button', {class: 'btn btn-primary btn-big', type: 'submit', 'data-key': 'go', disabled: busy}, busy ? 'Joining…' : '🚀 Join the team')));
 
   return page(
     el('section', {class: 'name-head'},
-      el('span', {class: 'eyebrow'}, 'Multiplayer · Join'),
+      el('span', {class: 'eyebrow'}, '📱 Multiplayer · Join'),
       el('h1', {class: 'screen-title'}, 'Join the defence team'),
-      el('p', {class: 'lead'}, 'Enter the room code shown on the host screen. You will be given Prevent, Detect or Respond.')),
+      el('p', {class: 'lead'}, 'Type the code from the big screen. You’ll get a squad:'),
+      squadStrip()),
     form);
 }
 
+const squadStrip = () => el('ul', {class: 'squad-strip', 'aria-label': 'The three squads'},
+  Object.entries(SQUADS).map(([cat, s]) => el('li', {'data-cat': cat},
+    el('span', {class: 'squad-icon', 'aria-hidden': 'true'}, s.icon), el('strong', {}, s.name), el('span', {}, s.job))));
+
 // Host: one button to open the room. create() asks the server for a room code.
 export function hostStartScreen({error = null, busy = false}, create) {
+  const step = (icon, title, line) => el('li', {}, el('span', {class: 'host-step-icon', 'aria-hidden': 'true'}, icon), el('strong', {}, title), el('span', {}, line));
   return page(
     el('section', {class: 'brief home-hero'},
       el('div', {},
-        el('span', {class: 'eyebrow'}, 'Multiplayer · Host'),
+        el('span', {class: 'eyebrow'}, '🖥️ Multiplayer · Host'),
         el('h1', {class: 'screen-title'}, 'Run the night'),
-        el('p', {class: 'lead'},
-          'Put this screen where the whole team can see it. Open a room, and players join on their phones with the code. ',
-          'They choose the defences; you lock the plan and move the night on.'),
+        el('p', {class: 'lead'}, 'Put this screen where everyone can see it.'),
+        el('ol', {class: 'host-steps'},
+          step('🔓', 'Open a room', 'Get a code'),
+          step('📱', 'Team joins', 'On their phones'),
+          step('🎮', 'Play together', 'You run the night')),
         error ? el('p', {class: 'alert', role: 'alert'}, error) : null,
         el('div', {class: 'actions start-actions'},
           el('a', {class: 'btn btn-ghost', href: '/index.html', 'data-key': 'back'}, '← Home'),
-          el('button', {class: 'btn btn-primary', type: 'button', 'data-key': 'create', disabled: busy, onclick: create},
+          el('button', {class: `btn btn-primary btn-big${busy ? '' : ' is-ready'}`, type: 'button', 'data-key': 'create', disabled: busy, onclick: create},
             busy ? 'Opening…' : '🔓 Open a room'))),
       el('div', {class: 'brief-art', 'aria-hidden': 'true'}, img(SCENE.office, 'a'), img(SCENE.operator, 'b'))));
 }
