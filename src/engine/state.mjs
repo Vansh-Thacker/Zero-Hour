@@ -17,6 +17,21 @@ export function createInitialState() {
   };
 }
 
+const pounds = n => '£' + n.toLocaleString('en-GB');
+
+// Returns a readable reason if the control cannot be added, or null if it can.
+// TODO: replace with canSelect() from selection.mjs once Rayyan's helper lands.
+function selectProblem(data, state, id) {
+  if (state.confirmed) return 'The choice is confirmed and can no longer change.';
+  const control = data.controls.find(c => c.id === id);
+  if (!control) return `"${id}" is not a control.`;
+  if (state.selected.includes(id)) return `${control.name} is already chosen. Each control can only be chosen once.`;
+  const spent = state.selected.reduce((sum, chosen) => sum + data.controls.find(c => c.id === chosen).cost, 0);
+  const left = data.budget - spent;
+  if (control.cost > left) return `Not enough budget for ${control.name}: it costs ${pounds(control.cost)} and ${pounds(left)} is left.`;
+  return null;
+}
+
 // Each phase runs story -> reveal -> checkpoint. After the last checkpoint the game
 // moves to the outcome. 'choose' and 'outcome' are left with 'confirm' and 'reset'.
 function nextStage(data, state) {
@@ -40,7 +55,8 @@ function nextStage(data, state) {
 export function reduce(data, state, action) {
   switch (action.type) {
     case 'select': {
-      if (state.confirmed || state.selected.includes(action.id)) return state;
+      const problem = selectProblem(data, state, action.id);
+      if (problem) return {...state, error: problem};
       return {...state, selected: [...state.selected, action.id], error: null};
     }
     case 'deselect': {
