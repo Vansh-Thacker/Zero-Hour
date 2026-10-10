@@ -1,6 +1,6 @@
 // The page starts on the home screen (single player or multiplayer), then the name screen.
 // Single player: load the data, hold the state, and redraw after every action.
-// Multiplayer: open the join page (play.html), which talks to the multiplayer server.
+// Multiplayer: host a room (host.html) or join one (play.html); both talk to the multiplayer server.
 // The multiplayer server drives the same reduce() function; see TEAM_PLAN.md.
 
 import {validateData} from '../1-foundation/starter/controls.mjs';
@@ -8,7 +8,7 @@ import {GAME_NAME, DATA_PATHS} from './config.mjs';
 import {createInitialState, reduce, timeLeft} from './engine/state.mjs';
 import {loadExtras, render, tick} from './ui/app.mjs';
 import {enableTilt} from './ui/effects.mjs';
-import {homeScreen, nameScreen, nameProblem} from './ui/startScreens.mjs';
+import {homeScreen, multiScreen, nameScreen, nameProblem} from './ui/startScreens.mjs';
 
 const root = document.getElementById('app');
 
@@ -34,7 +34,7 @@ setInterval(() => {
   else tick(root, state);
 }, 1000);
 
-// --- Start screens: home, then name. Nothing here touches the game state. ---
+// --- Start screens: home, (host or join,) then name. Nothing here touches the game state. ---
 
 const NAME_KEY = 'zero-hour-player-name';
 
@@ -47,13 +47,23 @@ function saveName(name) {
 }
 
 function showHome() {
-  root.replaceChildren(homeScreen(mode => showName({mode, name: savedName()})));
+  root.replaceChildren(homeScreen(mode => mode === 'multi' ? showMulti() : showName({mode, name: savedName()})));
+  window.scrollTo({top: 0, behavior: 'instant'});
+}
+
+// The host doesn't need a name: host.html creates the room. Players enter a name, then join.
+function showMulti() {
+  root.replaceChildren(multiScreen({
+    host: () => location.assign('/host.html'),
+    join: () => showName({mode: 'multi', name: savedName()}),
+    back: showHome,
+  }));
   window.scrollTo({top: 0, behavior: 'instant'});
 }
 
 function showName(view) {
   root.replaceChildren(nameScreen(view, {
-    back: showHome,
+    back: view.mode === 'multi' ? showMulti : showHome,
     go: name => {
       const problem = nameProblem(name);
       if (problem) return showName({...view, name, error: problem});

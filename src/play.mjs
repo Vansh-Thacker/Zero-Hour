@@ -145,5 +145,12 @@ document.getElementById('leave').addEventListener('click', () => {
   showForm('Enter another room code to join a game.');
 });
 
+// Players who came from the home page already gave a username there: don't ask twice.
+try {
+  const saved = sessionStorage.getItem('zero-hour-player-name');
+  if (saved) document.getElementById('name').value = saved;
+  if (saved) document.getElementById('code').focus();
+} catch { /* Private browsing: the player just types their name here. */ }
+
 const seat = currentSeat();
 if (!seat.host && seat.code && seat.token) showRoom(seat);

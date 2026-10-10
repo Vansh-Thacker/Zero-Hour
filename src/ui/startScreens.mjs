@@ -1,4 +1,5 @@
 // Start screens, shown before the game: pick single player or multiplayer, then enter a name.
+// Multiplayer has one extra step first: host a room on this screen, or join one.
 // They only choose where to go next; main.mjs starts the game or opens the multiplayer page.
 
 import {GAME_NAME, BUSINESS_NAME} from '../config.mjs';
@@ -56,6 +57,45 @@ export function homeScreen(pick) {
     el('div', {class: 'modes'}, cards));
 }
 
+// Multiplayer: host a room on this screen, or join one on a phone. Only players need a name;
+// the host screen (host.html) just creates the room and shows the code.
+const ROOM_CHOICES = {
+  host: {
+    title: 'Host a room',
+    tag: 'Main screen',
+    blurb: 'Put this screen where the team can see it. Create the room, share the code, and run the night for everyone.',
+    art: SCENE.office,
+  },
+  join: {
+    title: 'Join a room',
+    tag: 'Your phone',
+    blurb: 'Enter the room code from the host screen. You will look after Prevent, Detect or Respond for your team.',
+    art: SCENE.operator,
+  },
+};
+
+export function multiScreen({host, join, back}) {
+  const actions = {host, join};
+  const cards = Object.entries(ROOM_CHOICES).map(([choice, info]) =>
+    el('button', {class: 'mode-card', type: 'button', 'data-key': `room-${choice}`, 'data-tilt': true,
+      'aria-label': `${info.title}: ${info.blurb}`, onclick: actions[choice]},
+    el('span', {class: 'mode-art', 'aria-hidden': 'true'}, img(info.art)),
+    el('span', {class: 'mode-body'},
+      el('span', {class: 'crew-tag'}, info.tag),
+      el('span', {class: 'mode-title'}, info.title),
+      el('span', {class: 'mode-blurb'}, info.blurb),
+      el('span', {class: 'mode-go'}, 'Choose →'))));
+
+  return page(
+    el('section', {class: 'name-head'},
+      el('span', {class: 'eyebrow'}, 'Multiplayer · Step 2 of 3'),
+      el('h1', {class: 'screen-title'}, 'Host or join?'),
+      el('p', {class: 'lead'}, 'One screen hosts the room. Everyone else joins on their phone with the room code.')),
+    el('div', {class: 'modes'}, cards),
+    el('div', {class: 'actions'},
+      el('button', {class: 'btn btn-ghost', type: 'button', 'data-key': 'back', onclick: back}, '← Back')));
+}
+
 // Name screen. go(name) moves on; `error` is a readable message to show.
 export function nameScreen({mode, name = '', error = null}, {back, go}) {
   const nameInput = el('input', {id: 'player-name', class: 'field', name: 'name', value: name, maxlength: NAME_LIMIT,
@@ -74,7 +114,7 @@ export function nameScreen({mode, name = '', error = null}, {back, go}) {
 
   return page(
     el('section', {class: 'name-head'},
-      el('span', {class: 'eyebrow'}, `${MODES[mode].title} · Step 2 of 2`),
+      el('span', {class: 'eyebrow'}, mode === 'multi' ? 'Multiplayer · Join · Step 3 of 3' : `${MODES[mode].title} · Step 2 of 2`),
       el('h1', {class: 'screen-title'}, 'Who’s on shift tonight?'),
       el('p', {class: 'lead'}, 'Enter your username to sign in to the security desk.')),
     form);
