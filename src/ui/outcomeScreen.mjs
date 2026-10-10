@@ -2,8 +2,8 @@
 // of what happened in each phase and why.
 // TODO: swap the debrief section for Mo's buildDebrief() once it lands.
 
-import {SCENE} from './assets.mjs';
-import {el, img, points} from './dom.mjs';
+import {el, points} from './dom.mjs';
+import {nightReport, outcomeVault} from './nightReport.mjs';
 
 export function outcomeScreen(state, {data, bank}, dispatch, extras) {
   const control = state.result.total;
@@ -18,7 +18,7 @@ export function outcomeScreen(state, {data, bank}, dispatch, extras) {
         ending ? (ending.result === 'foiled' ? '✓ Heist foiled' : '✗ The crew got away') : 'The night is over'),
       el('p', {class: 'lead'}, ending?.reason
         ?? 'Here is how your defences and your people did across the four phases of the attack.')),
-    el('div', {'aria-hidden': 'true'}, img(ending?.result === 'escaped' ? SCENE.usb : SCENE.turbine)));
+    outcomeVault(data, bank, state));
 
   const scores = el('section', {class: 'scores', 'aria-label': 'Final scores'},
     scoreCard('Control score', control, 'from your defences'),
@@ -30,7 +30,7 @@ export function outcomeScreen(state, {data, bank}, dispatch, extras) {
     el('div', {class: 'debrief'}, data.phases.map((phase, n) => phaseDebrief(phase, n, state, data, bank))));
 
   return [
-    hero, scores, debrief,
+    hero, scores, nightReport(data, bank, state), debrief,
     el('div', {class: 'actions'},
       el('button', {class: 'btn btn-primary', type: 'button', 'data-key': 'reset', onclick: () => dispatch({type: 'reset'})},
         '↻ Play again')),
