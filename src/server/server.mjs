@@ -39,12 +39,19 @@ async function readJson(req) {
     }
     chunks.push(chunk);
   }
-  try { return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); }
+  let body;
+  try { body = JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); }
   catch {
     const error = new Error('Send valid JSON.');
     error.status = 400;
     throw error;
   }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    const error = new Error('Send a JSON object.');
+    error.status = 400;
+    throw error;
+  }
+  return body;
 }
 
 function newCode() {
@@ -111,6 +118,8 @@ async function listAssets(folder, found = []) {
 }
 
 async function serveFile(req, res, pathname) {
+  // Hidden files and folders (.git, .gitignore, .devcontainer) are never part of the game.
+  if (pathname.split('/').some(part => part.startsWith('.'))) return reply(res, 404, {error: 'File not found.'});
   const name = pathname === '/' ? '/index.html' : pathname.endsWith('/') ? `${pathname}index.html` : pathname;
   const file = await realpath(path.resolve(root, '.' + name));
   if (!file.startsWith(root + path.sep)) {

@@ -55,16 +55,23 @@ export function listen(onView, onError = () => {}, onLost = () => {}) {
 
   const url = `/api/rooms/${encodeURIComponent(code)}/events?token=${encodeURIComponent(token)}`;
   const handle = {stream: null, close() { this.closed = true; this.stream?.close(); }};
+  let lost = false;
   const open = () => {
     const stream = new EventSource(url);
     handle.stream = stream;
     stream.onmessage = event => onView(JSON.parse(event.data));
     stream.onerror = async () => {
-      if (leaving || handle.closed) return;
+      if (leaving || handle.closed || lost) return;
       onError('Connection lost. Trying to reconnect…');
       if (stream.readyState !== EventSource.CLOSED) return; // the browser is already retrying
       const status = await fetch(url, {method: 'HEAD'}).then(r => r.status, () => 0);
-      if (status === 403 || status === 404) { clearSeat(); onLost(); }
+      if (lost || handle.closed) return; // another error already handled this
+      if (status === 403 || status === 404) {
+        lost = true;
+        handle.close();
+        clearSeat();
+        onLost();
+      }
       else setTimeout(() => { if (!handle.closed) open(); }, 2000);
     };
   };

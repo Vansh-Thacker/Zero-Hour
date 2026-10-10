@@ -28,8 +28,8 @@ export function createRoom(code) {
 }
 
 export function joinRoom(room, name) {
-  const cleanName = String(name ?? '').trim().slice(0, 24);
-  if (!cleanName) throw refuse(400, 'Enter your name to join the game.');
+  if (typeof name !== 'string' || !name.trim()) throw refuse(400, 'Enter your name to join the game.');
+  const cleanName = name.trim().slice(0, 24);
 
   const category = ROLE_ORDER[room.players.length % ROLE_ORDER.length];
   const player = {
@@ -85,7 +85,9 @@ export function act(room, token, action, game, now = Date.now()) {
 
   // Only these fields are taken from the device. The server adds who and when.
   const {type, id, questionId, choice} = action ?? {};
-  const stamped = {type, id, questionId, choice, now, player: player?.id};
+  // teamSize lets the engine count a player who has not answered as 0 in the team average.
+  const teamSize = type === 'answer' || type === 'timeout' ? room.players.length : undefined;
+  const stamped = {type, id, questionId, choice, now, player: player?.id, teamSize};
   for (const key of Object.keys(stamped)) if (stamped[key] === undefined) delete stamped[key];
   if (!isValidAction(stamped)) throw fail(400, 'That is not something the game can do.');
 

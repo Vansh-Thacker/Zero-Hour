@@ -2,6 +2,7 @@
 // what was lacking, and what would have done better. Pure: no page code.
 // It builds on defenceStrength(), so it always agrees with the battle display and the scores.
 
+import {scoreSelection} from '../../1-foundation/starter/controls.mjs';
 import {defenceStrength, ATTACKS, STRONG_FROM, WEAK_BELOW} from './defenceStrength.mjs';
 import {POINTS_PER_SECURE_ANSWER, QUESTIONS_PER_CHECKPOINT} from '../config.mjs';
 
@@ -33,14 +34,9 @@ export function nightSummary(data, bank, state) {
     .sort((a, b) => b.night - a.night || a.id.localeCompare(b.id));
   const unspent = state.result.unspent;
   const affordable = unchosen.find(c => c.cost <= unspent && c.night > 0);
-  const top = unchosen[0];
-  const weakestChosen = [...chosen].sort((a, b) => nightPoints(a.id) - nightPoints(b.id) || b.cost - a.cost)[0];
-  const swapFrees = weakestChosen ? unspent + weakestChosen.cost : unspent;
   const suggestion = affordable
     ? {kind: 'add', control: affordable, points: affordable.night, unspent}
-    : top && top.night > 0 && weakestChosen && top.cost <= swapFrees && top.night > nightPoints(weakestChosen.id)
-      ? {kind: 'swap', control: top, points: top.night - nightPoints(weakestChosen.id), instead: weakestChosen}
-      : null;
+    : bestSwap(data, state.selected, chosen, unchosen, nightPoints);
 
   // The behaviour topic with the most answers that were not secure.
   const missedTopics = new Map();
@@ -71,4 +67,24 @@ export function nightSummary(data, bank, state) {
     suggestion,
     weakestTopic: weakestTopic && {topic: weakestTopic[0], missed: weakestTopic[1]},
   };
+}
+
+// The swap that gains the most points across the night. Only swaps that leave a plan the game
+// would accept count: within budget and still with a Prevent, a Detect and a Respond control.
+function bestSwap(data, selected, chosen, unchosen, nightPoints) {
+  let best = null;
+  for (const control of unchosen) {
+    if (control.night <= 0) continue;
+    for (const instead of chosen) {
+      const points = control.night - nightPoints(instead.id);
+      if (points <= 0 || (best && points <= best.points)) continue;
+      try {
+        scoreSelection(data, [...selected.filter(id => id !== instead.id), control.id]);
+      } catch {
+        continue; // over budget or a category left empty: not advice we can give
+      }
+      best = {kind: 'swap', control, points, instead};
+    }
+  }
+  return best;
 }
