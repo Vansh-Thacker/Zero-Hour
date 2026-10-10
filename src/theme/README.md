@@ -86,18 +86,21 @@ We used every piece of 2D pack artwork that fits the heist, and left out what do
 
 ## The rules we decided
 
-**Vault integrity.** After each phase, integrity is *the team's points so far* as a share of *the best possible points so far*. "Best possible" means every control that scores in that phase (ignoring budget), so 100% is the perfect yardstick. A perfect choice gives 100. Any real choice within £3m gives less, which shows the trade-off the game is about.
+**The yardstick: the best choice that fits £3m.** `bestAffordableChoice()` finds the set of controls that earns the most points across all four phases while costing no more than £3m and covering Prevent, Detect and Respond. In the real scenario it scores **54 points**. With 18 controls there are only 262,144 possible sets, so it simply checks them all: quick, runs once, and easy to trust.
 
-**Did a room hold?** A room holds if the team earned at least half of the best possible points in that phase. With the game's 3/2/1 scoring, picking the top control in each of the three layers is exactly half, so "the best defence in every layer" holds the room. Covering a layer with a weak control is not enough. That is the game's lesson: the right defence for the right moment.
+**Vault integrity.** After each phase, integrity is *the team's points so far* as a share of *the best affordable choice's points so far*. A team that makes the best affordable choice keeps the vault at 100%. Measuring against a choice a team could really make (not every control at once, which nobody can afford) keeps the score fair and shows the real trade-off.
 
-**Foiled or escaped (`FOILED_THRESHOLD = 50`).** After phase 4, the heist is foiled if vault integrity is 50% or more. Otherwise the crew escapes with the data. The rule is shown to players in the reason text.
+**Did a room hold? (`ROOM_HOLDS_AT = 0.5`)** A room holds if the team earned at least half of the best affordable choice's points in that phase. Covering a layer with a weak control is often not enough. That is the game's lesson: the right defence for the right moment.
+
+**Foiled or escaped (`FOILED_THRESHOLD = 50`).** After phase 4, the heist is foiled if vault integrity is 50% or more, meaning the team earned at least half the points of the best £3m choice. Otherwise the crew escapes with the data. The reason text tells players their score against the 54-point best.
 
 **Detecting is not stopping.** The Architect's wording follows the category, as the brief requires:
 - Prevent: "*…blocked us. We'll need another way in.*"
 - Detect: "*…spotted us. Being seen doesn't end a heist, but now your team knows where we are.*" (never "blocked" or "stopped", and a test checks this)
 - Respond: "*…contained us. You planned for the worst.*"
+- Respond, for backups and digital forensics: "*…means you recovered what we took.*" These help you recover afterwards rather than contain the crew, so the wording says so.
 
-**Gaps teach the lesson.** For each layer, The Architect names the best control the team did not choose that would have scored in this phase, with its real name. For example, at 02:00 a 9-to-5 response team scores nothing, and The Architect points out there was no round-the-clock unit.
+**Gaps teach the lesson, without contradictions.** The Architect only says "*Nobody was watching*", "*Nothing stood in our way*" or "*Nobody answered*" when **no** chosen control in that layer scored in this phase. Then he names the best control that would have, with its real name. For example, at 02:00 a 9-to-5 response team scores nothing, so he points out a round-the-clock unit would have answered. If a Detect control did spot him, he never claims nobody was watching. This matches the ✓/✗ marks on the blueprint.
 
 ## Accessibility
 
@@ -112,8 +115,11 @@ Run with `npm test`. Each test checks one behaviour:
 
 - Every control label includes its real name, and every control has its own heist name.
 - **Every real control in `challenge.json` has a heist name.** If the Cyber team adds a control, this test names what to add.
-- Vault integrity always stays between 0 and 100. A perfect choice gives 100. The cheapest valid choice gives less.
-- The engine's own phase score is used when it is there.
+- The theme reads the engine's state names, `selected` and `phase`.
+- The best affordable choice fits £3m and covers all three layers, and picks the right set in a worked example. **In the real scenario it scores 54.**
+- Vault integrity always stays between 0 and 100. The best affordable choice gives 100. The cheapest valid choice gives less.
+- **All 18 heist names are different.**
+- The Architect never says "nobody was watching" after a Detect control scored, and backups and forensics say "recovered", not "contained".
 - The outcome is the same for the same choices, and always has a reason. At or above the threshold is foiled, below is escaped.
 - A Detect control is never said to have "blocked" or "stopped" the crew.
 - The Architect names a real gap, and always ends with a summary line.
@@ -135,12 +141,13 @@ Run with `npm test`. Each test checks one behaviour:
 
 - **"How do the player's choices change the theme?"** Each room's ✓/✗, the crew's route, the vault meter, The Architect's lines and the ending all come from the controls chosen and their points in that phase.
 - **"How do you keep the theme separate from the scoring?"** It only reads state, it is in its own folder, and a frozen-state test proves it changes nothing. All reads of the engine's state are in one place.
-- **"Why 50% for foiled?"** It means your defences earned at least half of what a perfect set could. It also matches the 3/2/1 scoring: the best control in each layer is exactly half of a phase's points.
+- **"Why 50% for foiled?"** It means your defences earned at least half the points of the best choice that fits £3m (27 of 54). It is a clear rule players can understand, and it is one constant to change if playtesting says it is too easy or too hard.
+- **"Why measure against the best £3m choice and not every control?"** Nobody can afford every control, so measuring against that would make 100% impossible. The best affordable choice is a target a team can really hit.
 - **"What if the Cyber team adds a new control?"** It gets a fallback heist name based on its category, so nothing breaks, and a test tells us to give it a proper name.
 - **"Is it original?"** Yes. The names, the crew and The Architect are ours. Nothing from any TV show.
 
 ## Not done yet / limits
 
-- Built against the agreed plan for the engine's state (`chosen`, `phaseIndex`, `result.phases`). If the engine uses other names, update the two functions at the top of `vault.mjs`.
+- The theme reads the engine's state through two functions at the top of `vault.mjs` (`selected`, `phase`). If the engine renames them, that is the only place to change.
 - No sound.
 - The 3D models and outdoor scenery are not used (see Artwork for why).
