@@ -17,13 +17,17 @@ export function checkpointScreen(state, {data, bank}, dispatch) {
       el('h1', {class: 'screen-title'}, 'What would you do?'),
       el('p', {class: 'cp-rule'},
         `${questions.length} questions · ${CHECKPOINT_SECONDS / 60} minutes · a secure answer earns ${POINTS_PER_SECURE_ANSWER} points, `
-        + 'a wrong or missed answer earns none. These points are separate from your control score.')),
+        + 'a wrong or missed answer earns none. These points are separate from your control score.'),
+      el('p', {class: 'cp-wall'}, last
+        ? '🧱 Last checkpoint of the night: your answers count towards the final outcome.'
+        : `🧱 Secure answers also patch your defence wall for phase ${state.phase + 2}. Your people stop attacks that get past your controls.`)),
     el('div', {class: 'timer'},
       timerRing(checkpoint),
       checkpoint.expired ? null : el('button', {class: 'btn btn-ghost', type: 'button', 'data-key': 'pause',
         onclick: () => dispatch({type: paused ? 'resume' : 'pause'})}, paused ? '▶ Resume' : '❚❚ Pause')));
 
-  const cards = questions.map(q => questionCard(q, state, dispatch));
+  const nextPhase = last ? null : state.phase + 2;
+  const cards = questions.map(q => questionCard(q, state, dispatch, nextPhase));
 
   return [
     head,
@@ -53,7 +57,7 @@ export function updateTimer(ring, checkpoint) {
   ring.setAttribute('aria-label', checkpoint.expired ? 'Time is up' : `${seconds} seconds left${paused ? ', paused' : ''}`);
 }
 
-function questionCard(q, state, dispatch) {
+function questionCard(q, state, dispatch, nextPhase) {
   const given = state.answers.find(a => a.phase === state.phase && a.questionId === q.id);
   const closed = Boolean(given) || state.checkpoint.expired;
 
@@ -75,8 +79,12 @@ function questionCard(q, state, dispatch) {
     const [kind, words] = !given ? ['is-missed', '⏱ Not answered in time: 0 points']
       : given.correct ? ['is-secure', `✓ Secure answer: +${POINTS_PER_SECURE_ANSWER} points`]
         : ['is-wrong', '✗ Not the secure answer: 0 points'];
+    const wallEffect = nextPhase === null ? null
+      : given?.correct ? `🧱 This patches your wall for phase ${nextPhase}.`
+        : `This leaves a gap in your wall for phase ${nextPhase}.`;
     verdict = [
       el('p', {class: `verdict-line ${kind}`, role: 'status'}, words),
+      wallEffect ? el('p', {class: `wall-effect ${given?.correct ? 'is-secure' : 'is-gap'}`}, wallEffect) : null,
       el('p', {class: 'explain'}, el('span', {class: 'explain-label'}, 'Why'), q.explanation),
     ];
   }
