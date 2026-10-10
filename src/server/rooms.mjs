@@ -1,4 +1,4 @@
-// Rooms and players for multiplayer. No network here: server.mjs receives messages and calls
+// One team's game in multiplayer (src/server/competition.mjs puts several teams in a room). No network here: server.mjs receives messages and calls
 // these functions one at a time, so two messages that arrive together are applied in turn.
 // The server checks WHO may do something (roles, host); the engine's reduce() decides
 // WHETHER it is allowed by the game rules (budget, duplicates, lock, timer).
@@ -43,6 +43,14 @@ export function joinRoom(room, name) {
   return player;
 }
 
+// The categories a player chooses for. Usually one: Prevent, Detect, Respond, then round again.
+// In a team of two, the first player also looks after Respond, so every category has someone.
+export function categoriesOf(room, player) {
+  const index = room.players.indexOf(player);
+  if (room.players.length !== 2 || index !== 0) return [player.category];
+  return [player.category, ROLE_ORDER[2]];
+}
+
 // Only a room member gets a view, and no view contains anyone's token.
 export function viewFor(room, token) {
   const isHost = token === room.hostToken;
@@ -52,11 +60,11 @@ export function viewFor(room, token) {
   return {
     code: room.code,
     state: room.state,
-    players: room.players.map(({id, name, category}) => ({id, name, category})),
+    players: room.players.map(p => ({id: p.id, name: p.name, category: p.category, categories: categoriesOf(room, p)})),
     log: room.log.map(entry => ({...entry})),
     you: isHost
       ? {host: true}
-      : {id: player.id, name: player.name, category: player.category, host: false},
+      : {id: player.id, name: player.name, category: player.category, categories: categoriesOf(room, player), host: false},
   };
 }
 
@@ -72,7 +80,7 @@ function addLog(room, ok, text) {
  *   Players: select / deselect (own role only), answer (during a checkpoint)
  *   Host:    confirm, next, pause, resume, timeout, reset
  */
-export function act(room, token, action, game, now = Date.now()) {
+export function act(room, token, action, game, now = Date.now(), {anyCategories = false} = {}) {
   const isHost = token === room.hostToken;
   const player = room.players.find(member => member.token === token);
   if (!isHost && !player) throw refuse(403, 'This seat is not part of this game.');
@@ -87,7 +95,8 @@ export function act(room, token, action, game, now = Date.now()) {
   const {type, id, questionId, choice} = action ?? {};
   // teamSize lets the engine count a player who has not answered as 0 in the team average.
   const teamSize = type === 'answer' || type === 'timeout' ? room.players.length : undefined;
-  const stamped = {type, id, questionId, choice, now, player: player?.id, teamSize};
+  const stamped = {type, id, questionId, choice, now, player: player?.id, teamSize,
+    anyCategories: type === 'confirm' && anyCategories ? true : undefined};
   for (const key of Object.keys(stamped)) if (stamped[key] === undefined) delete stamped[key];
   if (!isValidAction(stamped)) throw fail(400, 'That is not something the game can do.');
 
@@ -96,7 +105,7 @@ export function act(room, token, action, game, now = Date.now()) {
     if (type !== 'answer') {
       const control = game.data.controls.find(c => c.id === id);
       if (!control) throw fail(400, `"${id}" is not a control.`);
-      if (control.category !== player.category) {
+      if (!categoriesOf(room, player).includes(control.category)) {
         throw fail(403, `Only a ${control.category} player can choose ${control.id} ${control.name}. You are ${player.category}.`);
       }
       if (room.state.confirmed) throw fail(409, "The team's choice is locked. It cannot change now.");

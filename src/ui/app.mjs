@@ -103,7 +103,7 @@ function wordmark(name) {
   return rest.length ? [first + ' ', el('span', {}, rest.join(' '))] : name;
 }
 
-function phaseTrack(state, data) {
+export function phaseTrack(state, data) {
   return el('ol', {class: 'track', 'aria-label': 'The night of the attack'},
     data.phases.map((phase, n) => {
       const done = state.stage === 'outcome' || n < state.phase;

@@ -29,9 +29,10 @@ export async function createGame() {
   return seat;
 }
 
-export async function joinGame(code, name) {
+// team: the team name to join, or a new team's name. Leave it out to join the room's first team.
+export async function joinGame(code, name, team) {
   const normalCode = code.trim().toUpperCase();
-  const seat = await post(`/api/rooms/${encodeURIComponent(normalCode)}/join`, {name});
+  const seat = await post(`/api/rooms/${encodeURIComponent(normalCode)}/join`, team ? {name, team} : {name});
   if (!seat.error) save({...seat, host: false});
   return seat;
 }

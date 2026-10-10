@@ -141,9 +141,9 @@ test('name form trims the user name and has an explicitly associated label', () 
 
 test('join form trims fields, exposes failures as alerts, and blocks duplicate busy submissions in markup', () => {
   const calls = []; const tree = joinScreen({busy: true, error: 'Room not found'}, (...args) => calls.push(args));
-  keyed(tree, 'code').value = '  VAULT-01  '; keyed(tree, 'name').value = ' Alice ';
+  keyed(tree, 'code').value = '  VAULT-01  '; keyed(tree, 'name').value = ' Alice '; keyed(tree, 'team').value = ' Red ';
   find(tree, n => n.tag === 'form')[0].events.submit({preventDefault() {}});
-  assert.deepEqual(calls, [['VAULT-01', 'Alice']]);
+  assert.deepEqual(calls, [['VAULT-01', 'Alice', 'Red']]);
   assert.equal(keyed(tree, 'go').attributes.disabled, '');
   assert.equal(find(tree, n => n.attributes.role === 'alert')[0].textContent, 'Room not found');
 });

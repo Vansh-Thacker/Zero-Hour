@@ -37,10 +37,11 @@ export function budgetSummary(data, selected) {
 }
 
 // Multiplayer. `room` is what the server sends a seat: {code, you, players, log}. `you` is
-// {host: true} on the host screen, or {host: false, id, name, category} on a phone.
+// {host: true} on the host screen, or {host: false, id, name, category, categories} on a phone.
+// categories: what this player chooses for (in a team of two, one player has two).
 // Single player passes no room and can do everything. The server checks the same rules.
 export const runsGame = room => !room || room.you.host;
-export const picksFor = (room, category) => !room || room.you.category === category;
+export const picksFor = (room, category) => !room || (room.you.categories ?? [room.you.category]).includes(category);
 export const answersQuestions = room => !room || !room.you.host;
 export const seatId = room => (room && !room.you.host ? room.you.id : null);
 

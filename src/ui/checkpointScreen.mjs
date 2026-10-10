@@ -44,7 +44,7 @@ export function checkpointScreen(state, {data, bank}, dispatch, extras, room) {
 }
 
 // The countdown. updateTimer() refreshes it once a second without redrawing the screen.
-function timerRing(checkpoint) {
+export function timerRing(checkpoint) {
   const ring = el('div', {class: 'ring', 'data-timer': true, role: 'timer', 'aria-label': 'Time left'}, el('span'));
   updateTimer(ring, checkpoint);
   return ring;

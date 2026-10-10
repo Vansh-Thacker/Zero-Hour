@@ -129,21 +129,37 @@ export function nameProblem(name) {
 
 // --- Multiplayer pages (play.html and host.html), in the same look as the start screens. ---
 
-// Phone: room code and username. join(code, name) tries to join; `error` is a readable message.
-export function joinScreen({code = '', name = '', error = null, busy = false}, join) {
+// Phone: room code, username and team. join(code, name, team) tries to join; `error` is a readable message.
+// teams: the teams already in the room ([{name, players}]), shown as quick picks.
+export function joinScreen({code = '', name = '', team = '', teams = [], error = null, busy = false}, join, lookUp = () => {}) {
   const codeInput = el('input', {id: 'room-code', class: 'field', name: 'code', value: code, autocomplete: 'off',
     autocapitalize: 'characters', spellcheck: 'false', required: true, placeholder: 'e.g. VAULT-54', 'data-key': 'code'});
   const nameInput = el('input', {id: 'player-name', class: 'field', name: 'name', value: name, maxlength: NAME_LIMIT,
     autocomplete: 'nickname', required: true, placeholder: 'e.g. Sam', 'data-key': 'name'});
 
+  const teamInput = el('input', {id: 'team-name', class: 'field', name: 'team', value: team, maxlength: NAME_LIMIT,
+    autocomplete: 'off', required: true, placeholder: 'e.g. Red Team', 'data-key': 'team', list: 'team-list'});
+  codeInput.addEventListener('change', () => lookUp(codeInput.value.trim(), {name: nameInput.value, team: teamInput.value}));
+
+  const picks = teams.length
+    ? el('div', {class: 'team-picks', role: 'group', 'aria-label': 'Teams already in the room'},
+      el('span', {class: 'hint'}, 'Teams in this room:'),
+      teams.map(t => el('button', {class: `chip team-pick${t.name === team ? ' is-on' : ''}`, type: 'button', 'data-key': `pick-${t.name}`,
+        onclick: () => { teamInput.value = t.name; }}, `${t.name} · ${t.players}`)))
+    : el('p', {class: 'hint'}, "Type your team's name. The first player to use a name starts that team; teammates type the same name.");
+
   const form = el('form', {class: 'panel name-form', novalidate: true, onsubmit: event => {
     event.preventDefault();
-    join(codeInput.value.trim(), nameInput.value.trim());
+    join(codeInput.value.trim(), nameInput.value.trim(), teamInput.value.trim());
   }},
   el('label', {for: 'room-code'}, 'Room code'),
   codeInput,
   el('label', {for: 'player-name'}, 'Your username'),
   nameInput,
+  el('label', {for: 'team-name'}, 'Your team'),
+  teamInput,
+  el('datalist', {id: 'team-list'}, teams.map(t => el('option', {value: t.name}))),
+  picks,
   error ? el('p', {class: 'alert', role: 'alert'}, error) : null,
   el('div', {class: 'actions'},
     el('a', {class: 'btn btn-ghost', href: '/index.html', 'data-key': 'back'}, '← Home'),
@@ -153,7 +169,7 @@ export function joinScreen({code = '', name = '', error = null, busy = false}, j
     el('section', {class: 'name-head'},
       el('span', {class: 'eyebrow'}, 'Multiplayer · Join'),
       el('h1', {class: 'screen-title'}, 'Join the defence team'),
-      el('p', {class: 'lead'}, 'Enter the room code shown on the host screen. You will be given Prevent, Detect or Respond.')),
+      el('p', {class: 'lead'}, "Enter the room code shown on the host screen and your team's name. Each team builds its own wall with £3m and competes against the other teams. In your team you look after Prevent, Detect or Respond.")),
     form);
 }
 
@@ -165,8 +181,8 @@ export function hostStartScreen({error = null, busy = false}, create) {
         el('span', {class: 'eyebrow'}, 'Multiplayer · Host'),
         el('h1', {class: 'screen-title'}, 'Run the night'),
         el('p', {class: 'lead'},
-          'Put this screen where the whole team can see it. Open a room, and players join on their phones with the code. ',
-          'They choose the defences; you lock the plan and move the night on.'),
+          'Put this screen where everyone can see it. Open a room, and players join on their phones with the code and a team name. ',
+          'Each team (at least 2 players, up to 15 teams) builds its own wall with £3m. You lock every plan and run the night, and the walls are compared at the end.'),
         error ? el('p', {class: 'alert', role: 'alert'}, error) : null,
         el('div', {class: 'actions start-actions'},
           el('a', {class: 'btn btn-ghost', href: '/index.html', 'data-key': 'back'}, '← Home'),

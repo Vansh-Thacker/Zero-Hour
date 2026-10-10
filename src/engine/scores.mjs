@@ -63,3 +63,30 @@ export function bestPossiblePhaseScore(data, n) {
   // Let the supplied scorer produce the score for the best valid basket.
   return scoreSelection(data, bestIds).phases[n].score;
 }
+
+/**
+ * Team battle: a team may lock any plan within budget, even one without all three categories.
+ * Same points and the same result shape as the supplied scoring module. When the plan does
+ * cover all three categories, the scoring module itself does the work.
+ */
+export function scorePlan(data, selection) {
+  const controls = selection.map(id => data.controls.find(c => c.id === id));
+  if (controls.some(c => !c)) throw new Error(`"${selection[controls.indexOf(undefined)]}" is not a control.`);
+  if (new Set(selection).size !== selection.length) throw new Error('A control is chosen twice. Each control can only be chosen once.');
+  if (['Prevent', 'Detect', 'Respond'].every(cat => controls.some(c => c.category === cat))) return scoreSelection(data, selection);
+
+  const spent = controls.reduce((sum, c) => sum + c.cost, 0);
+  if (spent > data.budget) throw new Error(`Over budget: £${spent.toLocaleString('en-GB')} chosen, £${data.budget.toLocaleString('en-GB')} available.`);
+  const phases = data.phases.map(phase => {
+    const contributions = selection.map(id => ({id, points: phase.scores[id]}));
+    return {phaseId: phase.id, score: contributions.reduce((sum, item) => sum + item.points, 0), contributions};
+  });
+  return {
+    chosen: [...selection],
+    budget: data.budget,
+    spent,
+    unspent: data.budget - spent,
+    phases,
+    total: phases.reduce((sum, phase) => sum + phase.score, 0),
+  };
+}

@@ -4,6 +4,8 @@
 
 import {el, points, hostOnly} from './dom.mjs';
 import {nightReport, outcomeVault} from './nightReport.mjs';
+import {standings} from './standings.mjs';
+import {leaderboard} from './standingsTable.mjs';
 
 export function outcomeScreen(state, {data, bank}, dispatch, extras, room) {
   const control = state.result.total;
@@ -29,8 +31,13 @@ export function outcomeScreen(state, {data, bank}, dispatch, extras, room) {
     el('h2', {id: 'debrief-title'}, 'Debrief: what happened and why'),
     el('div', {class: 'debrief'}, data.phases.map((phase, n) => phaseDebrief(phase, n, state, data, bank, room))));
 
+  // Multiplayer with several teams: how every team's wall held, with this team marked.
+  const teamResults = room?.teams?.length > 1
+    ? teamPlace(standings(data, room.teams, data.phases.length - 1), data, room.team?.id)
+    : null;
+
   return [
-    hero, scores, nightReport(data, bank, state), debrief,
+    hero, teamResults, scores, nightReport(data, bank, state), debrief,
     el('div', {class: 'actions'}, hostOnly(room,
       el('button', {class: 'btn btn-primary', type: 'button', 'data-key': 'reset', onclick: () => dispatch({type: 'reset'})},
         '↻ Play again'),
@@ -82,4 +89,13 @@ function byQuestion(answers) {
   const groups = new Map();
   for (const a of answers) groups.set(a.questionId, [...(groups.get(a.questionId) ?? []), a]);
   return [...groups];
+}
+
+// Where this team finished, then the full table of every team.
+function teamPlace(rows, data, ownId) {
+  const own = rows.find(row => row.id === ownId);
+  return el('section', {class: 'team-place', 'aria-label': 'Team results'},
+    own ? el('p', {class: 'lead'}, el('strong', {}, `${own.rank === 1 ? '🏆 ' : ''}Your team finished #${own.rank} of ${rows.length}. `),
+      `Your wall held ${own.wallPercent}% of the attacks: ${own.cracks} of ${own.attacks} cracked through.`) : null,
+    leaderboard(rows, data, 'Every team, side by side', ownId));
 }

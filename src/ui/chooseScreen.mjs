@@ -24,7 +24,9 @@ export function chooseScreen(state, {data}, dispatch, extras, room) {
         `A crew is planning to break into ${BUSINESS_NAME} overnight. They strike at ${firstPhase.local_time}. `,
         `You have ${money(data.budget)} to put defences in place before they do.`),
       el('ul', {class: 'rules'},
-        el('li', {}, 'Pick at least one Prevent, one Detect and one Respond control.'),
+        el('li', {}, room?.team
+          ? 'Prevent, Detect and Respond all help your wall. Your team can lock any plan, but a missing category leaves a gap.'
+          : 'Pick at least one Prevent, one Detect and one Respond control.'),
         el('li', {}, `Spend up to ${money(data.budget)}. You don't have to spend it all.`),
         el('li', {}, 'Once you lock the plan, it cannot change for the rest of the night.'),
         room ? el('li', {class: 'role-rule'}, roleRule(room)) : null)),
@@ -41,7 +43,7 @@ export function chooseScreen(state, {data}, dispatch, extras, room) {
         'aria-valuemin': 0, 'aria-valuemax': data.budget, 'aria-valuenow': summary.spent, style: `--fill:${fill}%`}, el('i')),
       el('div', {class: 'coverage'}, CATEGORIES.map(cat =>
         el('span', {class: `cover${summary.covered[cat] ? ' is-on' : ''}`, 'data-cat': cat},
-          summary.covered[cat] ? `✓ ${cat}` : `○ ${cat} needed`)))),
+          summary.covered[cat] ? `✓ ${cat}` : room?.team ? `○ ${cat}` : `○ ${cat} needed`)))),
     hostOnly(room,
       el('button', {class: 'btn btn-primary', type: 'button', 'data-key': 'confirm',
         'aria-disabled': summary.ready ? null : 'true', onclick: () => dispatch({type: 'confirm'})},
@@ -54,7 +56,8 @@ export function chooseScreen(state, {data}, dispatch, extras, room) {
       img(controlRender(item)), el('span', {}, el('strong', {}, item.name), 'Can\'t be chosen'))));
 
   // On a phone, the player's own category comes first.
-  const order = room?.you.category ? [room.you.category, ...CATEGORIES.filter(c => c !== room.you.category)] : CATEGORIES;
+  const mine = room?.you.category ? room.you.categories ?? [room.you.category] : [];
+  const order = [...mine, ...CATEGORIES.filter(c => !mine.includes(c))];
   const crews = order.map(cat => el('section', {class: `crew${room && !picksFor(room, cat) ? ' is-others' : ''}`, 'data-cat': cat, 'aria-labelledby': `crew-${cat}`},
     el('div', {class: 'crew-head'},
       el('span', {class: 'crew-tag'}, crewTag(cat, room, extras)),
@@ -68,13 +71,15 @@ export function chooseScreen(state, {data}, dispatch, extras, room) {
 
 function roleRule(room) {
   if (room.you.host) return 'Your players choose the controls on their phones. You lock the plan.';
-  return `You choose the ${room.you.category} controls. Your teammates choose the rest from the same budget.`;
+  const mine = (room.you.categories ?? [room.you.category]).join(' and ');
+  const team = room.team ? ` for ${room.team.name}` : '';
+  return `You choose the ${mine} controls${team}. Your teammates choose the rest from the same budget.`;
 }
 
 function crewTag(cat, room, extras) {
   const role = extras.roleName?.(cat);
   if (!room) return role ?? `${CATEGORIES.indexOf(cat) + 1} of 3`;
-  const owners = room.players.filter(p => p.category === cat).map(p => p.name);
+  const owners = room.players.filter(p => (p.categories ?? [p.category]).includes(cat)).map(p => p.name);
   const who = picksFor(room, cat) ? 'Your role' : owners.length ? `Chosen by ${owners.join(', ')}` : 'Nobody yet';
   return role ? `${role} · ${who}` : who;
 }
