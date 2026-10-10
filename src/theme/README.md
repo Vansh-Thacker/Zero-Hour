@@ -57,7 +57,32 @@ renderTheme(document.getElementById('heist'), state, data, { showOutcome: true }
 | 5 | `theme.css` | The blueprint look. Scoped under `.heist`. No flashing. Motion off for reduced-motion users. |
 | 6 | `blueprint.mjs` | Draws the floor plan as SVG: four rooms and the vault, the crew's route, and ✓ or ✗ for each defence layer in each room. |
 | 7 | `theme.mjs` | `renderTheme(root, state, data)` puts it all together. `buildThemeHtml` returns a string so it can be tested without a browser. |
-| 8 | `tests/theme.test.mjs` | 18 tests for the theme (see below). |
+| 8 | `tests/theme.test.mjs` | 22 tests for the theme (see below). |
+| + | `artwork.mjs` | Every piece of pack artwork the theme uses, in one place. Works out image paths from its own location, so images load on any page. |
+| + | `preview.html` | Try the theme on its own with the real data: open `/src/theme/preview.html` after `npm start`. Not part of the game. |
+
+## Artwork
+
+We used every piece of 2D pack artwork that fits the heist, and left out what does not. `artwork.mjs` lists each file, and a test checks every one of them really exists.
+
+| Artwork | Where it appears in the heist |
+|---|---|
+| `1-foundation/artwork/icons/` (all 21 control icons) | Next to each chosen control in "Your defences", and the 3 `IP_` icons in "Already in place" |
+| `1-foundation/artwork/everyday/email`, `laptop`, `phone` | The picture in rooms 1 to 3: the phishing email, the infected laptop, the fake IT call |
+| `1-foundation/artwork/everyday/usb_stick` | The crew's marker on the blueprint (their malicious device) |
+| `2-extend/artwork/incident/chat` | Room 4: the ransom demand message |
+| `2-extend/artwork/incident/call` | The Architect "is calling" |
+| `2-extend/artwork/incident/recovery` and `email` | The ending: vault holds, or the ransom email arrives |
+| `2-extend/artwork/map/outside_node`, `system_node`, `platform` | The street, rooms not reached yet, and the data vault |
+| `2-extend/artwork/map/marker_reduces`, `marker_sees`, `marker_recovers` | The Prevent, Detect and Respond layer marks in each room, and in the key |
+| `2-extend/artwork/scenery/office` | The company's building in the header |
+
+**What we did not use, and why:**
+- **ScottishPower logo and brand mark.** The business in the game is fictional. Putting the real logo on a company being robbed could suggest ScottishPower itself is being hacked.
+- **3D models (`.glb`).** The theme is 2D on purpose: it loads fast, works on any screen, and the brief says simple 2D is fine.
+- **Race artwork** belongs to the Endurance Race theme, so it does not fit a heist.
+- **Other scenery** (pylons, turbines, solar, trees) and `map/attacker_route`, `marker_coordinates`: our blueprint is the inside of one building, so outdoor scenery and the city map pieces did not fit. The crew's route is drawn in SVG so it can move with each phase.
+- Every image sits on a light badge, so dark artwork stays visible on the dark blueprint. Images have empty alt text because the words next to them already say the same thing.
 
 ## The rules we decided
 
@@ -95,6 +120,8 @@ Run with `npm test`. Each test checks one behaviour:
 - The clock runs from 0 to 1 and puts 02:00 at the right point in the night (560 of 830 minutes).
 - **The theme never changes the state or the data** (both frozen with `Object.freeze`).
 - Text from the data is escaped.
+- Every chosen control shows its icon, and the controls already in place get theirs by name.
+- **Every artwork file the theme uses exists in the pack**, so no broken images.
 
 ## Demo script (about 90 seconds of the 8-minute pitch)
 
@@ -116,4 +143,4 @@ Run with `npm test`. Each test checks one behaviour:
 
 - Built against the agreed plan for the engine's state (`chosen`, `phaseIndex`, `result.phases`). If the engine uses other names, update the two functions at the top of `vault.mjs`.
 - No sound.
-- Artwork from `2-extend/artwork/` is not used yet. The blueprint is drawn in SVG.
+- The 3D models and outdoor scenery are not used (see Artwork for why).
