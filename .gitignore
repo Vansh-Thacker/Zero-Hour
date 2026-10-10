@@ -3,3 +3,4 @@ node_modules/
 *.log
 # Office lock files, created while a document is open
 ~$*
+MULTIPLAYER_PRESENTATION.md

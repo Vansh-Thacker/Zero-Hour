@@ -290,11 +290,375 @@ async function firstView(base, code, token) {
   return {status: 200, view: JSON.parse(/^data: (.*)$/m.exec(text)[1])};
 }
 
+async function httpTeam(base) {
+  const {status, body: host} = await postJson(`${base}/api/rooms`, {});
+  assert.equal(status, 201);
+  const players = [];
+  for (const name of ['Ana', 'Ben', 'Cal']) {
+    const joined = await postJson(`${base}/api/rooms/${host.code}/join`, {name});
+    assert.equal(joined.status, 200);
+    players.push(joined.body);
+  }
+  const action = (token, request) => postJson(`${base}/api/rooms/${host.code}/actions`, {token, action: request});
+  return {host, players, action};
+}
+
+async function joinHttpTeam(base, code, teamName, names) {
+  const players = [];
+  for (const name of names) {
+    const joined = await postJson(`${base}/api/rooms/${code}/join`, {name, team: teamName});
+    assert.equal(joined.status, 200);
+    assert.equal(joined.body.team, teamName);
+    players.push(joined.body);
+  }
+  return players;
+}
+
+test('server: the teams endpoint reports names, player counts and start status', async t => {
+  const base = await startServer(t);
+  const {body: host} = await postJson(`${base}/api/rooms`, {});
+  const teamsUrl = `${base}/api/rooms/${host.code}/teams`;
+  const empty = await fetch(teamsUrl).then(r => r.json());
+  assert.deepEqual(empty.teams, []);
+  assert.equal(empty.started, false);
+  assert.ok(empty.maxTeams >= 2);
+  await joinHttpTeam(base, host.code, 'Red', ['Ana', 'Ben']);
+  await joinHttpTeam(base, host.code, 'Blue', ['Cal']);
+  const waiting = await fetch(teamsUrl).then(r => r.json());
+  assert.deepEqual(waiting.teams, [{name: 'Red', players: 2}, {name: 'Blue', players: 1}]);
+  assert.equal(waiting.started, false);
+});
+
+test('server: two teams in one room have separate budgets and baskets', async t => {
+  const base = await startServer(t);
+  const {body: host} = await postJson(`${base}/api/rooms`, {});
+  const [red] = await joinHttpTeam(base, host.code, 'Red', ['Ana', 'Ben']);
+  const [blue] = await joinHttpTeam(base, host.code, 'Blue', ['Cal', 'Dev']);
+  const url = `${base}/api/rooms/${host.code}/actions`;
+  assert.equal((await postJson(url, {token: red.token, action: buy('P2')})).status, 200);
+  const redView = (await firstView(base, host.code, red.token)).view;
+  const blueView = (await firstView(base, host.code, blue.token)).view;
+  const hostView = (await firstView(base, host.code, host.token)).view;
+  assert.deepEqual(redView.state.selected, ['P2']);
+  assert.deepEqual(blueView.state.selected, []);
+  assert.equal(redView.team.name, 'Red');
+  assert.equal(blueView.team.name, 'Blue');
+  assert.deepEqual(hostView.teams.map(team => [team.name, team.state.selected]), [['Red', ['P2']], ['Blue', []]]);
+  assert.doesNotMatch(JSON.stringify(hostView), new RegExp(red.token));
+});
+
+test('server: confirming waits for two players on every team, then locks both plans', async t => {
+  const base = await startServer(t);
+  const {body: host} = await postJson(`${base}/api/rooms`, {});
+  await joinHttpTeam(base, host.code, 'Red', ['Ana', 'Ben']);
+  await joinHttpTeam(base, host.code, 'Blue', ['Cal']);
+  const url = `${base}/api/rooms/${host.code}/actions`;
+  const early = await postJson(url, {token: host.token, action: {type: 'confirm'}});
+  assert.equal(early.status, 409);
+  assert.match(early.body.error, /Blue needs 1 more player/);
+  assert.equal((await firstView(base, host.code, host.token)).view.state.confirmed, false);
+  await joinHttpTeam(base, host.code, 'Blue', ['Dev']);
+  assert.equal((await postJson(url, {token: host.token, action: {type: 'confirm'}})).status, 200);
+  const view = (await firstView(base, host.code, host.token)).view;
+  assert.equal(view.state.stage, 'story');
+  assert.ok(view.teams.every(team => team.state.confirmed));
+  assert.equal((await fetch(`${base}/api/rooms/${host.code}/teams`).then(r => r.json())).started, true);
+});
+
+test('server: after starting, players may join an existing team but not create a new one', async t => {
+  const base = await startServer(t);
+  const {body: host} = await postJson(`${base}/api/rooms`, {});
+  await joinHttpTeam(base, host.code, 'Red', ['Ana', 'Ben']);
+  const actionUrl = `${base}/api/rooms/${host.code}/actions`;
+  assert.equal((await postJson(actionUrl, {token: host.token, action: {type: 'confirm'}})).status, 200);
+  const rejected = await postJson(`${base}/api/rooms/${host.code}/join`, {name: 'Late', team: 'Blue'});
+  assert.equal(rejected.status, 409);
+  assert.match(rejected.body.error, /new teams can't join/);
+  const accepted = await postJson(`${base}/api/rooms/${host.code}/join`, {name: 'Late', team: 'Red'});
+  assert.equal(accepted.status, 200);
+  assert.equal(accepted.body.team, 'Red');
+});
+
+test('server: a two-player team lets its first player select Respond controls', async t => {
+  const base = await startServer(t);
+  const {body: host} = await postJson(`${base}/api/rooms`, {});
+  const [first, second] = await joinHttpTeam(base, host.code, 'Red', ['Ana', 'Ben']);
+  const url = `${base}/api/rooms/${host.code}/actions`;
+  assert.equal((await postJson(url, {token: first.token, action: buy('R1')})).status, 200);
+  assert.equal((await postJson(url, {token: second.token, action: buy('R2')})).status, 403);
+  const view = (await firstView(base, host.code, first.token)).view;
+  assert.deepEqual(view.you.categories, ['Prevent', 'Respond']);
+  assert.deepEqual(view.state.selected, ['R1']);
+});
+
+test('server: two teams share the checkpoint clock but keep their answers and scores separate', async t => {
+  const base = await startServer(t);
+  const {body: host} = await postJson(`${base}/api/rooms`, {});
+  const red = await joinHttpTeam(base, host.code, 'Red', ['Ana', 'Ben']);
+  const blue = await joinHttpTeam(base, host.code, 'Blue', ['Cal', 'Dev']);
+  const url = `${base}/api/rooms/${host.code}/actions`;
+  for (const type of ['confirm', 'next', 'next']) {
+    assert.equal((await postJson(url, {token: host.token, action: {type}})).status, 200);
+  }
+  const redBefore = (await firstView(base, host.code, red[0].token)).view;
+  const blueBefore = (await firstView(base, host.code, blue[0].token)).view;
+  assert.equal(redBefore.state.stage, 'checkpoint');
+  assert.equal(blueBefore.state.stage, 'checkpoint');
+  assert.deepEqual(redBefore.state.checkpoint, blueBefore.state.checkpoint);
+  const [questionId] = redBefore.state.checkpoint.questionIds;
+  const correct = game.bank.questions.find(q => q.id === questionId).correct;
+  const wrong = ['A', 'B', 'C', 'D'].find(choice => choice !== correct);
+  assert.equal((await postJson(url, {
+    token: red[0].token, action: {type: 'answer', questionId, choice: correct},
+  })).status, 200);
+  assert.equal((await postJson(url, {
+    token: blue[0].token, action: {type: 'answer', questionId, choice: wrong},
+  })).status, 200);
+  const redAfter = (await firstView(base, host.code, red[0].token)).view;
+  const blueAfter = (await firstView(base, host.code, blue[0].token)).view;
+  assert.equal(redAfter.state.answers.length, 1);
+  assert.equal(blueAfter.state.answers.length, 1);
+  assert.equal(redAfter.state.behaviourPoints[0], POINTS_PER_SECURE_ANSWER / 2);
+  assert.equal(blueAfter.state.behaviourPoints[0], 0);
+  assert.deepEqual(redAfter.teams.map(team => team.state.behaviourPoints[0]), [POINTS_PER_SECURE_ANSWER / 2, 0]);
+});
+
+test('server: room creation returns a unique code and host seat', async t => {
+  const base = await startServer(t);
+  const first = await postJson(`${base}/api/rooms`, {});
+  const second = await postJson(`${base}/api/rooms`, {});
+  assert.equal(first.status, 201);
+  assert.equal(second.status, 201);
+  assert.match(first.body.code, /^VAULT-\d{2}$/);
+  assert.notEqual(first.body.code, second.body.code);
+  assert.ok(first.body.token);
+  assert.notEqual(first.body.token, second.body.token);
+});
+
+test('server: joining assigns roles in order and refuses a blank name', async t => {
+  const base = await startServer(t);
+  const {body: host} = await postJson(`${base}/api/rooms`, {});
+  const missing = await postJson(`${base}/api/rooms/${host.code}/join`, {name: '   '});
+  assert.equal(missing.status, 400);
+  assert.match(missing.body.error, /name/);
+  const roles = [];
+  for (const name of ['Ana', 'Ben', 'Cal', 'Dev']) {
+    const joined = await postJson(`${base}/api/rooms/${host.code}/join`, {name});
+    assert.equal(joined.status, 200);
+    roles.push(joined.body.category);
+    assert.ok(joined.body.token);
+  }
+  assert.deepEqual(roles, ['Prevent', 'Detect', 'Respond', 'Prevent']);
+});
+
+test('server: players cannot use host actions and host cannot answer', async t => {
+  const base = await startServer(t);
+  const {host, players, action} = await httpTeam(base);
+  assert.equal((await action(players[0].token, {type: 'confirm'})).status, 403);
+  assert.equal((await action(players[0].token, {type: 'next'})).status, 403);
+  assert.equal((await action(players[0].token, {type: 'reset'})).status, 403);
+  assert.equal((await action(host.token, {type: 'answer', questionId: 'Q01', choice: 'A'})).status, 403);
+  assert.equal((await firstView(base, host.code, host.token)).view.state.stage, 'choose');
+});
+
+test('server: host confirmation locks purchases and advances every seat to a checkpoint', async t => {
+  const base = await startServer(t);
+  const {host, players, action} = await httpTeam(base);
+  for (const [player, id] of players.map((player, i) => [player, ['P3', 'D3', 'R1'][i]])) {
+    assert.equal((await action(player.token, buy(id))).status, 200);
+  }
+  assert.equal((await action(host.token, {type: 'confirm'})).status, 200);
+  assert.equal((await action(players[0].token, buy('P4'))).status, 409);
+  assert.equal((await action(host.token, {type: 'next'})).status, 200);
+  const beforeCheckpoint = Date.now();
+  assert.equal((await action(host.token, {type: 'next', now: 0})).status, 200);
+  const afterCheckpoint = Date.now();
+  for (const token of [host.token, ...players.map(player => player.token)]) {
+    const {view} = await firstView(base, host.code, token);
+    assert.equal(view.state.stage, 'checkpoint');
+    assert.deepEqual(view.state.selected, ['P3', 'D3', 'R1']);
+    assert.equal(view.state.checkpoint.questionIds.length, 4);
+    assert.ok(view.state.checkpoint.timer.startedAt >= beforeCheckpoint);
+    assert.ok(view.state.checkpoint.timer.startedAt <= afterCheckpoint);
+  }
+});
+
+test('server: an answer uses the seat ID and rejects a second answer', async t => {
+  const base = await startServer(t);
+  const {host, players, action} = await httpTeam(base);
+  for (let i = 0; i < players.length; i++) {
+    assert.equal((await action(players[i].token, buy(['P3', 'D3', 'R1'][i]))).status, 200);
+  }
+  for (const type of ['confirm', 'next', 'next']) assert.equal((await action(host.token, {type})).status, 200);
+  const before = (await firstView(base, host.code, host.token)).view;
+  const [questionId] = before.state.checkpoint.questionIds;
+  assert.equal((await action(players[0].token, {
+    type: 'answer', questionId, choice: 'A', player: 'fake-player', now: 0,
+  })).status, 200);
+  assert.equal((await action(players[0].token, {type: 'answer', questionId, choice: 'B'})).status, 409);
+  const after = (await firstView(base, host.code, host.token)).view;
+  assert.equal(after.state.answers.length, 1);
+  assert.equal(after.state.answers[0].player, after.players[0].id);
+});
+
+test('server: a player can remove their control before confirmation', async t => {
+  const base = await startServer(t);
+  const {host, players, action} = await httpTeam(base);
+  assert.equal((await action(players[0].token, buy('P3'))).status, 200);
+  assert.equal((await action(players[0].token, {type: 'deselect', id: 'P3'})).status, 200);
+  assert.deepEqual((await firstView(base, host.code, host.token)).view.state.selected, []);
+});
+
+test('server: only the host can pause and resume the shared checkpoint clock', async t => {
+  const base = await startServer(t);
+  const {host, players, action} = await httpTeam(base);
+  for (let i = 0; i < players.length; i++) {
+    assert.equal((await action(players[i].token, buy(['P3', 'D3', 'R1'][i]))).status, 200);
+  }
+  for (const type of ['confirm', 'next', 'next']) assert.equal((await action(host.token, {type})).status, 200);
+  assert.equal((await action(players[0].token, {type: 'pause'})).status, 403);
+  assert.equal((await action(host.token, {type: 'pause'})).status, 200);
+  assert.notEqual((await firstView(base, host.code, host.token)).view.state.checkpoint.timer.pausedAt, null);
+  assert.equal((await action(host.token, {type: 'resume'})).status, 200);
+  assert.equal((await firstView(base, host.code, players[0].token)).view.state.checkpoint.timer.pausedAt, null);
+  assert.equal((await action(host.token, {type: 'timeout'})).status, 200);
+  assert.equal((await firstView(base, host.code, host.token)).view.state.checkpoint.expired, false);
+});
+
+test('server: an invalid action returns 400 and does not change the room', async t => {
+  const base = await startServer(t);
+  const {host, players, action} = await httpTeam(base);
+  const invalid = await action(players[0].token, {type: 'hack'});
+  assert.equal(invalid.status, 400);
+  assert.match(invalid.body.error, /not something the game can do/);
+  assert.deepEqual((await firstView(base, host.code, host.token)).view.state.selected, []);
+  assert.equal((await action(players[0].token, buy('P3'))).status, 200);
+});
+
+test('server: host reset clears the game but keeps the same players', async t => {
+  const base = await startServer(t);
+  const {host, players, action} = await httpTeam(base);
+  assert.equal((await action(players[0].token, buy('P3'))).status, 200);
+  assert.equal((await action(host.token, {type: 'reset'})).status, 200);
+  const {view} = await firstView(base, host.code, players[0].token);
+  assert.equal(view.state.stage, 'choose');
+  assert.deepEqual(view.state.selected, []);
+  assert.equal(view.players.length, 3);
+});
+
+test('server: auxiliary APIs and the home page work from the same server', async t => {
+  const base = await startServer(t);
+  const home = await fetch(base);
+  assert.equal(home.status, 200);
+  assert.match(await home.text(), /Zero Hour/);
+  const addresses = await fetch(`${base}/api/join-addresses`);
+  assert.equal(addresses.status, 200);
+  assert.ok(Array.isArray((await addresses.json()).addresses));
+  const assets = await fetch(`${base}/api/assets`);
+  assert.equal(assets.status, 200);
+  assert.ok(Array.isArray((await assets.json()).files));
+  assert.equal((await fetch(`${base}/api/not-a-route`)).status, 404);
+  assert.equal((await fetch(`${base}/index.html`, {method: 'POST'})).status, 405);
+});
+
 test('server: a wrong room code is refused with a readable message', async t => {
   const base = await startServer(t);
-  const res = await postJson(`${base}/api/rooms/VAULT-00/join`, {name: 'Ben'});
-  assert.equal(res.status, 404);
-  assert.match(res.body.error, /No game with code VAULT-00/);
+  for (const [route, body] of [['join', {name: 'Ben'}], ['actions', {token: 'none', action: buy('P3')}]]) {
+    const res = await postJson(`${base}/api/rooms/VAULT-00/${route}`, body);
+    assert.equal(res.status, 404);
+    assert.match(res.body.error, /No game with code VAULT-00/);
+  }
+  const events = await fetch(`${base}/api/rooms/VAULT-00/events?token=none`);
+  assert.equal(events.status, 404);
+  assert.match((await events.json()).error, /No game with code VAULT-00/);
+});
+
+test('server: two room codes keep their players and baskets separate', async t => {
+  const base = await startServer(t);
+  const {body: red} = await postJson(`${base}/api/rooms`, {});
+  const {body: blue} = await postJson(`${base}/api/rooms`, {});
+  assert.notEqual(red.code, blue.code);
+  const redPlayer = (await postJson(`${base}/api/rooms/${red.code}/join`, {name: 'Red'})).body;
+  const bluePlayer = (await postJson(`${base}/api/rooms/${blue.code}/join`, {name: 'Blue'})).body;
+  assert.equal((await postJson(`${base}/api/rooms/${red.code}/actions`, {
+    token: redPlayer.token, action: buy('P3'),
+  })).status, 200);
+  const redView = (await firstView(base, red.code, red.token)).view;
+  const blueView = (await firstView(base, blue.code, bluePlayer.token)).view;
+  assert.deepEqual(redView.state.selected, ['P3']);
+  assert.deepEqual(blueView.state.selected, []);
+  assert.deepEqual(redView.players.map(p => p.name), ['Red']);
+  assert.deepEqual(blueView.players.map(p => p.name), ['Blue']);
+});
+
+test('server: a seat from one room cannot act in another room', async t => {
+  const base = await startServer(t);
+  const {body: red} = await postJson(`${base}/api/rooms`, {});
+  const {body: blue} = await postJson(`${base}/api/rooms`, {});
+  const redPlayer = (await postJson(`${base}/api/rooms/${red.code}/join`, {name: 'Red'})).body;
+  const attempt = await postJson(`${base}/api/rooms/${blue.code}/actions`, {
+    token: redPlayer.token, action: buy('P3'),
+  });
+  assert.equal(attempt.status, 403);
+  assert.deepEqual((await firstView(base, blue.code, blue.token)).view.state.selected, []);
+});
+
+test('server: a role violation through the API leaves the basket unchanged', async t => {
+  const base = await startServer(t);
+  const {body: host} = await postJson(`${base}/api/rooms`, {});
+  const gate = (await postJson(`${base}/api/rooms/${host.code}/join`, {name: 'Gate'})).body;
+  const attempt = await postJson(`${base}/api/rooms/${host.code}/actions`, {
+    token: gate.token, action: buy('D3'),
+  });
+  assert.equal(attempt.status, 403);
+  assert.match(attempt.body.error, /Only a Detect player/);
+  assert.deepEqual((await firstView(base, host.code, host.token)).view.state.selected, []);
+});
+
+test('server: malformed JSON returns 400 and the server still accepts a valid request', async t => {
+  const base = await startServer(t);
+  const bad = await fetch(`${base}/api/rooms`, {
+    method: 'POST', headers: {'Content-Type': 'application/json'}, body: '{bad json',
+  });
+  assert.equal(bad.status, 400);
+  assert.match((await bad.json()).error, /valid JSON/);
+  assert.equal((await postJson(`${base}/api/rooms`, {})).status, 201);
+});
+
+test('server: an oversized JSON body returns 413', async t => {
+  const base = await startServer(t);
+  const res = await postJson(`${base}/api/rooms`, {padding: 'x'.repeat(8192)});
+  assert.equal(res.status, 413);
+  assert.match(res.body.error, /too large/);
+});
+
+test('server: an open event stream receives a purchase without reconnecting', {timeout: 5000}, async t => {
+  const base = await startServer(t);
+  const {body: host} = await postJson(`${base}/api/rooms`, {});
+  const player = (await postJson(`${base}/api/rooms/${host.code}/join`, {name: 'Ana'})).body;
+  const controller = new AbortController();
+  t.after(() => controller.abort());
+  const response = await fetch(`${base}/api/rooms/${host.code}/events?token=${host.token}`, {signal: controller.signal});
+  assert.equal(response.status, 200);
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let pending = '';
+  async function nextView() {
+    while (!pending.includes('\n\n')) {
+      const {value, done} = await reader.read();
+      assert.equal(done, false, 'the live stream closed before the next update');
+      pending += decoder.decode(value, {stream: true});
+    }
+    const end = pending.indexOf('\n\n');
+    const event = pending.slice(0, end);
+    pending = pending.slice(end + 2);
+    return JSON.parse(event.slice('data: '.length));
+  }
+  assert.deepEqual((await nextView()).state.selected, []);
+  assert.equal((await postJson(`${base}/api/rooms/${host.code}/actions`, {
+    token: player.token, action: buy('P3'),
+  })).status, 200);
+  assert.deepEqual((await nextView()).state.selected, ['P3']);
 });
 
 test('server: two players spending the last £100,000 at the same moment: only one goes through', async t => {
