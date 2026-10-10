@@ -341,3 +341,13 @@ test('server: an unknown seat cannot listen or act', async t => {
   assert.equal((await firstView(base, code, 'stranger')).status, 403);
   assert.equal((await postJson(`${base}/api/rooms/${code}/actions`, {token: 'stranger', action: buy('P3')})).status, 403);
 });
+
+test('server: hidden files and folders such as .git are never served to the Wi-Fi', async t => {
+  const base = await startServer(t);
+  for (const path of ['/.git/HEAD', '/.git/config', '/%2egit/HEAD', '/.gitignore', '/src/.hidden']) {
+    const res = await fetch(base + path);
+    assert.equal(res.status, 404, path);
+    assert.doesNotMatch(await res.text(), /ref:|\[core\]/, path);
+  }
+  assert.equal((await fetch(`${base}/index.html`)).status, 200, 'normal game files are still served');
+});

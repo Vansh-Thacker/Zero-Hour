@@ -111,6 +111,11 @@ async function listAssets(folder, found = []) {
 }
 
 async function serveFile(req, res, pathname) {
+  // Never serve hidden files or folders (.git, .env, .claude): the server is open to the whole Wi-Fi.
+  if (pathname.split('/').some(part => part.startsWith('.'))) {
+    res.writeHead(404);
+    return res.end('Not found');
+  }
   const name = pathname === '/' ? '/index.html' : pathname.endsWith('/') ? `${pathname}index.html` : pathname;
   const file = await realpath(path.resolve(root, '.' + name));
   if (!file.startsWith(root + path.sep)) {
