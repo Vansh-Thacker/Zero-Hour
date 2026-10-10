@@ -371,12 +371,30 @@ p { margin: 0 0 0.8em; }
 }
 .battle-crew { left: 0; width: 11%; border-right: 1px dashed rgba(227, 133, 13, 0.4); color: var(--notice); }
 .battle-vault { right: 0; width: 15%; }
-.vault-door {
-  width: 54px; height: 54px; border-radius: 50%;
-  border: 4px solid var(--gold); background: radial-gradient(circle, var(--panel-2) 30%, var(--panel) 31%, var(--panel-2) 60%);
-  box-shadow: 0 0 0 4px rgba(255, 181, 54, 0.15);
-}
-.battle.is-weak .vault-door { border-color: var(--notice); box-shadow: 0 0 0 4px rgba(227, 133, 13, 0.25); }
+.battle-vault .safe { width: 58px; }
+
+/* The safe with a ship's-wheel lock (vaultSafe.mjs) */
+.safe { display: block; height: auto; overflow: visible; filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.55)); }
+.safe .door-ring { stroke: #1d2924; stroke-width: 4; }
+.safe .rivet { fill: #9aa8a1; }
+.safe .bolt { fill: #c9d3ce; stroke: #26332d; stroke-width: 2; }
+.safe .hinge { fill: #2c3833; stroke: #9aa8a1; stroke-width: 1.5; }
+.safe .spoke { stroke: #d9a441; stroke-width: 6; stroke-linecap: round; }
+.safe .knob { fill: #ffcd52; stroke: #8a5d17; stroke-width: 1.5; }
+.safe .rim { stroke: #d9a441; stroke-width: 7; }
+.safe .hub-pin { fill: #5b3d0c; }
+.safe .safe-light { fill: var(--secure); }
+.safe.is-damaged .safe-light { fill: var(--gold); }
+.safe.is-breached .safe-light { fill: var(--notice); }
+.safe .safe-crack { fill: none; stroke: #0b130f; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+.safe .safe-scratch { fill: none; stroke: rgba(255, 255, 255, 0.4); stroke-width: 2; stroke-linecap: round; }
+.safe-wheel { transform-box: view-box; transform-origin: 100px 100px; animation: wheel-lock 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both; }
+.safe.is-breached .safe-wheel { animation-name: wheel-loose; }
+.safe.is-breached { filter: drop-shadow(0 0 18px rgba(227, 133, 13, 0.55)) drop-shadow(0 12px 16px rgba(0, 0, 0, 0.55)); }
+.safe.is-breached .safe-door { transform-box: view-box; transform-origin: 18px 100px; animation: door-ajar 1.2s ease-out 0.5s both; }
+@keyframes wheel-lock { from { transform: rotate(-300deg); } to { transform: rotate(0deg); } }
+@keyframes wheel-loose { from { transform: rotate(0deg); } to { transform: rotate(38deg); } }
+@keyframes door-ajar { to { transform: scaleX(0.86) skewY(-5deg); } }
 
 .attack {
   position: absolute; left: 11%; top: var(--y); width: 26px; height: 26px; margin-top: -13px;
@@ -384,15 +402,37 @@ p { margin: 0 0 0.8em; }
 }
 .attack.is-held { animation-name: attack-held; }
 .attack.is-through { animation-name: attack-through; }
-.virus { width: 100%; height: 100%; overflow: visible; }
+.virus { width: 100%; height: 100%; overflow: visible; animation: virus-float 1.1s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -0.27s); }
+.attack.is-held .virus {
+  animation: virus-float 1.1s ease-in-out infinite alternate, virus-pop 0.3s ease-in forwards;
+  animation-delay: calc(var(--i) * -0.27s), calc(var(--i) * 0.17s + 1.74s);
+}
+@keyframes virus-float { from { transform: translateY(-6px) rotate(-14deg); } to { transform: translateY(6px) rotate(14deg); } }
+@keyframes virus-pop { to { transform: scale(1.9); opacity: 0; } }
+.burst { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; }
+.burst-ring, .spark { position: absolute; opacity: 0; animation-delay: calc(var(--i) * 0.17s + 1.74s); }
+.burst-ring {
+  left: -15px; top: -15px; width: 30px; height: 30px; border-radius: 50%;
+  border: 3px solid var(--secure); animation: burst-ring 0.5s ease-out both;
+}
+.spark {
+  left: -3px; top: -3px; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--secure); animation: spark 0.55s ease-out both;
+}
+.attack.by-people .burst-ring { border-color: var(--gold); }
+.attack.by-people .spark { background: var(--gold); }
+@keyframes burst-ring { 0% { opacity: 0.9; transform: scale(0.2); } 100% { opacity: 0; transform: scale(1.9); } }
+@keyframes spark {
+  0% { opacity: 1; transform: rotate(var(--a)) translateX(0) scale(1); }
+  100% { opacity: 0; transform: rotate(var(--a)) translateX(26px) scale(0.4); }
+}
 .virus circle { fill: var(--notice); }
 .virus .spot { fill: rgba(255, 255, 255, 0.55); }
 .virus line { stroke: var(--notice); stroke-width: 2.2; stroke-linecap: round; }
 @keyframes attack-held {
   0% { left: 11%; opacity: 0; transform: scale(0.6); }
   10% { opacity: 1; transform: scale(1); }
-  80% { left: calc(var(--wall-left) - 30px); opacity: 1; transform: scale(1); }
-  100% { left: calc(var(--wall-left) - 30px); opacity: 0; transform: scale(1.7); }
+  80%, 100% { left: calc(var(--wall-left) - 30px); opacity: 1; transform: scale(1); }
 }
 @keyframes attack-through {
   0% { left: 11%; opacity: 0; transform: scale(0.6); }
@@ -516,6 +556,43 @@ dialog.weak-alert[open] { animation: rise 0.35s var(--ease) both; }
 .verdict-hero { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items: center; margin-bottom: 26px; }
 .verdict-hero img { width: 100%; max-height: 260px; object-fit: contain; filter: drop-shadow(0 20px 26px rgba(0, 0, 0, 0.6)); }
 .scores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 26px; }
+.outcome-vault { margin: 0; display: grid; justify-items: center; gap: 12px; }
+.outcome-vault .safe { width: min(240px, 60vw); }
+.outcome-vault figcaption { font-weight: 700; font-size: 1.05rem; text-align: center; }
+.outcome-vault figcaption span { font-weight: 400; color: var(--muted); }
+.outcome-vault.is-secure figcaption { color: var(--secure); }
+.outcome-vault.is-damaged figcaption { color: var(--gold); }
+.outcome-vault.is-breached figcaption { color: var(--notice); }
+
+.night-report { margin: 0 0 32px; }
+.night-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.night-head h2 { margin: 0; }
+.night-report.is-strong .level-chip { color: var(--secure); }
+.night-report.is-holding .level-chip { color: var(--gold); }
+.night-report.is-weak .level-chip { color: var(--notice); background: rgba(227, 133, 13, 0.12); }
+.night-strip { list-style: none; padding: 0; margin: 16px 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.night-strip li {
+  display: grid; gap: 6px; padding: 14px; border-radius: var(--radius);
+  background: var(--panel); border: 1px solid var(--line);
+}
+.night-time { font-family: var(--font-mono); color: var(--gold); font-size: 0.9rem; }
+.night-meter { height: 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); overflow: hidden; border: 1px solid var(--line); }
+.night-meter i { display: block; height: 100%; width: var(--fill); transition: width 0.8s var(--ease); }
+.night-strip .is-strong .night-meter i { background: var(--secure); }
+.night-strip .is-holding .night-meter i { background: var(--gold); }
+.night-strip .is-weak .night-meter i { background: var(--notice); }
+.night-level { font-weight: 700; }
+.night-strip .is-strong .night-level { color: var(--secure); }
+.night-strip .is-holding .night-level { color: var(--gold); }
+.night-strip .is-weak .night-level { color: var(--notice); }
+.night-split { color: var(--muted); font-size: 0.85rem; }
+.night-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.night-card h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.night-card.is-worked h3 { color: var(--secure); }
+.night-card.is-lacking h3 { color: var(--notice); }
+.night-card.is-better h3 { color: var(--gold); }
+.night-card ul { margin: 0; padding-left: 18px; display: grid; gap: 8px; }
+
 .score { text-align: center; padding: 22px 16px; }
 .score .num { display: block; font: 700 3rem/1 var(--font-mono); margin-bottom: 8px; }
 .score .label { color: var(--muted); }
@@ -542,6 +619,9 @@ dialog.weak-alert[open] { animation: rise 0.35s var(--ease) both; }
   .evidence { min-height: 260px; }
   .track { grid-template-columns: repeat(2, 1fr); }
   .scores { grid-template-columns: 1fr; }
+  .night-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .night-cards { grid-template-columns: 1fr; }
+  .battle-vault .safe { width: 46px; }
   .debrief-phase { grid-template-columns: 1fr; gap: 4px; }
   .planbar { top: 0; position: relative; }
   .topbar { position: relative; }

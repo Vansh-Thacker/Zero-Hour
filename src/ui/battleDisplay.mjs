@@ -6,6 +6,16 @@
 
 import {el} from './dom.mjs';
 import {defenceStrength} from './defenceStrength.mjs';
+import {vaultSafe} from './vaultSafe.mjs';
+
+const VAULT_STATUS = {strong: 'secure', holding: 'damaged', weak: 'breached'};
+
+// Sparks and a ring that burst out when an attack is stopped at the wall.
+function burst() {
+  return el('span', {class: 'burst', 'aria-hidden': 'true'},
+    el('span', {class: 'burst-ring'}),
+    Array.from({length: 8}, (_, k) => el('span', {class: 'spark', style: `--a:${k * 45}deg`})));
+}
 
 const LEVEL_TEXT = {
   strong: {mark: '▲', word: 'Strong', line: 'Your wall held.'},
@@ -80,7 +90,7 @@ export function battleDisplay(state, data) {
   const attacks = fates(result).map((fate, i) => el('span', {
     class: `attack is-${fate === 'through' ? 'through' : 'held'}${fate === 'people' ? ' by-people' : ''}`,
     style: `--i:${i}; --y:${8 + ((i * 37) % 80)}%`,
-  }, virusIcon()));
+  }, virusIcon(), fate === 'through' ? null : burst()));
 
   const wall = el('div', {class: 'wall'},
     result.layers.map(layer => el('div', {class: `wall-row${layer.points > 0 ? ' is-on' : ''}`, 'data-cat': layer.category},
@@ -93,7 +103,7 @@ export function battleDisplay(state, data) {
       el('div', {class: 'battle-crew'}, el('span', {}, 'The crew')),
       el('div', {class: 'battle-lane'}, attacks),
       wall,
-      el('div', {class: 'battle-vault'}, el('span', {class: 'vault-door'}), el('span', {}, 'Vault'))),
+      el('div', {class: 'battle-vault'}, vaultSafe(VAULT_STATUS[result.level], 'Vault this phase'), el('span', {}, 'Vault'))),
     el('div', {class: 'battle-caption'},
       el('span', {class: 'level-chip'}, `${text.mark} ${text.word} · ${result.wallPercent}%`),
       el('span', {}, `${result.held} of ${result.attacks} attacks held back`),
