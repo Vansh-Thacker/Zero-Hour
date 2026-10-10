@@ -430,6 +430,40 @@ p { margin: 0 0 0.8em; }
 
 .footer-note { margin-top: 40px; color: var(--muted); font-size: 0.85rem; text-align: center; }
 
+/* ---------- Start screens: home and name ---------- */
+
+.home-hero { margin-top: 12px; }
+.mode-heading { font-size: 1.3rem; text-transform: uppercase; margin: 6px 0 16px; }
+.modes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.mode-card {
+  display: grid; grid-template-columns: 140px 1fr; gap: 18px; align-items: center; text-align: left;
+  --cat: var(--brand-light);
+  padding: 22px; color: var(--text); font: inherit; cursor: pointer;
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: var(--shadow);
+  transition: border-color 0.2s, box-shadow 0.2s var(--ease);
+}
+.mode-card:hover { border-color: var(--brand-light); box-shadow: 0 0 0 1px var(--brand-light), var(--shadow); }
+.mode-art img { width: 100%; max-height: 120px; object-fit: contain; filter: drop-shadow(0 14px 14px rgba(0, 0, 0, 0.5)); }
+.mode-body { display: flex; flex-direction: column; gap: 6px; }
+.mode-card .crew-tag { align-self: flex-start; }
+.mode-title { font: 700 1.5rem/1.1 var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; }
+.mode-blurb { color: var(--muted); font-size: 0.95rem; }
+.mode-go { color: var(--brand-light); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.9rem; }
+
+.name-head { margin: 12px 0 22px; }
+.name-form { max-width: 560px; display: grid; gap: 8px; }
+.name-form label { font-weight: 700; letter-spacing: 0.04em; margin-top: 6px; }
+.field {
+  width: 100%; min-height: 50px; padding: 12px 14px; font: 1.05rem var(--font-body);
+  color: var(--text); background: var(--bg-2);
+  border: 1px solid var(--line-strong); border-radius: 12px;
+}
+.field::placeholder { color: rgba(180, 202, 189, 0.55); }
+.field:focus-visible { border-color: var(--brand-light); }
+.name-form .alert { margin: 8px 0 0; }
+.name-form .actions { margin-top: 14px; }
+
 /* ---------- Small screens ---------- */
 
 @media (max-width: 860px) {
@@ -442,6 +476,8 @@ p { margin: 0 0 0.8em; }
   .planbar { top: 0; position: relative; }
   .topbar { position: relative; }
   .bigscore { text-align: left; }
+  .modes { grid-template-columns: 1fr; }
+  .mode-card { grid-template-columns: 96px 1fr; }
 }
 
 /* ---------- Reduced motion: keep everything, drop the movement ---------- */

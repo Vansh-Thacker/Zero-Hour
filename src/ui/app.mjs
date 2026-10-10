@@ -77,7 +77,11 @@ function topbar(state, data) {
       el('span', {class: 'chip'}, 'Control ', el('strong', {}, String(control))),
       el('span', {class: 'chip'}, 'Behaviour ', el('strong', {}, points(behaviour))));
   }
+  return brandBar(chips);
+}
 
+// The logo, game name and business line at the top of every screen, including the start screens.
+export function brandBar(chips = []) {
   return el('header', {class: 'topbar'},
     el('div', {class: 'brand'},
       el('span', {class: 'brand-logo'}, el('img', {src: LOGO, alt: 'ScottishPower'})),
