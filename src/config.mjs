@@ -1,6 +1,6 @@
 // The one place for names and tunable numbers. Change them here, nowhere else.
 
-export const GAME_NAME = 'Untitled Cyber Game';        // TODO: team to choose
+export const GAME_NAME = 'Zero Hour';
 export const BUSINESS_NAME = 'Fictional Energy Co';    // TODO: team to choose
 
 export const DATA_PATHS = {
