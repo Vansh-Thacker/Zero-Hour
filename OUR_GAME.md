@@ -6,7 +6,7 @@ There is a Word version, `OUR_GAME.docx`, if you prefer. Fill in one or the othe
 
 ## Team
 
-- Team name:
+- Team name : 
 - Team members:
 - Name of our game:
 - Name of our fictional business:
