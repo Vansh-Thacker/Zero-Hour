@@ -10,6 +10,7 @@ export function createInitialState() {
     selected: [],
     confirmed: false,
     result: null,
+    checkpoint: null,
     behaviourPoints: [0, 0, 0, 0],
     answers: [],
     error: null,
