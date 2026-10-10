@@ -1,6 +1,6 @@
 /**
  * A small local web server for this folder. No install needed.
- *   npm start            then open http://127.0.0.1:8080
+ *   npm start            then open http://127.0.0.1:8080 (opens Zero Hour)
  *   PORT=3000 npm start  to use another port
  *
  * It serves the whole pack folder, plus one extra address, /api/assets, which lists the artwork
@@ -12,7 +12,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const root = await realpath(fileURLToPath(new URL('../../',import.meta.url)));
-const home = '/1-foundation/demo.html';
+const home = '/index.html'; // Zero Hour. The pack's demo page has been removed.
 const port = Number(process.env.PORT || 8080);
 const mime = {'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.md':'text/plain; charset=utf-8','.txt':'text/plain; charset=utf-8','.csv':'text/csv; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.gif':'image/gif','.ico':'image/x-icon','.glb':'model/gltf-binary','.gltf':'model/gltf+json','.bin':'application/octet-stream'};
 const assetFolders = ['1-foundation/artwork','2-extend/artwork','2-extend/previews','2-extend/worlds'];

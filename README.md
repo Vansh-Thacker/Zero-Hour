@@ -1,104 +1,45 @@
-# Cyber Awareness challenge: technical start
+# Zero Hour
 
-Read `BRIEF.html` first. It says what to build and how it is judged. This file covers how to run the pack and what is in it.
+Zero Hour is Team 20's cyber security game for the ScottishPower StrathHack challenge. Protect a fictional energy company with a £3,000,000 defence budget, watch an overnight attack unfold across four phases, then answer behaviour questions before the clock runs out.
 
-## Run it
+The game runs in **single-player** mode or as a live **team battle**. One host runs the night; players join with a room code and build separate plans for their teams. See [OUR_GAME.md](OUR_GAME.md) for the hand-in notes, architecture, limits and a demo walkthrough.
 
-You need Node.js version 20 or later. Nothing else needs installing: no packages, no account, no key.
+**Live deployment:** The current version is deployed [here](https://team-20-vglm.onrender.com/).
 
-Open a terminal in this folder and run:
+## Run
 
-```
-npm test
+For a local run, install Node.js 20 or later. There are no npm packages to install, and local play does not need internet access.
+
+```sh
 npm start
 ```
 
-Run both from the pack folder, the one that holds this file. `npm test` should finish with `fail 0`. `npm start` runs a small local web server. Open http://127.0.0.1:8080 to see the demo page. If it shows a control score of 23, everything is working. Press Ctrl+C in the terminal to stop the server.
+Open **http://127.0.0.1:8080/** in a browser. This opens `index.html`, the home screen for both modes. The same server serves the game and the multiplayer room API. Press Ctrl+C to stop it.
 
-If port 8080 is in use, choose another: `PORT=3000 npm start` (macOS, Linux) or `set PORT=3000 && npm start` (Windows).
+Run the tests with `npm test`. On Windows PowerShell, use `npm.cmd start` and `npm.cmd test` if PowerShell blocks npm's script. The server uses port 8080 by default; set `PORT` before starting it to choose another port.
 
-## What is in the pack
+## Play
 
-The pack is arranged by level. Each level folder has its own short README listing its files. Every guide written in Markdown (files ending `.md`) has a Word version next to it with the same name, ending `.docx`. They say the same thing.
+**Single player:** Choose Single player on the home screen. Buy controls within £3,000,000, including at least one Prevent, one Detect and one Respond control, then confirm. Your plan stays locked through the four story, reveal and checkpoint rounds. Each checkpoint has four questions and a two-minute timer. At the end, see the control score, behaviour points and debrief.
 
-| Folder or file | What it is |
-|---|---|
-| `BRIEF.html` | The challenge, the rules, the three levels and the judging |
-| `OUR_GAME.md` | The note you fill in and hand in with your game. `OUR_GAME.docx` is the same note in Word, if you prefer |
-| `1-foundation/` | The core game: demo page, scoring code and tests, scenario, questions, control icons and everyday pictures |
-| `2-extend/` | Themes: a guide and starting file for each, the rest of the artwork, 3D models and scenes, and the artwork viewer |
-| `3-stretch/` | A guide for each of the four capabilities |
-| `package.json` | Tells Node.js how to run `npm start` and `npm test` |
+**Team battle:** Choose Multiplayer → Host to create a room. The host screen shows the room code and an address for phones. Players choose Multiplayer → Join and enter the code, their name and a team name. To try it on one laptop, use one host tab and at least two player tabs per team.
 
-The demo page is the quickest way to see how the pieces fit together. Its code, at the bottom of `1-foundation/demo.html`, is a worked example of loading each file.
+Each team has its own £3,000,000 budget, selected controls, answers and score. Teams share the attack timeline and checkpoint clock. A room supports up to 15 teams and needs at least two players on **every** team before the host can confirm. In a two-player team, the first player buys Prevent and Respond controls; the second buys Detect controls. With more players, those roles rotate in join order. Players can only buy controls for their assigned categories. In team battle, leaving a category empty is allowed, but can leave a weakness in the team's defence.
 
-We supply scoring for control purchases and nothing else. There is no finished game, no question scoring, no theme logic and none of the stretch capabilities. Those are yours.
+The host confirms every team's plan at once, advances the story, and can pause or resume checkpoints. Phones answer the questions; the team earns the average points across its players, with unanswered questions worth zero. The host sees live standings and a final podium. Three supplied controls are already in place: they are shown for context, cannot be bought and score nothing.
 
-## The scoring module
+## How it works
 
-```js
-import {validateData, evaluatePurchases} from './1-foundation/starter/controls.mjs';
+- `src/engine/state.mjs` changes game state through `reduce()`; `src/engine/scores.mjs` calculates phase and team-battle scores from the supplied scenario data.
+- `src/checkpoint/checkpoint.mjs` selects four story-relevant questions per phase, marks answers and handles the timer. A correct answer is worth 2 points.
+- `src/server/server.mjs` serves the site and the room API. `src/server/competition.mjs` keeps teams separate within a room; `src/server/rooms.mjs` checks player roles and host permissions before applying actions.
+- `src/net/client.mjs` sends actions and receives live Server-Sent Events. `src/main.mjs` runs single player, while `src/host.mjs` and `src/play.mjs` connect host and player screens. `src/ui/` renders the screens, defence wall, standings and outcome.
+- `1-foundation/starter/controls.mjs` is the supplied scoring module. The supplied challenge and question files are in `1-foundation/data/`. `src/config.mjs` holds the game name, fictional business name and checkpoint settings.
 
-const data = await (await fetch('./1-foundation/data/challenge.json')).json();
-const result = evaluatePurchases(data, [['P3', 'D3', 'R1'], ['D4'], [], []]);
-// result.rounds.map(r => r.score)  ->  [2, 8, 7, 6]
-// result.total                     ->  23
-```
+The server owns each room's state and checks purchases in order, so two devices cannot spend the same remaining budget. It assigns the player and timestamp for every action. Room state is kept in memory: restarting the server ends existing games. For a local run, phones need to reach the host laptop on the same network; some venue Wi-Fi networks block this, so a hotspot or separate laptop tabs can be used for a demo.
 
-It runs in the browser and in Node.
+## Tests and credits
 
-**`validateData(data)`** checks a scenario file. It returns `true` or throws an error with a readable message.
+`npm test` runs the supplied tests and our engine, checkpoint, debrief, UI and multiplayer tests, including the shared-budget race and room API. The challenge brief is in `BRIEF.html`.
 
-**`evaluatePurchases(data, purchases)`** takes the scenario and the locked rounds so far. `purchases` is a list of zero to four lists. Each inner list holds the IDs of the controls newly bought in that round. It returns:
-
-- `rounds`: one entry per locked round, each with `phaseId`, `purchased`, `owned`, `available`, `spent`, `unspent`, `carryForward`, `score` and `contributions` (the points each owned control earned that round)
-- `total`: the control score so far
-- `complete`: `true` once four rounds are locked
-
-It throws an error if a round breaks a rule: over budget, a control bought twice, an unknown ID, or a round ending without at least one Prevent, one Detect and one Respond control owned. The message says which round, which control and how much, for example `Round 2 is over budget: £1,300,000 spent, £1,150,000 available.` You can show it to the player as it is.
-
-Things to know:
-
-- It keeps no state. It works everything out again from the history you pass in, and never changes what you pass in. Your game holds the history.
-- To test a basket before locking it, call the function with the history plus that basket. If it throws, show the message. If it does not, the basket is valid.
-- Locking, moving between rounds, results screens and reset are yours to build.
-- If you change or replace this module, your game must give exactly the same control scores, and your tests should show that it does. Keep the control score visible on its own if you add other scoring.
-
-## The scenario file
-
-`1-foundation/data/challenge.json` is the only file the scoring module needs.
-
-| Field | Meaning |
-|---|---|
-| `round_budget` | Pounds released at the start of each round (750000) |
-| `carryover` | `true` means unspent money moves to the next round |
-| `controls` | Each has `id`, `name`, `category` (Prevent, Detect or Respond) and `cost` in pounds. `description`, `use_case` and `limitation` are text for players |
-| `already_in_place` | Three controls the business already has. Show them. They cannot be bought and score nothing |
-| `phases` | Exactly four. Each has `id`, `title`, `local_time`, `story` and `scores`: the points for every control in that phase |
-
-Every phase must give a score for every control. A missing or extra score is an error.
-
-## The question file
-
-`1-foundation/data/questions.json` holds 40 questions. Each has:
-
-| Field | Meaning |
-|---|---|
-| `id` | Q01 to Q40 |
-| `category` | One of 10 topics |
-| `tier`, `tier_label` | Difficulty from 1 (Spot the Risk) to 4 (Pressure Test) |
-| `question`, `options`, `correct` | The scenario, four options A to D, and the letter of the one correct answer |
-| `explanation` | Show this after the answer. Keep it as written |
-| `secure_behaviour`, `difficulty_driver` | The behaviour being taught, and what makes the question hard |
-| `phase_id` | For 16 questions, the phase of the story it matches. `null` means a general question for any round |
-| `related_controls` | IDs of controls that deal with the same risk. P5 (Training and awareness) is on every question |
-
-The demo page lists the story questions for each phase.
-
-## Artwork
-
-Open `2-extend/artwork.html` to browse all the artwork in the pack. It opens by double-click. If you open it through `npm start` instead (http://127.0.0.1:8080/2-extend/artwork.html), it always shows what is in the folders now, and you can spin the 3D models. You can use the artwork, change it or ignore it and make your own.
-
-## Tests
-
-`npm test` runs every file ending `.test.mjs`, wherever it is in the pack. The supplied tests cover the scoring module and the data files. They do not test your game. Add your own tests next to them, and use these as a pattern: one behaviour per test, a name that says what should happen, and data set up inside the test.
+ScottishPower supplied the challenge scenario, scoring module, questions, brand assets and artwork. Assets and licence notices are in `1-foundation/artwork/`, `2-extend/artwork/` and `2-extend/licences/`. The business and attack are fictional; controls, prices and points are simplified for learning.

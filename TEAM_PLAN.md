@@ -18,7 +18,7 @@ costumes or music from any existing show.
 | Mo      | Tests, debrief and hand-in             | `tests/`, `src/debrief/`, `OUR_GAME.md`, slides             |
 
 Only edit files you own. If you need a change in someone else's files, ask them.
-Do not edit the root `style.css` (the brief and demo pages use it) or anything in
+Do not edit the root `style.css` (the brief and artwork pages use it) or anything in
 `1-foundation/starter/`.
 
 Everyone writes basic tests for their own module. Mo owns the overall test suite and keeps
@@ -36,10 +36,10 @@ Everyone writes basic tests for their own module. Mo owns the overall test suite
       at once with a readable `state.error`
 - [ ] `src/main.mjs`: load data with Rayyan's `loadGameData()`, `dispatch(action)` runs
       `reduce` then redraws. This is the **single-screen mode**
-- [ ] Checkpoint actions `answer`, `pause`, `resume`, `timeout`, using Ghassan's functions.
+- [x] Checkpoint actions `answer`, `pause`, `resume`, `timeout`, using Ghassan's functions.
       Answers record which `player` gave them (`null` in single-screen mode)
-- [ ] Reject actions that are not allowed at this point by returning the state unchanged
-- [ ] A test that plays a whole game through `reduce` alone
+- [x] Reject actions that are not allowed at this point by returning the state unchanged
+- [x] A test that plays a whole game through `reduce` alone
 - [ ] Set `GAME_NAME = 'Zero Hour'` and the business name in `src/config.mjs`
 
 **Done when:** a full game plays on one screen, and the server can drive the same engine.
@@ -70,17 +70,18 @@ After these, help Vansh with the phone screens.
 Pure functions only: no page code, and the time is passed in (never `Date.now()` inside),
 so the same code runs the shared timer on the server.
 
-- [ ] `pickQuestions(bank, phaseId, count)`: questions for the phase, using `phase_id` and
+- [x] `pickQuestions(bank, phaseId, count)`: questions for the phase, using `phase_id` and
       the brief's table (phase 1: Q01–Q04, Q29 …). Every player gets the same questions
-- [ ] `markAnswer(question, choice)` → `{correct, points, explanation}`
-- [ ] Timer: `startTimer(now)`, `timeLeft(timer, now)`, `pauseTimer(timer, now)`,
+- [x] `markAnswer(question, choice)` → `{correct, points, explanation}`
+- [x] Timer: `startTimer(now)`, `timeLeft(timer, now)`, `pauseTimer(timer, now)`,
       `resumeTimer(timer, now)`, `isExpired(timer, now)`. Never more than 120 seconds;
       the host can pause
-- [ ] Time runs out: unanswered questions score 0, explanation still shown
-- [ ] `teamBehaviourPoints(answers, players)`: the **team average** per question (see decisions)
-- [ ] Never change a question's wording, correct answer or explanation
+- [x] Time runs out: unanswered questions score 0, explanation still shown
+- [x] `teamBehaviourPoints(answers)`: the **team average** per question (see decisions)
+- [x] Never change a question's wording, correct answer or explanation
 
-**Done when:** Tejas can call these and the checkpoint tests pass.
+**Done when:** Tejas can call these and the checkpoint tests pass. ✅ Done: the engine uses
+`src/checkpoint/checkpoint.mjs`, tested in `tests/checkpoint.test.mjs` (28 tests).
 
 ## Vansh: heist theme, multiplayer and screens
 

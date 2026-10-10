@@ -10,4 +10,5 @@ export const DATA_PATHS = {
 
 // Behaviour checkpoint rules (see BRIEF.html: at most 2 minutes per checkpoint).
 export const CHECKPOINT_SECONDS = 120;
+export const QUESTIONS_PER_CHECKPOINT = 4;   // 4 x 30 seconds fits the 2-minute limit
 export const POINTS_PER_SECURE_ANSWER = 2;

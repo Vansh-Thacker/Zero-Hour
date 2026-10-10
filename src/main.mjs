@@ -1,9 +1,14 @@
-// Single-screen mode: load the data, hold the state, and redraw after every action.
+// The page starts on the home screen (single player or multiplayer), then the name screen.
+// Single player: load the data, hold the state, and redraw after every action.
+// Multiplayer: host a room (host.html) or join one (play.html); both talk to the multiplayer server.
 // The multiplayer server drives the same reduce() function; see TEAM_PLAN.md.
 
 import {validateData} from '../1-foundation/starter/controls.mjs';
-import {GAME_NAME, BUSINESS_NAME, DATA_PATHS} from './config.mjs';
-import {createInitialState, reduce} from './engine/state.mjs';
+import {GAME_NAME, DATA_PATHS} from './config.mjs';
+import {createInitialState, reduce, timeLeft} from './engine/state.mjs';
+import {loadExtras, render, tick} from './ui/app.mjs';
+import {enableTilt} from './ui/effects.mjs';
+import {homeScreen, multiScreen, nameScreen, nameProblem} from './ui/startScreens.mjs';
 
 const root = document.getElementById('app');
 
@@ -14,63 +19,80 @@ async function loadJson(path) {
   return response.json();
 }
 
-let data, bank, state;
+let game, state, extras;
 
+// Every action is stamped with the time, so the checkpoint timer works.
 function dispatch(action) {
-  state = reduce(data, state, action);
-  render();
+  state = reduce(game, state, {now: Date.now(), ...action});
+  render(root, state, game, dispatch, extras);
 }
 
-// TODO: replace with the real screens from src/ui/ once they land.
-function render() {
-  root.replaceChildren(devView(state, data, dispatch));
+// Once a second: update the countdown, and end the checkpoint when time runs out.
+setInterval(() => {
+  if (state?.stage !== 'checkpoint' || state.checkpoint.expired) return;
+  if (timeLeft(state.checkpoint.timer, Date.now()) === 0) dispatch({type: 'timeout'});
+  else tick(root, state);
+}, 1000);
+
+// --- Start screens: home, (host or join,) then name. Nothing here touches the game state. ---
+
+const NAME_KEY = 'zero-hour-player-name';
+
+function savedName() {
+  try { return sessionStorage.getItem(NAME_KEY) ?? ''; } catch { return ''; }
 }
 
-function el(tag, text, attrs = {}) {
-  const node = document.createElement(tag);
-  if (text !== undefined) node.textContent = text;
-  Object.assign(node, attrs);
-  return node;
+function saveName(name) {
+  try { sessionStorage.setItem(NAME_KEY, name); } catch { /* Private browsing: the name just isn't remembered. */ }
 }
 
-function devView(state, data, dispatch) {
-  const view = el('section');
-  const button = (label, action) => el('button', label, {type: 'button', onclick: () => dispatch(action)});
-  const phase = data.phases[state.phase];
+function showHome() {
+  root.replaceChildren(homeScreen(mode => mode === 'multi' ? showMulti() : showName({mode, name: savedName()})));
+  window.scrollTo({top: 0, behavior: 'instant'});
+}
 
-  view.append(el('h1', GAME_NAME), el('p', BUSINESS_NAME), el('p', `Stage: ${state.stage} · Phase ${state.phase + 1} of ${data.phases.length}`));
-  if (state.error) view.append(el('p', `⚠ ${state.error}`, {role: 'alert'}));
+// The host doesn't need a name: host.html creates the room. Players enter a name, then join.
+function showMulti() {
+  root.replaceChildren(multiScreen({
+    host: () => location.assign('/host.html'),
+    join: () => showName({mode: 'multi', name: savedName()}),
+    back: showHome,
+  }));
+  window.scrollTo({top: 0, behavior: 'instant'});
+}
 
-  if (state.stage === 'choose') {
-    for (const control of data.controls) {
-      const chosen = state.selected.includes(control.id);
-      view.append(button(`${chosen ? '✓ ' : ''}${control.id} ${control.name} (${control.category}, £${control.cost.toLocaleString('en-GB')})`,
-        {type: chosen ? 'deselect' : 'select', id: control.id}));
-    }
-    view.append(el('p'), button('Confirm choice', {type: 'confirm'}));
-  } else if (state.stage === 'story') {
-    view.append(el('h2', `${phase.local_time}: ${phase.title}`), el('p', phase.story));
-  } else if (state.stage === 'reveal') {
-    const scored = state.result.phases[state.phase];
-    for (const {id, points} of scored.contributions) view.append(el('p', `${id}: ${points} points`));
-    view.append(el('p', `Phase score: ${scored.score}`));
-  } else if (state.stage === 'checkpoint') {
-    view.append(el('p', 'Behaviour checkpoint goes here (waiting for the checkpoint module).'));
-  } else if (state.stage === 'outcome') {
-    view.append(el('p', `Control score: ${state.result.total}`));
+function showName(view) {
+  root.replaceChildren(nameScreen(view, {
+    back: view.mode === 'multi' ? showMulti : showHome,
+    go: name => {
+      const problem = nameProblem(name);
+      if (problem) return showName({...view, name, error: problem});
+      saveName(name);
+      if (view.mode === 'multi') location.assign('/play.html');
+      else startGame();
+    },
+  }));
+  root.querySelector('#player-name')?.focus();
+}
+
+// --- Single player ---
+
+async function startGame() {
+  root.replaceChildren(Object.assign(document.createElement('p'), {style: 'padding: 24px', textContent: 'Loading the night…'}));
+  try {
+    const [data, bank] = await Promise.all([loadJson(DATA_PATHS.challenge), loadJson(DATA_PATHS.questions)]);
+    validateData(data);
+    game = {data, bank};
+    extras = await loadExtras();
+    state = createInitialState();
+    render(root, state, game, dispatch, extras);
+  } catch (e) {
+    root.replaceChildren(Object.assign(document.createElement('p'), {
+      className: 'alert', role: 'alert', textContent: `The game could not start: ${e.message}`,
+    }));
   }
-
-  if (['story', 'reveal', 'checkpoint'].includes(state.stage)) view.append(button('Next', {type: 'next'}));
-  view.append(el('p'), button('Reset', {type: 'reset'}));
-  return view;
 }
 
-try {
-  [data, bank] = await Promise.all([loadJson(DATA_PATHS.challenge), loadJson(DATA_PATHS.questions)]);
-  validateData(data);
-  state = createInitialState();
-  document.title = GAME_NAME;
-  render();
-} catch (e) {
-  root.replaceChildren(el('p', `The game could not start: ${e.message}`, {role: 'alert'}));
-}
+document.title = GAME_NAME;
+enableTilt();
+showHome();
