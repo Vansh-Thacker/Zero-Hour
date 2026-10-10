@@ -4,6 +4,7 @@
 import {el, money} from './dom.mjs';
 import {nightSummary} from './nightSummary.mjs';
 import {vaultSafe} from './vaultSafe.mjs';
+import {inPlaceLesson} from './inPlace.mjs';
 
 const RATING = {
   strong: {mark: '▲', word: 'Strong defence', line: 'Your defences held through the night. The crew never got a real grip on the vault.'},
@@ -79,5 +80,6 @@ export function nightReport(data, bank, state) {
     el('div', {class: 'night-cards'},
       card('worked', '✓ What worked', worked),
       card('lacking', '✗ What was lacking', lacking),
-      card('better', '→ What would have done better', better)));
+      card('better', '→ What would have done better', better)),
+    inPlaceLesson(data));
 }

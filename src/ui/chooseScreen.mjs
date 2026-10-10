@@ -4,6 +4,7 @@
 
 import {BUSINESS_NAME} from '../config.mjs';
 import {controlRender, SCENE} from './assets.mjs';
+import {inPlaceCards} from './inPlace.mjs';
 import {el, img, money, budgetSummary, CATEGORIES, hostOnly, picksFor} from './dom.mjs';
 
 const CREW_BLURB = {
@@ -48,10 +49,7 @@ export function chooseScreen(state, {data}, dispatch, extras, room) {
       '🔒 Lock the plan'),
       'The host locks the plan when the team is ready.'));
 
-  const inPlace = el('section', {class: 'inplace', 'aria-label': 'Already in place'},
-    el('span', {class: 'eyebrow'}, 'Already in place · scores nothing'),
-    data.already_in_place.map(item => el('div', {class: 'inplace-item', title: item.why_no_score},
-      img(controlRender(item)), el('span', {}, el('strong', {}, item.name), 'Can\'t be chosen'))));
+  const inPlace = inPlaceCards(data);
 
   // On a phone, the player's own category comes first.
   const order = room?.you.category ? [room.you.category, ...CATEGORIES.filter(c => c !== room.you.category)] : CATEGORIES;

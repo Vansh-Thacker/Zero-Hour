@@ -226,14 +226,47 @@ p { margin: 0 0 0.8em; }
 .cover[data-cat="Detect"].is-on { border-color: var(--detect); }
 .cover[data-cat="Respond"].is-on { border-color: var(--respond); }
 
-.inplace { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 30px; }
-.inplace-item {
-  display: flex; gap: 10px; align-items: center; padding: 8px 14px 8px 8px;
-  background: var(--panel); border: 1px dashed var(--line-strong); border-radius: 12px;
-  color: var(--muted); font-size: 0.9rem;
+/* Already in place: cards that flip to say why they won't stop tonight's attack. */
+.inplace { margin-bottom: 34px; }
+.inplace-head { margin-bottom: 12px; }
+.inplace-head p { color: var(--muted); margin: 4px 0 0; }
+.inplace-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.ip-card {
+  perspective: 1000px; padding: 0; border: 0; background: none; cursor: pointer;
+  color: var(--text); font: inherit; text-align: left; border-radius: var(--radius);
 }
-.inplace-item img { width: 46px; height: 36px; object-fit: contain; }
-.inplace-item strong { display: block; color: var(--text); font-weight: 600; }
+.ip-inner { display: grid; height: 100%; transform-style: preserve-3d; transition: transform 0.6s var(--ease); }
+.ip-card.is-flipped .ip-inner { transform: rotateY(180deg); }
+.ip-face {
+  grid-area: 1 / 1; backface-visibility: hidden;
+  display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; min-height: 210px;
+  border-radius: var(--radius); background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px dashed var(--line-strong);
+}
+.ip-front img { height: 56px; width: auto; align-self: flex-start; object-fit: contain; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.5)); }
+.ip-face strong { font-size: 1.02rem; }
+.ip-desc { color: var(--muted); font-size: 0.88rem; }
+.ip-status, .ip-verdict { font-size: 0.76rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.ip-status { color: var(--secure); }
+.ip-verdict { color: var(--danger); }
+.ip-back { transform: rotateY(180deg); border: 1px solid var(--notice); background: linear-gradient(180deg, #2a1d0a, var(--panel)); }
+.ip-why { font-size: 0.92rem; line-height: 1.45; }
+.ip-hint { margin-top: auto; color: var(--brand-light); font-size: 0.82rem; font-weight: 700; }
+.ip-back .ip-hint { color: var(--gold); }
+.ip-card:hover .ip-face { border-color: var(--brand-light); }
+.ip-card:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+.inplace-lesson { margin-top: 16px; border-color: rgba(227, 133, 13, 0.45); }
+.inplace-lesson h3 { font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); }
+.lesson-chips { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.lesson-chips li { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 10px; background: rgba(0, 0, 0, 0.25); font-size: 0.85rem; color: var(--muted); }
+.lesson-chips img { width: 40px; height: 32px; object-fit: contain; flex: none; }
+.lesson-chips strong { display: block; color: var(--text); font-size: 0.92rem; }
+.lesson-line { margin: 0; line-height: 1.5; }
+@media (max-width: 860px) {
+  .inplace-cards, .lesson-chips { grid-template-columns: 1fr; }
+  .ip-face { min-height: 0; }
+}
 
 .crew { margin-bottom: 34px; }
 .crew-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
