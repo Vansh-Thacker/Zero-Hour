@@ -393,6 +393,7 @@ p { margin: 0 0 0.8em; }
 .option.is-picked-wrong { border-color: var(--danger); background: rgba(255, 107, 110, 0.10); }
 .option[disabled] { cursor: default; transform: none; }
 .option { flex-wrap: wrap; }
+.option .letter + span { flex: 1 1 0; min-width: 0; }
 .option-note { flex-basis: 100%; padding-left: 40px; font-size: 0.85rem; font-weight: 700; }
 .option.is-correct .option-note { color: var(--secure); }
 .option.is-picked-wrong .option-note { color: var(--danger); }
