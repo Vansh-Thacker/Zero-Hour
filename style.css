@@ -4,7 +4,7 @@
   --mint:#5bd38c; --wash:#eef8f1; --line:#d5ddd8; --text:#3a3735; --white:#fff;
   --font:"Segoe UI","Helvetica Neue",Arial,system-ui,sans-serif;
   --mono:Consolas,"SF Mono",Menlo,monospace;
-}
+} 
 *{box-sizing:border-box}
 html{scroll-padding-top:1rem}
 body{margin:0;background:var(--white);color:var(--text);font:1.0625rem/1.6 var(--font)}
