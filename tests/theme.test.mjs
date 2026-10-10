@@ -13,6 +13,8 @@ import { vaultIntegrity, heistOutcome, FOILED_THRESHOLD } from '../src/theme/vau
 import { architectMessages } from '../src/theme/architect.mjs';
 import { heistClock } from '../src/theme/clock.mjs';
 import { buildThemeHtml } from '../src/theme/theme.mjs';
+import { allArtworkPaths, controlIcon } from '../src/theme/artwork.mjs';
+import { access } from 'node:fs/promises';
 
 // ---------------------------------------------------------------------------
 // Test data: a small scenario in the same shape as challenge.json
@@ -21,25 +23,25 @@ import { buildThemeHtml } from '../src/theme/theme.mjs';
 function makeData() {
   return {
     controls: [
-      { id: 'P1', name: 'Training & Awareness', category: 'Prevent', cost: 400000 },
-      { id: 'P2', name: 'Email Security', category: 'Prevent', cost: 600000 },
+      { id: 'P5', name: 'Training & Awareness', category: 'Prevent', cost: 400000 },
+      { id: 'P6', name: 'Email Security', category: 'Prevent', cost: 600000 },
       { id: 'D1', name: 'SIEM', category: 'Detect', cost: 700000 },
-      { id: 'D2', name: 'Endpoint Detection & Response (EDR)', category: 'Detect', cost: 500000 },
-      { id: 'R1', name: 'Incident Response Team (24 x 7)', category: 'Respond', cost: 800000 },
-      { id: 'R2', name: 'Incident Response Plan', category: 'Respond', cost: 100000 },
+      { id: 'D2', name: 'Intrusion detection and prevention', category: 'Detect', cost: 500000 },
+      { id: 'R2', name: 'Incident Response Team (24 x 7)', category: 'Respond', cost: 800000 },
+      { id: 'R1', name: 'Incident Response Plan', category: 'Respond', cost: 100000 },
     ],
     already_in_place: [{ id: 'X1', name: 'Firewall' }],
     phases: [
-      { id: 'phase_1', title: 'Delivery', local_time: 'Monday 16:40', scores: { P1: 3, P2: 2, D1: 3, D2: 2, R1: 3, R2: 2 } },
-      { id: 'phase_2', title: 'Discovery', local_time: 'Tuesday 02:00', scores: { P1: 0, P2: 0, D1: 2, D2: 3, R1: 3, R2: 2 } },
-      { id: 'phase_3', title: 'Command and control', local_time: 'Tuesday 03:30', scores: { P1: 1, P2: 0, D1: 1, D2: 3, R1: 3, R2: 2 } },
-      { id: 'phase_4', title: 'Encryption', local_time: 'Tuesday 06:30', scores: { P1: 0, P2: 0, D1: 1, D2: 2, R1: 3, R2: 1 } },
+      { id: 'phase_1', title: 'Delivery', local_time: 'Monday 16:40', scores: { P5: 3, P6: 2, D1: 3, D2: 2, R2: 3, R1: 2 } },
+      { id: 'phase_2', title: 'Discovery', local_time: 'Tuesday 02:00', scores: { P5: 0, P6: 0, D1: 2, D2: 3, R2: 3, R1: 2 } },
+      { id: 'phase_3', title: 'Command and control', local_time: 'Tuesday 03:30', scores: { P5: 1, P6: 0, D1: 1, D2: 3, R2: 3, R1: 2 } },
+      { id: 'phase_4', title: 'Encryption', local_time: 'Tuesday 06:30', scores: { P5: 0, P6: 0, D1: 1, D2: 2, R2: 3, R1: 1 } },
     ],
   };
 }
 
-const everyControl = ['P1', 'P2', 'D1', 'D2', 'R1', 'R2'];
-const cheapestValidChoice = ['P1', 'D2', 'R2']; // one of each category, lowest cost
+const everyControl = ['P5', 'P6', 'D1', 'D2', 'R2', 'R1'];
+const cheapestValidChoice = ['P5', 'D2', 'R1']; // one of each category, lowest cost
 const lastPhase = state => ({ ...state, phaseIndex: 3 });
 
 /** Freezes an object and everything inside it, so any change would throw. */
@@ -131,7 +133,7 @@ test('a Detect control is never said to have blocked or stopped the crew', () =>
 });
 
 test('the Architect names a gap the team left', () => {
-  const lines = architectMessages(makeData(), { chosen: ['P1', 'D2', 'R2'], phaseIndex: 0 });
+  const lines = architectMessages(makeData(), { chosen: ['P5', 'D2', 'R1'], phaseIndex: 0 });
   assert.ok(lines.some(line => line.kind === 'gap' && line.text.includes('SIEM')));
 });
 
@@ -171,15 +173,50 @@ test('the theme never changes the game state or the data', () => {
 });
 
 test('the theme shows real control names next to heist names', () => {
-  const html = buildThemeHtml({ chosen: ['P2', 'D1', 'R1'], phaseIndex: 0 }, makeData());
+  const html = buildThemeHtml({ chosen: ['P6', 'D1', 'R2'], phaseIndex: 0 }, makeData());
   assert.ok(html.includes('Mailroom scanner (Email Security)'));
 });
 
 test('text from the data is escaped in the theme', () => {
   const data = makeData();
   data.controls[0].name = 'Training <script>';
-  const html = buildThemeHtml({ chosen: ['P1', 'D1', 'R1'], phaseIndex: 0 }, data);
+  const html = buildThemeHtml({ chosen: ['P5', 'D1', 'R2'], phaseIndex: 0 }, data);
   assert.ok(!html.includes('<script>'));
+});
+
+// ---------------------------------------------------------------------------
+// artwork.mjs
+// ---------------------------------------------------------------------------
+
+test('every control that can be chosen has an icon', () => {
+  for (const control of makeData().controls) {
+    assert.match(controlIcon(control), /icons\/.+\.svg$/, control.name);
+  }
+});
+
+test('the controls already in place get their icons by name', () => {
+  assert.match(controlIcon({ id: 'X1', name: 'Firewall and DDoS protection' }), /IP_firewall_and_ddos_protection\.svg$/);
+  assert.match(controlIcon({ id: 'X2', name: 'Penetration testing' }), /IP_penetration_testing\.svg$/);
+});
+
+test('the theme shows the icon of each chosen control', () => {
+  const html = buildThemeHtml({ chosen: ['P6', 'D1', 'R2'], phaseIndex: 0 }, makeData());
+  assert.ok(html.includes('P6_email_security.svg'));
+  assert.ok(html.includes('D1_siem.svg'));
+});
+
+test('every artwork file the theme uses exists in the pack', async t => {
+  const packRoot = new URL('../', import.meta.url);
+  try {
+    await access(new URL('1-foundation/artwork', packRoot));
+  } catch {
+    return t.skip('pack artwork folder not found');
+  }
+  const missing = [];
+  for (const path of allArtworkPaths()) {
+    try { await access(new URL(path, packRoot)); } catch { missing.push(path); }
+  }
+  assert.deepEqual(missing, []);
 });
 
 // ---------------------------------------------------------------------------
