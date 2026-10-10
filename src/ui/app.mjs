@@ -39,6 +39,8 @@ let lastScreenKey = null;
 
 export function render(root, state, game, dispatch, extras, room = null) {
   const focusedKey = document.activeElement?.dataset?.key;
+  const openSheet = root.querySelector('dialog.sheet[open]')?.id;
+  const sheetScroll = root.querySelector('dialog.sheet[open]')?.scrollTop ?? 0;
   const screenKey = `${state.stage}-${state.phase}`;
   const entering = screenKey !== lastScreenKey;
   lastScreenKey = screenKey;
@@ -62,6 +64,12 @@ export function render(root, state, game, dispatch, extras, room = null) {
     countUp(screen);
   }
   if (state.stage === 'reveal') openWeakWarning(screen, state);
+  const sheet = openSheet && !entering ? root.querySelector(`#${CSS.escape(openSheet)}`) : null;
+  if (sheet) {
+    sheet.classList.add('is-reopened');   // no opening animation when it was already open
+    sheet.showModal();
+    sheet.scrollTop = sheetScroll;
+  }
   if (focusedKey) root.querySelector(`[data-key="${CSS.escape(focusedKey)}"]`)?.focus({preventScroll: true});
 }
 

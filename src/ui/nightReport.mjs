@@ -61,7 +61,7 @@ export function nightReport(data, bank, state) {
   }
   if (s.weakestTopic) {
     better.push(`Revisit ${s.weakestTopic.topic}: ${s.weakestTopic.missed} answer${s.weakestTopic.missed === 1 ? '' : 's'} on this topic `
-      + 'were not secure. The explanations are in the debrief below.');
+      + 'were not secure. Open the Debrief for the explanations.');
   }
   better.push(s.suggestion
     ? 'Try another game with these changes and watch the wall in each phase.'

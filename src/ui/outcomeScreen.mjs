@@ -1,5 +1,5 @@
-// Outcome screen: the scores, kept separate and then added together, and a debrief
-// of what happened in each phase and why.
+// Outcome screen: the scores, kept separate and then added together. The night report and
+// the debrief of each phase open as pop-ups from two buttons, so the page stays short.
 // TODO: swap the debrief section for Mo's buildDebrief() once it lands.
 
 import {el, points, hostOnly} from './dom.mjs';
@@ -29,13 +29,39 @@ export function outcomeScreen(state, {data, bank}, dispatch, extras, room) {
     el('h2', {id: 'debrief-title'}, 'Debrief: what happened and why'),
     el('div', {class: 'debrief'}, data.phases.map((phase, n) => phaseDebrief(phase, n, state, data, bank, room))));
 
+  const report = sheet('sheet-report', 'night-title', nightReport(data, bank, state));
+  const details = sheet('sheet-debrief', 'debrief-title', debrief);
+
+  const open = (dialog, key) => el('button', {class: 'panel report-button', type: 'button', 'data-key': key,
+    'aria-haspopup': 'dialog', onclick: () => dialog.showModal()},
+  el('span', {class: 'report-icon', 'aria-hidden': 'true'}, key === 'open-report' ? '📊' : '🔍'),
+  el('span', {class: 'report-text'},
+    el('strong', {}, key === 'open-report' ? 'Night report' : 'Debrief'),
+    el('span', {}, key === 'open-report'
+      ? 'How your wall held in each phase, what was lacking, and what would have done better.'
+      : 'Phase by phase: what helped, what was worth considering, and why each answer was secure.')),
+  el('span', {class: 'report-go', 'aria-hidden': 'true'}, 'Open →'));
+
   return [
-    hero, scores, nightReport(data, bank, state), debrief,
+    hero, scores,
+    el('section', {class: 'report-buttons', 'aria-label': 'Reports'}, open(report, 'open-report'), open(details, 'open-debrief')),
+    report, details,
     el('div', {class: 'actions'}, hostOnly(room,
       el('button', {class: 'btn btn-primary', type: 'button', 'data-key': 'reset', onclick: () => dispatch({type: 'reset'})},
         '↻ Play again'),
       'The host can start a new game for the team.')),
   ];
+}
+
+// A pop-up holding one report. Closes with the ✕, the Close button, Esc, or a click outside it.
+function sheet(id, labelledBy, content) {
+  const close = () => dialog.close();
+  const dialog = el('dialog', {class: 'sheet', id, 'aria-labelledby': labelledBy,
+    onclick: event => { if (event.target === dialog) close(); }},
+  el('button', {class: 'sheet-x', type: 'button', 'aria-label': 'Close', onclick: close}, '✕'),
+  el('div', {class: 'sheet-body'}, content),
+  el('div', {class: 'actions'}, el('button', {class: 'btn btn-primary', type: 'button', onclick: close}, 'Close')));
+  return dialog;
 }
 
 function scoreCard(label, value, sign, extra = '') {
