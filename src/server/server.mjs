@@ -234,4 +234,6 @@ server.on('error', error => {
 });
 server.listen(port, '0.0.0.0', () => {
   console.log(`Zero Hour at http://127.0.0.1:${server.address().port}/  (single player and multiplayer; Ctrl+C to stop)`);
+  // Other computers and phones on the same Wi-Fi or hotspot use this computer's network address.
+  for (const url of joinAddresses()) console.log(`On another computer or phone, open ${url.replace('/play.html', '/')}`);
 });
