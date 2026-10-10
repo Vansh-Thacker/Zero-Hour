@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createInitialState, reduce} from '../src/engine/state.mjs';
+import {scoreSelection} from '../1-foundation/starter/controls.mjs';
 
 const data = JSON.parse(readFileSync(new URL('../1-foundation/data/challenge.json', import.meta.url)));
 const pick = (state, ...ids) => ids.reduce((s, id) => reduce(data, s, {type: 'select', id}), state);
@@ -13,9 +14,33 @@ test('a new game starts on the choose stage with nothing selected', () => {
   assert.equal(state.confirmed, false);
 });
 
-test('selecting the same control twice keeps it once', () => {
+test('selecting the same control twice keeps it once and says why', () => {
   const state = pick(createInitialState(), 'P3', 'P3');
   assert.deepEqual(state.selected, ['P3']);
+  assert.match(state.error, /already chosen/);
+});
+
+test('selecting an unknown control is rejected', () => {
+  const state = pick(createInitialState(), 'X9');
+  assert.deepEqual(state.selected, []);
+  assert.match(state.error, /"X9" is not a control/);
+});
+
+test('a control that costs more than the budget left is rejected straight away', () => {
+  const state = pick(createInitialState(), 'P2', 'D4', 'D1', 'R2');
+  assert.deepEqual(state.selected, ['P2', 'D4', 'D1']);
+  assert.match(state.error, /Not enough budget for .*£300,000 is left/);
+});
+
+test('a control that fits the budget left is still accepted', () => {
+  const state = pick(createInitialState(), 'P2', 'D4', 'D1', 'R1');
+  assert.deepEqual(state.selected, ['P2', 'D4', 'D1', 'R1']);
+  assert.equal(state.error, null);
+});
+
+test('a successful pick clears the previous error', () => {
+  const state = pick(createInitialState(), 'X9', 'P3');
+  assert.equal(state.error, null);
 });
 
 test('confirming a valid choice locks it and scores it', () => {
@@ -79,4 +104,22 @@ test('next does nothing on the outcome screen', () => {
 test('reset starts a new game', () => {
   const state = reduce(data, pick(createInitialState(), 'P3'), {type: 'reset'});
   assert.deepEqual(state, createInitialState());
+});
+
+test('a whole game plays from choosing to outcome with scores matching the scoring module', () => {
+  const choice = ['P5', 'P6', 'P7', 'D1', 'R1', 'R2', 'R4'];
+  const expected = scoreSelection(data, choice);
+  let state = reduce(data, pick(createInitialState(), ...choice), {type: 'confirm'});
+  const seen = [];
+
+  while (state.stage !== 'outcome') {
+    if (state.stage === 'reveal') seen.push(state.result.phases[state.phase].score);
+    const before = state;
+    state = reduce(data, state, {type: 'next'});
+    assert.notEqual(state, before, `the game got stuck on ${before.stage}`);
+  }
+
+  assert.deepEqual(seen, expected.phases.map(p => p.score));
+  assert.equal(state.result.total, expected.total);
+  assert.deepEqual(state.selected, choice);
 });
