@@ -57,7 +57,20 @@ One route through the game that we know works, step by step. We will follow it.
 
 ## How the questions change the game
 
-**TODO** (Ghassan): which questions appear in each phase and why.
+**Which questions appear, and when.** Each checkpoint asks 4 questions (`QUESTIONS_PER_CHECKPOINT` in `src/config.mjs`), chosen by `pickQuestions()` in `src/checkpoint/checkpoint.mjs`:
+
+| Phase | What has just happened | Questions | Topics |
+|---|---|---|---|
+| 1, Monday 16:40 | A trusted-looking email; malware reaches a laptop | Q01, Q02, Q03, Q04 | Phishing, tiers 1 to 4 |
+| 2, Tuesday 02:00 | The attacker explores while nobody is watching | Q09, Q37, Q10, Q11 | MFA, Remote working |
+| 3, Tuesday 03:30 | A fake "IT" call asks the night desk for a sign-in code | Q15, Q08, Q12, Q16 | Vishing, Passwords, MFA |
+| 4, Tuesday 06:30 | Files encrypted and a ransom demand | Q21, Q22, Q30, Q32 | Social engineering, Safe data handling |
+
+Why these: every question the brief marks as a story question for a phase (its `phase_id`) is used first, so the questions match what players have just watched happen. Within a phase we take one question per difficulty tier before a second on the same tier, then show them easiest first, so each checkpoint climbs from Spot the Risk towards Pressure Test. Phase 1 has five story questions, so Q29 (a second tier 1 question) is left out; phase 4 has only three, so Q21 fills the gap from Social Engineering, a topic the brief lists as fitting that phase. That uses 15 of the 16 story questions. The choice is fixed, not random, so every player and every phone sees the same questions and a facilitator can prepare.
+
+Why 4: the brief allows 30 seconds a question, and 4 × 30 seconds is exactly the 2-minute limit. Tier 4 questions are longer to read, which is what the facilitator's pause button is for.
+
+**What an answer does:**
 
 - At the end of each of the four phases there is a behaviour checkpoint lasting at most 2 minutes (`CHECKPOINT_SECONDS` in `src/config.mjs`). The facilitator can pause the timer.
 - A secure (correct) answer earns `POINTS_PER_SECURE_ANSWER` points (2, in `src/config.mjs`). A wrong answer earns nothing. When time runs out, unanswered questions earn nothing, but their explanation is still shown.
@@ -86,7 +99,11 @@ One route through the game that we know works, step by step. We will follow it.
 | Unanswered questions score nothing | `tests/debrief.test.mjs` | an unanswered question is shown as unanswered, not as wrong |
 | Debrief: what helped and what was missed | `tests/debrief.test.mjs` | "missed" is never a control the player chose; "missed" is the highest-scoring control not chosen in that phase |
 | Reset starts a new game | `tests/engine.test.mjs` | reset starts a new game |
-| Checkpoint: right answer earns points, wrong earns 0, timeout earns 0, pause stops the clock | `tests/checkpoint.test.mjs` | **TODO** (Ghassan) |
+| Checkpoint: questions fit the phase, same for everyone, easiest first | `tests/checkpoint.test.mjs` | story questions for the phase come first; the same phase always gets the same questions; questions in a checkpoint run from easiest to hardest |
+| Checkpoint: right answer earns points, wrong earns 0 | `tests/checkpoint.test.mjs` | a secure answer earns the configured points; a wrong answer earns no points |
+| Checkpoint: explanation always shown, word for word | `tests/checkpoint.test.mjs` | the explanation comes back word for word, whatever the answer |
+| Checkpoint: at most 2 minutes, pause stops the clock, timeout earns 0 | `tests/checkpoint.test.mjs`, `tests/engine.test.mjs` | time is up at exactly two minutes, not before; pausing stops the clock; an answer after the time runs out earns nothing |
+| Checkpoint: team size does not change behaviour points | `tests/checkpoint.test.mjs` | two players, one secure and one not: half points; team size does not change the score |
 | A whole game can be played through `reduce` | `tests/engine.test.mjs` | **TODO** (Tejas/Mo, once `next` is built) |
 | Multiplayer: wrong room code, rejoining, joining after Confirm | `tests/multiplayer.test.mjs` | a wrong room code is refused; a player who drops out and rejoins sees the game as it is now; someone joining after Confirm sees the locked choice |
 | Multiplayer: two picks at once stay within budget | `tests/multiplayer.test.mjs` | two picks that spend the last of the budget at once: only the first goes through |
