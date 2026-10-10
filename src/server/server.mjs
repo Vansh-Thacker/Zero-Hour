@@ -4,10 +4,13 @@ import {readFile, realpath} from 'node:fs/promises';
 import {networkInterfaces} from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {createRoom, joinRoom, viewFor} from './rooms.mjs';
+import {loadGameData} from '../engine/loadData.mjs';
+import {timeLeft} from '../engine/state.mjs';
+import {act, createRoom, joinRoom, viewFor} from './rooms.mjs';
 
 const root = await realpath(fileURLToPath(new URL('../../', import.meta.url)));
 const port = Number(process.env.PORT || 8080);
+const game = await loadGameData(); // challenge.json and questions.json, checked once at start
 const rooms = new Map();
 const streams = new Map();
 const mime = {
@@ -58,7 +61,8 @@ function findRoom(code, res) {
 }
 
 function send(client, room) {
-  client.res.write(`data: ${JSON.stringify(viewFor(room, client.token))}\n\n`);
+  // serverNow lets each screen line its countdown up with the server's clock.
+  client.res.write(`data: ${JSON.stringify({...viewFor(room, client.token), serverNow: Date.now()})}\n\n`);
 }
 
 function broadcast(room) {
@@ -111,7 +115,7 @@ const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://localhost');
     const pathname = decodeURIComponent(url.pathname);
-    const match = /^\/api\/rooms\/([^/]+)\/(join|events)$/.exec(pathname);
+    const match = /^\/api\/rooms\/([^/]+)\/(join|events|actions)$/.exec(pathname);
 
     if (req.method === 'POST' && pathname === '/api/rooms') {
       await readJson(req);
@@ -130,6 +134,21 @@ const server = http.createServer(async (req, res) => {
         reply(res, 200, {code: room.code, token: player.token, category: player.category});
         return broadcast(room);
       }
+      if (match[2] === 'actions' && req.method === 'POST') {
+        const {token, action} = await readJson(req);
+        try {
+          act(room, token, action, game);
+        } catch (error) {
+          if (viewFor(room, token)) broadcast(room); // a refusal still shows in everyone's log
+          throw error;
+        }
+        reply(res, 200, {ok: true});
+        return broadcast(room);
+      }
+      if (match[2] === 'events' && req.method === 'HEAD') { // "is my seat still in this game?"
+        res.writeHead(viewFor(room, url.searchParams.get('token')) ? 200 : 403);
+        return res.end();
+      }
       if (match[2] === 'events' && req.method === 'GET') {
         return openStream(req, res, room, url.searchParams.get('token'));
       }
@@ -145,10 +164,20 @@ const server = http.createServer(async (req, res) => {
   } catch (error) {
     if (res.headersSent) return res.end();
     if (error.code === 'ENOENT') return reply(res, 404, {error: 'File not found.'});
-    const status = error.status ?? (error.message === 'Enter your name to join the game.' ? 400 : 500);
+    const status = error.status ?? 500;
     reply(res, status, {error: status === 500 ? 'The game could not complete that request.' : error.message});
   }
 });
+
+// One clock for every screen: when a checkpoint's time runs out, end it for the whole room.
+setInterval(() => {
+  for (const room of rooms.values()) {
+    const {stage, checkpoint} = room.state;
+    if (stage !== 'checkpoint' || checkpoint.expired || timeLeft(checkpoint.timer, Date.now()) > 0) continue;
+    act(room, room.hostToken, {type: 'timeout'}, game);
+    broadcast(room);
+  }
+}, 1000);
 
 setInterval(() => {
   for (const clients of streams.values()) {

@@ -44,14 +44,32 @@ export function clearSeat() {
   catch { /* A private tab may not allow storage. */ }
 }
 
-export function listen(onView, onError = () => {}) {
+let leaving = false;
+addEventListener('pagehide', () => { leaving = true; });
+
+// onLost runs once if the server says this seat is gone (for example, it restarted).
+// Any other drop retries by itself and gets the game as it is now when it is back.
+export function listen(onView, onError = () => {}, onLost = () => {}) {
   const {code, token} = saved();
   if (!code || !token) throw new Error('Create or join a game first.');
 
-  const stream = new EventSource(`/api/rooms/${encodeURIComponent(code)}/events?token=${encodeURIComponent(token)}`);
-  stream.onmessage = event => onView(JSON.parse(event.data));
-  stream.onerror = () => onError('Connection lost. Trying to reconnect…');
-  return stream;
+  const url = `/api/rooms/${encodeURIComponent(code)}/events?token=${encodeURIComponent(token)}`;
+  const handle = {stream: null, close() { this.closed = true; this.stream?.close(); }};
+  const open = () => {
+    const stream = new EventSource(url);
+    handle.stream = stream;
+    stream.onmessage = event => onView(JSON.parse(event.data));
+    stream.onerror = async () => {
+      if (leaving || handle.closed) return;
+      onError('Connection lost. Trying to reconnect…');
+      if (stream.readyState !== EventSource.CLOSED) return; // the browser is already retrying
+      const status = await fetch(url, {method: 'HEAD'}).then(r => r.status, () => 0);
+      if (status === 403 || status === 404) { clearSeat(); onLost(); }
+      else setTimeout(() => { if (!handle.closed) open(); }, 2000);
+    };
+  };
+  open();
+  return handle;
 }
 
 export function send(action) {
