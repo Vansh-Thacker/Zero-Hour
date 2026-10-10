@@ -20,7 +20,8 @@
  * specific entries (e.g. "24x7 response team") come before general ones.
  */
 const CONTROL_NAME_RULES = [
-  // Prevent
+  // Prevent ("endpoint protection" must come before the Detect "endpoint" rule)
+  { match: ['endpoint protection'], heist: 'Device locks' },
   { match: ['training', 'awareness'], heist: 'Crew-spotting drills' },
   { match: ['email'], heist: 'Mailroom scanner' },
   { match: ['anti malware', 'anti-malware', 'antivirus', 'malware'], heist: 'Device sweep' },
@@ -36,6 +37,7 @@ const CONTROL_NAME_RULES = [
 
   // Detect
   { match: ['siem'], heist: 'Monitor wall' },
+  { match: ['managed detection'], heist: 'Hired night watch' },
   { match: ['endpoint', 'edr'], heist: 'Desk cameras' },
   { match: ['intrusion', 'ids', 'ips'], heist: 'Laser tripwires' },
   { match: ['threat hunting', 'hunting'], heist: 'Night patrol' },
@@ -44,7 +46,8 @@ const CONTROL_NAME_RULES = [
   // Respond (specific response teams first, then plans, then general)
   { match: ['24x7', '24 x 7', '24×7', '24/7', '24 × 7'], heist: 'Round-the-clock response unit' },
   { match: ['9-5', '9–5', 'mon - fri', 'mon-fri', 'office hours'], heist: 'Day-shift response unit' },
-  { match: ['plan', 'playbook'], heist: 'Lockdown playbook' },
+  { match: ['retainer'], heist: 'On-call specialists' },
+  { match: ['plan', 'playbook'], heist: 'Emergency playbook' },
   { match: ['forensic'], heist: 'Evidence team' },
   { match: ['backup'], heist: 'Duplicate vault' },
   { match: ['recovery', 'restore'], heist: 'Emergency restore crew' },
