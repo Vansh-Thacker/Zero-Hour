@@ -1,112 +1,45 @@
 # Zero Hour
 
-A cyber security awareness game for ScottishPower's StrathHack 2026 challenge.
+Zero Hour is Team 20's cyber security game for the ScottishPower StrathHack challenge. Protect a fictional energy company with a £3,000,000 defence budget, watch an overnight attack unfold across four phases, then answer behaviour questions before the clock runs out.
 
-A crew is planning to break into a fictional energy company overnight. You have £3,000,000 to put cyber defences in place before they strike at Monday 16:40. Then the attack plays out in four phases until 06:30 on Tuesday. After each phase you see how your defences did, and you answer behaviour questions against the clock.
+The game runs in **single-player** mode or as a live **team battle**. One host runs the night; players join with a room code and build separate plans for their teams. See [OUR_GAME.md](OUR_GAME.md) for the hand-in notes, architecture, limits and a demo walkthrough.
 
-The rules of the challenge are in `BRIEF.html`. Our hand-in note is `OUR_GAME.md`.
+**Live deployment:** The current version is deployed [here](https://team-20-vglm.onrender.com/).
 
-## Run it
+## Run
 
-You need Node.js 20 or later. Nothing else needs installing: no packages, no account, no internet.
+For a local run, install Node.js 20 or later. There are no npm packages to install, and local play does not need internet access.
 
-Open a terminal in this folder and run:
-
-```
+```sh
 npm start
 ```
 
-Then open **http://127.0.0.1:8080** in your browser. It opens Zero Hour (`/index.html`). The same server runs single player and multiplayer, so players on the same Wi-Fi can join from their phones. Press Ctrl+C in the terminal to stop the server.
+Open **http://127.0.0.1:8080/** in a browser. This opens `index.html`, the home screen for both modes. The same server serves the game and the multiplayer room API. Press Ctrl+C to stop it.
 
-If port 8080 is in use, choose another: `set PORT=3000 && npm start` (Windows) or `PORT=3000 npm start` (macOS, Linux), then open http://127.0.0.1:3000.
+Run the tests with `npm test`. On Windows PowerShell, use `npm.cmd start` and `npm.cmd test` if PowerShell blocks npm's script. The server uses port 8080 by default; set `PORT` before starting it to choose another port.
 
-To run the tests:
+## Play
 
-```
-npm test
-```
+**Single player:** Choose Single player on the home screen. Buy controls within £3,000,000, including at least one Prevent, one Detect and one Respond control, then confirm. Your plan stays locked through the four story, reveal and checkpoint rounds. Each checkpoint has four questions and a two-minute timer. At the end, see the control score, behaviour points and debrief.
 
-It should finish with `fail 0`.
+**Team battle:** Choose Multiplayer → Host to create a room. The host screen shows the room code and an address for phones. Players choose Multiplayer → Join and enter the code, their name and a team name. To try it on one laptop, use one host tab and at least two player tabs per team.
 
-## How to play
+Each team has its own £3,000,000 budget, selected controls, answers and score. Teams share the attack timeline and checkpoint clock. A room supports up to 15 teams and needs at least two players on **every** team before the host can confirm. In a two-player team, the first player buys Prevent and Respond controls; the second buys Detect controls. With more players, those roles rotate in join order. Players can only buy controls for their assigned categories. In team battle, leaving a category empty is allowed, but can leave a weakness in the team's defence.
 
-1. **Plan.** Pick defences from the 18 controls. You need at least one Prevent, one Detect and one Respond control, and you can spend up to £3,000,000. Three controls (firewall, vulnerability scanning, penetration testing) are already in place and score nothing.
-2. **Lock the plan.** Once locked, it cannot change for the rest of the night.
-3. **Each of the four phases:**
-   - **Story:** what the attacker does, and when.
-   - **Reveal:** each chosen control shows the points it scored in this phase.
-   - **Behaviour checkpoint:** 2 questions in 2 minutes. A secure answer earns 2 points; a wrong or missed answer earns none, and the explanation is always shown. The facilitator can pause the timer.
-4. **Outcome.** The control score, behaviour points and total are shown separately, followed by a debrief of each phase: what helped, what was worth considering, and the questions answered.
+The host confirms every team's plan at once, advances the story, and can pause or resume checkpoints. Phones answer the questions; the team earns the average points across its players, with unanswered questions worth zero. The host sees live standings and a final podium. Three supplied controls are already in place: they are shown for context, cannot be bought and score nothing.
 
-## How it is built
+## How it works
 
-The game state lives in one place, the engine. Screens only read it and send actions back. The theme only reads it and never changes scores.
+- `src/engine/state.mjs` changes game state through `reduce()`; `src/engine/scores.mjs` calculates phase and team-battle scores from the supplied scenario data.
+- `src/checkpoint/checkpoint.mjs` selects four story-relevant questions per phase, marks answers and handles the timer. A correct answer is worth 2 points.
+- `src/server/server.mjs` serves the site and the room API. `src/server/competition.mjs` keeps teams separate within a room; `src/server/rooms.mjs` checks player roles and host permissions before applying actions.
+- `src/net/client.mjs` sends actions and receives live Server-Sent Events. `src/main.mjs` runs single player, while `src/host.mjs` and `src/play.mjs` connect host and player screens. `src/ui/` renders the screens, defence wall, standings and outcome.
+- `1-foundation/starter/controls.mjs` is the supplied scoring module. The supplied challenge and question files are in `1-foundation/data/`. `src/config.mjs` holds the game name, fictional business name and checkpoint settings.
 
-| Folder or file | What it does | Owner |
-|---|---|---|
-| `src/config.mjs` | The one place for the game name, business name and tunable numbers | Tejas |
-| `src/engine/state.mjs` | The game state and every action that changes it: picking, confirming, phases, answers, the checkpoint timer | Tejas |
-| `src/engine/selection.mjs` | Budget and category helpers for a selection | Rayyan |
-| `src/checkpoint/` | Choosing and marking behaviour questions | Ghassan |
-| `src/debrief/debrief.mjs` | The end-of-game debrief | Mo |
-| `src/ui/` | The screens: choose, story, reveal, checkpoint, outcome | Tejas |
-| `src/theme/` | The heist theme (loaded only if present) | Vansh |
-| `src/main.mjs` | Single-screen mode: loads the data and connects the engine to the screens | Tejas |
-| `index.html` | The game's page | Tejas |
-| `tests/` | Our tests | Mo and everyone |
-| `TEAM_PLAN.md` | Who does what, the agreed state shape, and the timeline | |
+The server owns each room's state and checks purchases in order, so two devices cannot spend the same remaining budget. It assigns the player and timestamp for every action. Room state is kept in memory: restarting the server ends existing games. For a local run, phones need to reach the host laptop on the same network; some venue Wi-Fi networks block this, so a hotspot or separate laptop tabs can be used for a demo.
 
-**Changing the names.** The game name and the business name are set in `src/config.mjs` (`GAME_NAME`, `BUSINESS_NAME`). Change them there and nowhere else.
+## Tests and credits
 
-**Multiplayer** (Stretch) is in progress: a host screen and phones sharing one game. Its tests are in `tests/multiplayer.test.mjs` and are skipped until `src/multiplayer/room.mjs` exists.
+`npm test` runs the supplied tests and our engine, checkpoint, debrief, UI and multiplayer tests, including the shared-budget race and room API. The challenge brief is in `BRIEF.html`.
 
-## The scoring module
-
-`1-foundation/starter/controls.mjs` is supplied by ScottishPower and we do not change it. Every control score in the game comes from it.
-
-```js
-import {validateData, scoreSelection} from './1-foundation/starter/controls.mjs';
-
-const data = await (await fetch('./1-foundation/data/challenge.json')).json();
-const result = scoreSelection(data, ['P3', 'D3', 'R1']);
-// result.phases.map(p => p.score)  ->  [2, 5, 4, 3]
-// result.total                     ->  14
-// result.spent                     ->  350000
-```
-
-- **`validateData(data)`** checks a scenario file. It returns `true` or throws an error with a readable message.
-- **`scoreSelection(data, ids)`** takes the list of chosen control IDs and returns `chosen`, `budget`, `spent`, `unspent`, `phases` (each with `phaseId`, `score` and `contributions`, the points each control earned) and `total`. It throws a readable error if the selection is over budget, chooses a control twice, uses an unknown ID, or misses a category. The game shows that message to the player as it is.
-
-## The data files
-
-`1-foundation/data/challenge.json`: the scenario.
-
-| Field | Meaning |
-|---|---|
-| `budget` | £3,000,000 to spend on controls, once, before the attack |
-| `controls` | 18 controls. Each has `id`, `name`, `category` (Prevent, Detect or Respond), `cost`, and `description`, `use_case` and `limitation` for players |
-| `already_in_place` | Three controls the business already has. Shown, cannot be chosen, score nothing |
-| `phases` | Four phases, each with `id`, `title`, `local_time`, `story` and `scores` (the points for every control in that phase) |
-
-`1-foundation/data/questions.json`: 40 behaviour questions written by ScottishPower's Cyber team. Each has an `id` (Q01 to Q40), a `category`, a `tier` from 1 (Spot the Risk) to 4 (Pressure Test), the `question`, four `options`, the `correct` letter and an `explanation`. 16 have a `phase_id` that matches a phase of the story. The game shows every question, answer and explanation exactly as written.
-
-## Tests
-
-`npm test` runs every file ending `.test.mjs`.
-
-| File | What it covers |
-|---|---|
-| `1-foundation/tests/` | The supplied scoring module and data files |
-| `tests/engine.test.mjs` | Picking rules, confirming, the four phases, checkpoints, the timer, team-average points, and a full game checked against the scoring module |
-| `tests/debrief.test.mjs` | The debrief |
-| `tests/multiplayer.test.mjs` | Shared games: joining, roles, one shared budget, two picks at once, rejoining (skipped until multiplayer is built) |
-
-## Artwork and credits
-
-All artwork is from the ScottishPower challenge pack: the ScottishPower logo and brand colours (`1-foundation/artwork/brand/`), the 3D control and scenery renders (`2-extend/previews/`), and the incident and map artwork (`2-extend/artwork/`). Browse it all at http://127.0.0.1:8080/2-extend/artwork.html while the server runs. Licence notices are in `2-extend/licences/`.
-
-The business, its systems and its people are fictional. The controls, prices and points are simplified for learning, and are not advice on what to buy.
-
-## Team
-
-Tejas, Rayyan, Ghassan, Vansh and Mo (team 20).
+ScottishPower supplied the challenge scenario, scoring module, questions, brand assets and artwork. Assets and licence notices are in `1-foundation/artwork/`, `2-extend/artwork/` and `2-extend/licences/`. The business and attack are fictional; controls, prices and points are simplified for learning.

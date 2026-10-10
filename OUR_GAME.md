@@ -1,135 +1,73 @@
-# Our game
-
-Fill this in and commit it with your code by 12:00 on Sunday. Short answers are fine.
-
-There is a Word version, `OUR_GAME.docx`, if you prefer. Fill in one or the other, not both.
-
-> **Draft, kept up to date by Mo.** Lines marked **TODO** are not settled yet. Every TODO must be gone by Sun 11:30.
+# Our game: Zero Hour
 
 ## Team
 
-- Team name: Team 20
-- Team members: Tejas (engine and integration), Rayyan (screens and accessibility), Ghassan (checkpoints and questions), Vansh (Incident Room theme and multiplayer), Mo (tests, debrief and hand-in)
-- Name of our game: **TODO** (currently "Untitled Cyber Game")
-- Name of our fictional business: **TODO** (currently "Fictional Energy Co")
-- Where each name is set, so it can be changed (file and line): `src/config.mjs`, line 3 (`GAME_NAME`) and line 4 (`BUSINESS_NAME`). Nothing else in the code holds either name; the page reads them from there.
+- **Team:** Team 20 — Tejas, Rayyan, Ghassan, Vansh and Mo.
+- **Game:** Zero Hour. **Fictional business:** Fictional Energy Co. Both names are set in `src/config.mjs`.
+- **Level:** Foundation game with the multiplayer Stretch capability and an incident-room-inspired heist presentation.
 
 ## What we built
 
-- Level reached (Foundation, Extend or Stretch): **TODO** (aiming for Stretch)
-- Theme (Incident Room, Endurance Race, Map Room, our own, or none): Incident Room
-- Stretch capability, if any: Multiplayer (**TODO**: confirm it works before claiming it)
+Players have £3,000,000 to protect a fictional energy business before a four-phase overnight cyber attack. They buy Prevent, Detect and Respond controls, see what each control contributes during each phase, and answer behaviour questions under a two-minute checkpoint timer. The outcome separates control points from behaviour points and includes a debrief. The three controls already in place are explained but cannot be bought and add no points.
+
+The same application supports a single-player game and a live team battle. A host creates one room code; players join teams from their phones or separate browser tabs. Each team has its **own** £3,000,000 budget, plan, answers and score. The host starts and advances one shared night, so all teams face the same phases and checkpoint clock. The host sees standings and a final podium. A room supports up to 15 teams, with at least two players per team before the host can confirm. In a two-player team, the first player covers Prevent and Respond and the second covers Detect. With more players, roles rotate Prevent, Detect, Respond.
+
+**Rules differ by mode:** single player must buy at least one control in each category before confirming. In team battle a team may leave categories uncovered; the resulting weakness is part of the comparison. The budget limit, duplicate checks and phase scoring still apply to every team.
 
 ## How to run it
 
-The exact steps from a fresh copy of the repository, including anything that needs installing.
+**Live deployment:** [Replace this with the deployed game link](https://REPLACE-WITH-YOUR-DEPLOYED-URL.example/).
 
-1. Install Node.js version 20 or later from nodejs.org. Nothing else needs installing: no packages, no account, no key.
-2. Open a terminal in the repository folder (the one with `package.json`).
-3. Run `npm test`. It should finish with `fail 0`.
-4. Run `npm start` and open http://127.0.0.1:8080/index.html. Press Ctrl+C in the terminal to stop.
+1. For a local run, install Node.js 20 or later. There are no npm dependencies, accounts or online services required for local play.
+2. In this repository, run `npm start` and open `http://127.0.0.1:8080/` (the `index.html` home screen). This **one server** runs both modes.
+3. Choose **Single player** to play alone, or **Multiplayer → Host** to open a room. Players choose **Multiplayer → Join**, then enter the code, their name and a team name. The host screen also shows a phone join address. Two or more browser tabs on one laptop work for a demo.
+4. Run `npm test` to run the tests. Stop the server with Ctrl+C.
 
-On Windows PowerShell, if `npm` is blocked with "running scripts is disabled", use `npm.cmd test` and `npm.cmd start` instead. To use another port in PowerShell: `$env:PORT=3000; npm.cmd start`.
+On PowerShell, use `npm.cmd start` and `npm.cmd test` if the `npm` script is blocked. To change the port, set `PORT` before starting the server (for example, `$env:PORT=3000; npm.cmd start` in PowerShell). For a local multiplayer run, phones need the laptop's network address and must be able to reach it on the same Wi-Fi or hotspot.
 
-**TODO** (Vansh): add the steps for multiplayer, such as how to start the shared server and open a second window.
+## Walkthrough for the demo
 
-## A walkthrough that works
+1. Start at `/index.html`, choose **Multiplayer → Host**, and create a room. Keep the room code visible on the host tab.
+2. Open four separate player tabs at `/play.html` (or use phones). Join the first two as **Red** and the next two as **Blue**, using the same room code. The host should show both teams and four players without a reload.
+3. For a valid shared purchase, Red's first player buys **P3** (£200,000) and **R1** (£50,000); Red's second player buys **D3** (£100,000). Both Red players and the host should see Red's updated plan and £2,650,000 remaining. Blue's budget remains £3,000,000.
+4. For an invalid move, Red's Detect player tries a Prevent control. The server refuses it because that player does not own that role. To show the shared budget rule instead, let Red spend close to £3,000,000 and try a control that costs more than the remaining amount; the purchase is refused and the basket stays valid.
+5. Give Blue a different plan, such as **P2** (£1,000,000), **D4** (£1,000,000) and **R4** (£400,000), bought by the players assigned those categories. Both teams are now distinct and under budget.
+6. On the host screen, **Confirm**. Both plans lock together. The host then advances through **story → reveal → checkpoint**. Every player sees their own team's results; the host sees the teams side by side and the standings.
+7. Have both Red players answer one checkpoint question differently. The team receives the average behaviour points for that question. The host can pause and resume the shared two-minute timer. Continue through all four phases to the outcome and final podium.
 
-One route through the game that we know works, step by step. We will follow it.
-
-**TODO**: write this against the finished build on Saturday evening and play it through twice before handing in.
-
-1.
-2.
+For a shorter presentation, use just two teams of two, one valid purchase, one rejected purchase, the first reveal and one checkpoint answer. The full night is available for questions afterward.
 
 ## How it is built
 
-- How the code is organised: one folder per job.
-  - `1-foundation/starter/controls.mjs` is the supplied scoring module. We have not changed it.
-  - `src/engine/state.mjs` holds the game state and the only function that changes it, `reduce(data, state, action)`.
-  - `src/checkpoint/` picks questions, marks answers and runs the timer. These are pure functions, and the time is passed in.
-  - `src/debrief/debrief.mjs` builds the end-of-game review from the final state.
-  - `src/ui/` draws the screens and `src/theme/` draws the Incident Room. Both only read state and send actions.
-  - `src/config.mjs` is the one place for names and tunable numbers.
-- Where the game's state is kept (the budget, what is owned, the answers given): in one state object, made by `createInitialState()` in `src/engine/state.mjs`. It holds `stage`, `phase`, `selected`, `confirmed`, `result` (the scoring module's output), `checkpoint`, `behaviourPoints` (one number per phase) and `answers`. Every action goes through `reduce`, which returns a new state and never changes the old one.
-- How the theme is kept separate from the scoring: the theme is given the state and draws it. It never calls the scoring module and never changes state. Scores come only from `scoreSelection` in the supplied module. A test checks that the debrief's scores always equal the engine's.
-- One design decision we made, what else we considered, and why we chose it: **TODO**. Candidate: a single pure `reduce` function for all state changes, rather than letting each screen change state itself. It means the whole game can be played in a test without a browser, and invalid actions (answering outside a checkpoint, changing the choice after Confirm) can be refused in one place.
+- `1-foundation/starter/controls.mjs` and the challenge data are supplied. The supplied module remains unchanged; its `scoreSelection` scores valid single-player plans. `src/engine/scores.mjs` also provides `scorePlan` for team battles that leave categories empty, using the same phase score data.
+- `src/engine/state.mjs` contains `createInitialState()` and the pure `reduce(game, state, action)` transition. It holds the stage, phase, selected control IDs, confirmation and scoring result, checkpoint, answers and behaviour points. The engine enforces the budget, lock, answer and timer rules. `src/engine/actions.mjs` checks action shapes; `selection.mjs`, `scores.mjs` and `loadData.mjs` provide focused helpers.
+- `src/checkpoint/checkpoint.mjs` deterministically picks four questions per phase, prioritising story-linked questions and then suitable topics. Questions progress through the difficulty tiers. A secure answer earns 2 points; a wrong or missed answer earns 0. In a team, points are averaged across all members, including anyone who did not answer. The timer runs for at most 120 seconds and the host may pause it.
+- `src/server/server.mjs` is the **single** Node server for static files and room APIs. `src/server/competition.mjs` manages the teams in a room. `src/server/rooms.mjs` applies role and host permissions to one team's actions before calling the engine. The server assigns the acting player and time; it does not trust those values from a phone. Requests are processed one at a time, so the second simultaneous purchase checks the budget left after the first.
+- `src/net/client.mjs` sends actions and keeps each tab's seat for refresh. Server-Sent Events push a fresh view after changes; reconnection receives the current state. `src/main.mjs` runs single player locally. `src/host.mjs` and `src/play.mjs` connect the host and players to the server. `src/ui/` draws the incident-room-style screens, defence wall, standings and debrief. Screens read state and dispatch actions; they do not calculate scores.
+
+We chose one reducer and one server-owned state per team instead of allowing each screen to change a local copy. This keeps the phone and host views consistent, makes concurrent budget checks safe, and lets tests exercise the rules without a browser. Teams share only the host's phase and clock; their baskets, answers and scores remain separate.
 
 ## How the questions change the game
 
-**Which questions appear, and when.** Each checkpoint asks 4 questions (`QUESTIONS_PER_CHECKPOINT` in `src/config.mjs`), chosen by `pickQuestions()` in `src/checkpoint/checkpoint.mjs`:
-
-| Phase | What has just happened | Questions | Topics |
-|---|---|---|---|
-| 1, Monday 16:40 | A trusted-looking email; malware reaches a laptop | Q01, Q02, Q03, Q04 | Phishing, tiers 1 to 4 |
-| 2, Tuesday 02:00 | The attacker explores while nobody is watching | Q09, Q37, Q10, Q11 | MFA, Remote working |
-| 3, Tuesday 03:30 | A fake "IT" call asks the night desk for a sign-in code | Q15, Q08, Q12, Q16 | Vishing, Passwords, MFA |
-| 4, Tuesday 06:30 | Files encrypted and a ransom demand | Q21, Q22, Q30, Q32 | Social engineering, Safe data handling |
-
-Why these: every question the brief marks as a story question for a phase (its `phase_id`) is used first, so the questions match what players have just watched happen. Within a phase we take one question per difficulty tier before a second on the same tier, then show them easiest first, so each checkpoint climbs from Spot the Risk towards Pressure Test. Phase 1 has five story questions, so Q29 (a second tier 1 question) is left out; phase 4 has only three, so Q21 fills the gap from Social Engineering, a topic the brief lists as fitting that phase. That uses 15 of the 16 story questions. The choice is fixed, not random, so every player and every phone sees the same questions and a facilitator can prepare.
-
-Why 4: the brief allows 30 seconds a question, and 4 × 30 seconds is exactly the 2-minute limit. Tier 4 questions are longer to read, which is what the facilitator's pause button is for.
-
-**What an answer does:**
-
-- At the end of each of the four phases there is a behaviour checkpoint lasting at most 2 minutes (`CHECKPOINT_SECONDS` in `src/config.mjs`). The facilitator can pause the timer.
-- A secure (correct) answer earns `POINTS_PER_SECURE_ANSWER` points (2, in `src/config.mjs`). A wrong answer earns nothing. When time runs out, unanswered questions earn nothing, but their explanation is still shown.
-- After each answer the game shows the explanation, word for word from `questions.json`.
-- Behaviour points are shown separately from the control score. After phase 4 the two are added together for the final outcome.
+After each phase's story and reveal, a 120-second checkpoint asks four questions selected from `questions.json`. Story-linked questions appear first; topic-matched questions fill any gaps. Each player answers on their own screen and sees the supplied explanation. Correct answers add behaviour points separately from the defence-control score. At the outcome, both parts contribute to the total. The host can pause the clock, and missing answers earn zero when time expires.
 
 ## Tests
 
-- What our tests cover: see the test map below. Every rule in the brief has at least one test.
-- How to run them: `npm test` (or `npm.cmd test` in Windows PowerShell). The multiplayer tests are skipped until `src/multiplayer/room.mjs` exists, and then run on their own.
-- One test we are glad we wrote, and why: "two picks that spend the last of the budget at once: only the first goes through" (`tests/multiplayer.test.mjs`). It catches the bug that is easiest to miss in a shared game: two devices each checking the budget before either purchase is saved, so the team ends up over budget. We broke the budget rule on purpose to check the test fails. **TODO**: swap for another if the team prefers.
+Run `npm test` (`npm.cmd test` in PowerShell). The suite covers supplied scoring and question data, engine transitions, budget and category rules, phase scores, checkpoint selection and timing, team averages, debrief, standings, role and host permissions, independent team budgets, room/API errors, Server-Sent Events, reconnection, and simultaneous purchases. See `tests/` and `1-foundation/tests/` for the cases.
 
-### Test map: which test covers which rule
+A useful regression case sends two purchases against the last of a shared team budget. Only the first can succeed; the second must see the updated balance. This directly checks the multiplayer rule most likely to fail if devices kept their own copies of state.
 
-| Rule from the brief | Test file | Test |
-|---|---|---|
-| Budget of £3m, cannot go over | `1-foundation/tests/controls.test.mjs` | rejects a selection that is over budget; allows a selection that spends the budget exactly |
-| At least one Prevent, Detect and Respond | `1-foundation/tests/controls.test.mjs`, `tests/engine.test.mjs` | rejects a selection without all three categories; confirming without a Respond control shows an error and stays unlocked |
-| Each control chosen once | `1-foundation/tests/controls.test.mjs`, `tests/engine.test.mjs` | rejects a control chosen twice; selecting the same control twice keeps it once |
-| Can change the choice until Confirm, then fixed | `tests/engine.test.mjs` | the choice cannot change after confirming |
-| Already-in-place controls score nothing | `tests/debrief.test.mjs` | the three controls already in place are listed with the reason they score nothing |
-| Every chosen control scores in every phase | `1-foundation/tests/controls.test.mjs` | every chosen control scores in every phase |
-| Phase scores shown match the scoring module | `tests/debrief.test.mjs` | each phase shows the same control points as the engine; the points shown for each chosen control match the engine |
-| Behaviour points kept separate, then added | `tests/debrief.test.mjs` | behaviour points are kept separate and then added to make the total |
-| Explanations kept exactly as written | `tests/debrief.test.mjs` | each question is shown with its explanation word for word from questions.json |
-| Unanswered questions score nothing | `tests/debrief.test.mjs` | an unanswered question is shown as unanswered, not as wrong |
-| Debrief: what helped and what was missed | `tests/debrief.test.mjs` | "missed" is never a control the player chose; "missed" is the highest-scoring control not chosen in that phase |
-| Reset starts a new game | `tests/engine.test.mjs` | reset starts a new game |
-| Checkpoint: questions fit the phase, same for everyone, easiest first | `tests/checkpoint.test.mjs` | story questions for the phase come first; the same phase always gets the same questions; questions in a checkpoint run from easiest to hardest |
-| Checkpoint: right answer earns points, wrong earns 0 | `tests/checkpoint.test.mjs` | a secure answer earns the configured points; a wrong answer earns no points |
-| Checkpoint: explanation always shown, word for word | `tests/checkpoint.test.mjs` | the explanation comes back word for word, whatever the answer |
-| Checkpoint: at most 2 minutes, pause stops the clock, timeout earns 0 | `tests/checkpoint.test.mjs`, `tests/engine.test.mjs` | time is up at exactly two minutes, not before; pausing stops the clock; an answer after the time runs out earns nothing |
-| Checkpoint: team size does not change behaviour points | `tests/checkpoint.test.mjs` | two players, one secure and one not: half points; team size does not change the score |
-| A whole game can be played through `reduce` | `tests/engine.test.mjs` | **TODO** (Tejas/Mo, once `next` is built) |
-| Multiplayer: wrong room code, rejoining, joining after Confirm | `tests/multiplayer.test.mjs` | a wrong room code is refused; a player who drops out and rejoins sees the game as it is now; someone joining after Confirm sees the locked choice |
-| Multiplayer: two picks at once stay within budget | `tests/multiplayer.test.mjs` | two picks that spend the last of the budget at once: only the first goes through |
-| Multiplayer: picks limited to the player's role | `tests/multiplayer.test.mjs` | a player cannot pick a control outside their role |
-| Multiplayer: every purchase still checked by the scoring rules | `tests/multiplayer.test.mjs` | confirm is refused while a category is missing; a confirmed shared game scores exactly what the scoring module gives |
+## Known limits
 
-## What does not work yet
-
-Known problems and anything unfinished.
-
-**TODO**: update this every evening. As of Saturday afternoon:
-
-- Moving through the phases (`next`) and the checkpoints are not wired into the engine yet.
-- The screens, the Incident Room theme and the multiplayer server are in progress.
-- The game and business names are still placeholders.
+- Rooms and seats live in server memory. Restarting the server ends every room; there is no saved game database.
+- When running locally, phones must be able to reach the host laptop over the network. Some venue Wi-Fi networks isolate devices; a hotspot or separate tabs on one laptop works for a local demo.
+- Room codes and per-seat tokens are sufficient for a local demo, but this is not an account or authentication system for a public internet deployment.
+- The incident-room look is implemented in `src/ui/`. The separate optional `src/theme/` module is still a placeholder; the game does not depend on it.
 
 ## Where AI tools helped
 
-Which tools we used and for what. What we checked or changed ourselves.
-
-- Claude (Anthropic): helped explain the brief, plan the work split and write the debrief module and its tests, the multiplayer tests and this hand-in note. We ran every test ourselves against the real data and the supplied scoring module, and checked that the multiplayer tests fail when the budget and role rules are broken.
-- **TODO**: each team member adds their own line: which tool, for what, and what they checked or changed.
+We used Claude and Codex to help interpret the brief, plan the engine and multiplayer work, generate and review code and tests, and draft documentation. We checked the resulting rules against the supplied challenge data and scoring module and used the test suite and browser demos to verify behaviour. The team made the final design and demo choices.
 
 ## Credits
 
-Artwork, libraries and anything else we did not make.
-
-- The scoring module, scenario, questions and test fixture: supplied by ScottishPower in the challenge pack.
-- **TODO** (Vansh): any artwork used from `2-extend/artwork/`, and its licence from `2-extend/licences/`.
+ScottishPower supplied the challenge brief, scenario, controls, questions, scoring module, brand mark and artwork pack. The artwork used by the game is in `1-foundation/artwork/` and `2-extend/artwork/`; supplied licence notices are in `2-extend/licences/`. The business and incident are fictional, and the prices and scores are simplified for learning.
