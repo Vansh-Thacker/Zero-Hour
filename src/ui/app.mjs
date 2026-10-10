@@ -1,5 +1,7 @@
 // The page frame and screen switching. render() reads state and draws it;
 // player actions go back to the engine through dispatch(). Nothing here changes state.
+// Multiplayer uses the same screens: pass `room` (the server's view for this seat) and
+// dispatch() sends the action to the server instead. A room bar shows the code and the team.
 
 import {GAME_NAME, BUSINESS_NAME} from '../config.mjs';
 import {LOGO} from './assets.mjs';
@@ -11,6 +13,7 @@ import {revealScreen} from './revealScreen.mjs';
 import {checkpointScreen, updateTimer} from './checkpointScreen.mjs';
 import {outcomeScreen} from './outcomeScreen.mjs';
 import {openWeakWarning} from './battleDisplay.mjs';
+import {roomBar} from './roomBar.mjs';
 
 const SCREENS = {choose: chooseScreen, story: storyScreen, reveal: revealScreen, checkpoint: checkpointScreen, outcome: outcomeScreen};
 
@@ -34,17 +37,18 @@ export async function loadExtras() {
 
 let lastScreenKey = null;
 
-export function render(root, state, game, dispatch, extras) {
+export function render(root, state, game, dispatch, extras, room = null) {
   const focusedKey = document.activeElement?.dataset?.key;
   const screenKey = `${state.stage}-${state.phase}`;
   const entering = screenKey !== lastScreenKey;
   lastScreenKey = screenKey;
 
   const screen = el('main', {class: `screen${entering ? ' is-entering' : ''}`, id: 'screen'},
-    SCREENS[state.stage](state, game, dispatch, extras));
+    SCREENS[state.stage](state, game, dispatch, extras, room));
 
   root.replaceChildren(el('div', {class: 'shell'},
     topbar(state, game.data),
+    room ? roomBar(room) : null,
     state.confirmed ? phaseTrack(state, game.data) : null,
     screen,
     el('p', {class: 'footer-note'},

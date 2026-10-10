@@ -35,3 +35,16 @@ export function budgetSummary(data, selected) {
   const covered = Object.fromEntries(CATEGORIES.map(cat => [cat, chosen.some(c => c.category === cat)]));
   return {spent, left: data.budget - spent, covered, ready: CATEGORIES.every(cat => covered[cat])};
 }
+
+// Multiplayer. `room` is what the server sends a seat: {code, you, players, log}. `you` is
+// {host: true} on the host screen, or {host: false, id, name, category} on a phone.
+// Single player passes no room and can do everything. The server checks the same rules.
+export const runsGame = room => !room || room.you.host;
+export const picksFor = (room, category) => !room || room.you.category === category;
+export const answersQuestions = room => !room || !room.you.host;
+export const seatId = room => (room && !room.you.host ? room.you.id : null);
+
+// A button only the person running the game can press. On a phone it becomes a note instead.
+export function hostOnly(room, button, waiting) {
+  return runsGame(room) ? button : el('p', {class: 'waiting', role: 'status'}, `⏳ ${waiting}`);
+}

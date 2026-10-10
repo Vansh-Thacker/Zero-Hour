@@ -1,9 +1,9 @@
 // Story screen: what the crew does in this phase, told as a case file.
 
 import {PHASE_ART} from './assets.mjs';
-import {el, img} from './dom.mjs';
+import {el, img, hostOnly} from './dom.mjs';
 
-export function storyScreen(state, {data}, dispatch, extras) {
+export function storyScreen(state, {data}, dispatch, extras, room) {
   const phase = data.phases[state.phase];
   const art = PHASE_ART[state.phase] ?? {};
   const heistTitle = extras.heistPhaseTitle?.(phase.id, state.phase);
@@ -20,8 +20,9 @@ export function storyScreen(state, {data}, dispatch, extras) {
         el('div', {class: 'photo'}, img(art.evidence)),
         img(art.object, 'object'),
         el('span', {class: 'stamp'}, 'Evidence'))),
-    el('div', {class: 'actions'},
+    el('div', {class: 'actions'}, hostOnly(room,
       el('button', {class: 'btn btn-primary', type: 'button', 'data-key': 'next', onclick: () => dispatch({type: 'next'})},
-        'Reveal your defences →')),
+        'Reveal your defences →'),
+      'Waiting for the host to reveal your defences.')),
   ];
 }

@@ -126,3 +126,51 @@ export function nameProblem(name) {
   if (name.length > NAME_LIMIT) return `Keep your username to ${NAME_LIMIT} characters or fewer.`;
   return null;
 }
+
+// --- Multiplayer pages (play.html and host.html), in the same look as the start screens. ---
+
+// Phone: room code and username. join(code, name) tries to join; `error` is a readable message.
+export function joinScreen({code = '', name = '', error = null, busy = false}, join) {
+  const codeInput = el('input', {id: 'room-code', class: 'field', name: 'code', value: code, autocomplete: 'off',
+    autocapitalize: 'characters', spellcheck: 'false', required: true, placeholder: 'e.g. VAULT-54', 'data-key': 'code'});
+  const nameInput = el('input', {id: 'player-name', class: 'field', name: 'name', value: name, maxlength: NAME_LIMIT,
+    autocomplete: 'nickname', required: true, placeholder: 'e.g. Sam', 'data-key': 'name'});
+
+  const form = el('form', {class: 'panel name-form', novalidate: true, onsubmit: event => {
+    event.preventDefault();
+    join(codeInput.value.trim(), nameInput.value.trim());
+  }},
+  el('label', {for: 'room-code'}, 'Room code'),
+  codeInput,
+  el('label', {for: 'player-name'}, 'Your username'),
+  nameInput,
+  error ? el('p', {class: 'alert', role: 'alert'}, error) : null,
+  el('div', {class: 'actions'},
+    el('a', {class: 'btn btn-ghost', href: '/index.html', 'data-key': 'back'}, '← Home'),
+    el('button', {class: 'btn btn-primary', type: 'submit', 'data-key': 'go', disabled: busy}, busy ? 'Joining…' : 'Join the team →')));
+
+  return page(
+    el('section', {class: 'name-head'},
+      el('span', {class: 'eyebrow'}, 'Multiplayer · Join'),
+      el('h1', {class: 'screen-title'}, 'Join the defence team'),
+      el('p', {class: 'lead'}, 'Enter the room code shown on the host screen. You will be given Prevent, Detect or Respond.')),
+    form);
+}
+
+// Host: one button to open the room. create() asks the server for a room code.
+export function hostStartScreen({error = null, busy = false}, create) {
+  return page(
+    el('section', {class: 'brief home-hero'},
+      el('div', {},
+        el('span', {class: 'eyebrow'}, 'Multiplayer · Host'),
+        el('h1', {class: 'screen-title'}, 'Run the night'),
+        el('p', {class: 'lead'},
+          'Put this screen where the whole team can see it. Open a room, and players join on their phones with the code. ',
+          'They choose the defences; you lock the plan and move the night on.'),
+        error ? el('p', {class: 'alert', role: 'alert'}, error) : null,
+        el('div', {class: 'actions start-actions'},
+          el('a', {class: 'btn btn-ghost', href: '/index.html', 'data-key': 'back'}, '← Home'),
+          el('button', {class: 'btn btn-primary', type: 'button', 'data-key': 'create', disabled: busy, onclick: create},
+            busy ? 'Opening…' : '🔓 Open a room'))),
+      el('div', {class: 'brief-art', 'aria-hidden': 'true'}, img(SCENE.office, 'a'), img(SCENE.operator, 'b'))));
+}

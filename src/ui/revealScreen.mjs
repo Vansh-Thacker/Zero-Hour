@@ -2,10 +2,10 @@
 // The points come straight from the scoring module's result, never worked out here.
 
 import {controlRender} from './assets.mjs';
-import {el, img} from './dom.mjs';
+import {el, img, hostOnly} from './dom.mjs';
 import {battleDisplay} from './battleDisplay.mjs';
 
-export function revealScreen(state, {data}, dispatch, extras) {
+export function revealScreen(state, {data}, dispatch, extras, room) {
   const phase = data.phases[state.phase];
   const scored = state.result.phases[state.phase];
   const soFar = state.result.phases.slice(0, state.phase + 1).reduce((sum, p) => sum + p.score, 0);
@@ -35,8 +35,9 @@ export function revealScreen(state, {data}, dispatch, extras) {
     battleDisplay(state, data),
     el('div', {class: 'flips'}, flips),
     el('div', {class: 'theme-slot', id: 'theme-slot'}),
-    el('div', {class: 'actions'},
+    el('div', {class: 'actions'}, hostOnly(room,
       el('button', {class: 'btn btn-primary', type: 'button', 'data-key': 'next', onclick: () => dispatch({type: 'next'})},
-        'Behaviour checkpoint →')),
+        'Behaviour checkpoint →'),
+      'Waiting for the host to start the behaviour checkpoint.')),
   ];
 }

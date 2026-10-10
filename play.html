@@ -4,41 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Zero Hour · Join</title>
-  <link rel="stylesheet" href="./src/net/lobby.css">
-  <script type="module" src="./src/play.mjs"></script>
+  <link rel="stylesheet" href="/src/ui/game.css">
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="./index.html" aria-label="Zero Hour home page">
-      <span class="brand-logo"><img src="./1-foundation/artwork/brand/scottishpower_logo_cropped.png" alt="ScottishPower"></span>
-      <span class="wordmark">Zero <span>Hour</span></span>
-    </a>
-    <a class="home" href="./index.html">← Home</a>
-  </header>
-  <main class="lobby">
-    <p class="eyebrow">ZERO HOUR / PLAYER PHONE</p>
-    <h1>Join the defence team.</h1>
-    <p id="status" class="status" role="status">Enter the code shown on the host screen.</p>
-    <form id="join">
-      <label for="code">Room code</label>
-      <input id="code" name="code" autocomplete="off" autocapitalize="characters" placeholder="VAULT-89" required>
-      <label for="name">Your name</label>
-      <input id="name" name="name" autocomplete="name" maxlength="24" required>
-      <button type="submit" class="primary">Join game</button>
-    </form>
-    <section id="room" hidden aria-label="Your game room">
-      <div class="code-card">
-        <span>YOUR ROLE</span>
-        <strong id="role"></strong>
-        <p id="role-detail"></p>
-      </div>
-      <p id="room-code" class="quiet"></p>
-      <h2>Your team</h2>
-      <ul id="players" class="players"></ul>
-      <p id="phase" class="quiet"></p>
-      <div id="live" class="live"></div>
-      <button id="leave" type="button" class="secondary">Join a different room</button>
-    </section>
-  </main>
+  <div id="app">
+    <p style="padding: 24px">Loading the night…</p>
+  </div>
+  <script type="module" src="/src/play.mjs"></script>
 </body>
 </html>

@@ -2,10 +2,10 @@
 // of what happened in each phase and why.
 // TODO: swap the debrief section for Mo's buildDebrief() once it lands.
 
-import {el, points} from './dom.mjs';
+import {el, points, hostOnly} from './dom.mjs';
 import {nightReport, outcomeVault} from './nightReport.mjs';
 
-export function outcomeScreen(state, {data, bank}, dispatch, extras) {
+export function outcomeScreen(state, {data, bank}, dispatch, extras, room) {
   const control = state.result.total;
   const behaviour = state.behaviourPoints.reduce((sum, p) => sum + p, 0);
   const total = control + behaviour;
@@ -27,13 +27,14 @@ export function outcomeScreen(state, {data, bank}, dispatch, extras) {
 
   const debrief = el('section', {'aria-labelledby': 'debrief-title'},
     el('h2', {id: 'debrief-title'}, 'Debrief: what happened and why'),
-    el('div', {class: 'debrief'}, data.phases.map((phase, n) => phaseDebrief(phase, n, state, data, bank))));
+    el('div', {class: 'debrief'}, data.phases.map((phase, n) => phaseDebrief(phase, n, state, data, bank, room))));
 
   return [
     hero, scores, nightReport(data, bank, state), debrief,
-    el('div', {class: 'actions'},
+    el('div', {class: 'actions'}, hostOnly(room,
       el('button', {class: 'btn btn-primary', type: 'button', 'data-key': 'reset', onclick: () => dispatch({type: 'reset'})},
-        '↻ Play again')),
+        '↻ Play again'),
+      'The host can start a new game for the team.')),
   ];
 }
 
@@ -44,7 +45,7 @@ function scoreCard(label, value, sign, extra = '') {
     el('span', {class: 'sign'}, sign));
 }
 
-function phaseDebrief(phase, n, state, data, bank) {
+function phaseDebrief(phase, n, state, data, bank, room) {
   const scored = state.result.phases[n];
   const byId = id => data.controls.find(c => c.id === id);
   const helped = scored.contributions.filter(c => c.points > 0).sort((a, b) => b.points - a.points);
@@ -67,8 +68,18 @@ function phaseDebrief(phase, n, state, data, bank) {
       missed ? el('p', {},
         el('span', {class: 'tag-gap'}, '○ Worth considering: '),
         `${missed.name} (${missed.category}, would have scored ${phase.scores[missed.id]}). ${missed.use_case}`) : null,
-      answers.length ? el('ul', {}, answers.map(a => {
-        const q = bank.questions.find(x => x.id === a.questionId);
-        return el('li', {}, el('strong', {}, a.correct ? '✓ Secure: ' : '✗ Not secure: '), `${q.secure_behaviour}. `, q.explanation);
+      answers.length ? el('ul', {}, byQuestion(answers).map(([questionId, given]) => {
+        const q = bank.questions.find(x => x.id === questionId);
+        const secure = given.filter(a => a.correct).length;
+        const mark = secure === given.length ? '✓' : '✗';
+        const label = room ? `${mark} ${secure} of ${given.length} secure: ` : secure ? '✓ Secure: ' : '✗ Not secure: ';
+        return el('li', {}, el('strong', {}, label), `${q.secure_behaviour}. `, q.explanation);
       })) : el('p', {class: 'lead'}, 'No behaviour questions were answered in this phase.')));
+}
+
+// In multiplayer several players answer each question: show each question once, with the team's result.
+function byQuestion(answers) {
+  const groups = new Map();
+  for (const a of answers) groups.set(a.questionId, [...(groups.get(a.questionId) ?? []), a]);
+  return [...groups];
 }

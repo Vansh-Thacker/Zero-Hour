@@ -662,6 +662,53 @@ dialog.weak-alert[open] { animation: rise 0.35s var(--ease) both; }
 .name-form .alert { margin: 8px 0 0; }
 .name-form .actions { margin-top: 14px; }
 
+/* ---------- Multiplayer: the same screens, with a room bar and role limits ---------- */
+
+a.btn { text-decoration: none; }
+.start-actions { justify-content: flex-start; }
+
+.room-bar {
+  display: grid; grid-template-columns: auto 1fr 1.3fr; gap: 14px 24px; align-items: start;
+  padding: 16px 20px; margin-bottom: 22px; border-color: rgba(38, 191, 100, 0.35);
+}
+.room-seat { display: flex; flex-direction: column; gap: 2px; }
+.room-code { font: 700 1.9rem/1.1 var(--font-mono); color: var(--gold); letter-spacing: 0.04em; }
+.room-you { color: var(--text); font-weight: 700; }
+.room-join { color: var(--muted); font-size: 0.85rem; overflow-wrap: anywhere; }
+.room-join a { color: var(--detect); display: block; }
+.room-team, .room-log { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 0.92rem; }
+.room-team li { display: flex; align-items: center; gap: 8px; }
+.room-team .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--cat, var(--muted)); flex: none; }
+.room-team li[data-cat="Prevent"] { --cat: var(--prevent); }
+.room-team li[data-cat="Detect"] { --cat: var(--detect); }
+.room-team li[data-cat="Respond"] { --cat: var(--respond); }
+.room-log li { padding: 5px 10px; border-radius: 8px; background: rgba(0, 0, 0, 0.25); color: var(--muted); }
+.room-log li.is-refused { color: #ffe3c4; background: rgba(227, 133, 13, 0.18); border: 1px solid rgba(227, 133, 13, 0.5); }
+.room-team .is-empty, .room-log .is-empty { color: var(--muted); font-style: italic; background: none; }
+.room-bar .alert { grid-column: 1 / -1; margin: 0; }
+.room-leave { grid-column: 1 / -1; justify-self: start; min-height: 40px; padding: 8px 16px; }
+
+.waiting {
+  margin: 0; padding: 12px 18px; border-radius: 12px; font-weight: 700;
+  color: var(--gold); background: rgba(255, 181, 54, 0.08); border: 1px dashed rgba(255, 181, 54, 0.45);
+}
+.crew.is-others { opacity: 0.8; }
+.pick.is-locked { display: inline-flex; align-items: center; cursor: default; opacity: 0.75; font-size: 0.85rem; }
+.pick.is-locked:hover { transform: none; }
+.role-rule { color: var(--gold); font-weight: 700; }
+.verdict-line.is-team { color: var(--detect); }
+.option:disabled { cursor: default; }
+
+@media (max-width: 860px) {
+  .room-bar { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {   /* phones: keep the room bar short, so the game starts on the first screen */
+  .room-bar { gap: 10px; padding: 12px 14px; }
+  .room-code { font-size: 1.4rem; }
+  .room-team { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .room-log li:nth-child(n + 2) { display: none; }
+}
+
 /* ---------- Small screens ---------- */
 
 @media (max-width: 860px) {
