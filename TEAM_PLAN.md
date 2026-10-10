@@ -2,193 +2,191 @@
 
 Who works on what, how the pieces fit, and when things are due. Read `BRIEF.html` for the rules.
 
+**The game:** *Zero Hour*, a heist-themed, multiplayer version of the challenge. The players
+are the security team protecting a fictional energy company's data vault from a heist crew
+led by "The Architect". Original theme, inspired by heist films: no names, characters,
+costumes or music from any existing show.
+
 ## Roles at a glance
 
-| Person  | Role                         | Owns                                                  |
-|---------|------------------------------|-------------------------------------------------------|
-| Tejas   | Game engine and integration  | `src/engine/`, `src/main.mjs`, `src/config.mjs`       |
-| Rayyan  | Screens and accessibility    | `src/ui/`, `index.html`, `style.css`                  |
-| Ghassan | Checkpoints and questions    | `src/checkpoint/`                                     |
-| Vansh   | Incident Room theme          | `src/theme/`                                          |
-| Mo      | Tests, debrief and hand-in   | `tests/`, `src/debrief/`, `OUR_GAME.md`, slides       |
+| Person  | Role                                   | Owns                                                        |
+|---------|----------------------------------------|-------------------------------------------------------------|
+| Tejas   | Game engine (reducer) and integration  | `src/engine/state.mjs`, `src/main.mjs`, `src/config.mjs`    |
+| Rayyan  | Game engine (rules and helpers)        | `src/engine/actions.mjs`, `selection.mjs`, `scores.mjs`, `phases.mjs`, `loadData.mjs` |
+| Ghassan | Checkpoints and questions              | `src/checkpoint/`                                           |
+| Vansh   | Heist theme, multiplayer and screens   | `src/theme/`, `src/server/`, `src/net/`, `src/ui/`, `index.html` |
+| Mo      | Tests, debrief and hand-in             | `tests/`, `src/debrief/`, `OUR_GAME.md`, slides             |
 
-Tejas and Rayyan share the engine and screens as a pair: Tejas leads the engine, Rayyan
-leads the screens, and both can change either. Everyone else only edits files they own;
-if you need a change in someone else's folder, ask them.
+Only edit files you own. If you need a change in someone else's files, ask them.
+Do not edit the root `style.css` (the brief and demo pages use it) or anything in
+`1-foundation/starter/`.
 
-Everyone writes basic tests for their own module. Mo owns the overall test suite, writes
-the edge-case and end-to-end tests, and keeps `npm test` at `fail 0`.
+Everyone writes basic tests for their own module. Mo owns the overall test suite and keeps
+`npm test` at `fail 0`.
 
 ---
 
-## Tejas: game engine and integration
+## Tejas: game engine (reducer) and integration
 
-**Goal:** the whole game runs end to end, driven by one state object.
-
-Files: `src/engine/state.mjs`, `src/main.mjs` (new), `src/config.mjs`.
+**Goal:** the whole game runs end to end, driven by one state object, on one screen or many.
 
 - [x] State shape, `createInitialState()`, actions `select`, `deselect`, `confirm`, `reset`
-- [ ] Load `challenge.json` and `questions.json` in `src/main.mjs`, run `validateData`,
-      show a readable error if loading fails
-- [ ] `next` action: `story` → `reveal` → `checkpoint` → next phase's `story` …
-      → after phase 4's checkpoint → `outcome`
-- [ ] On entering `checkpoint`, call Ghassan's `pickQuestions()` and store the questions
-      in state (`state.checkpoint = {questions, index, timer}`)
-- [ ] Actions `answer`, `timeout`, `pause`, `resume`: call Ghassan's functions, record
-      each answer in `state.answers`, add points to `state.behaviourPoints[phase]`
-- [ ] Reject invalid actions safely (e.g. `answer` outside a checkpoint, `next` before
-      confirm) by returning the state unchanged
-- [ ] `dispatch(action)` in `main.mjs`: run `reduce`, then call Rayyan's `render(state)`
-      and Vansh's `renderTheme(state)`
-- [ ] Combine everyone's pull requests, run `npm test` after each one
+- [x] `next` action: story → reveal → checkpoint for each phase, then outcome
+- [ ] `select` uses Rayyan's `canSelect()`, so over-budget and duplicate picks are rejected
+      at once with a readable `state.error`
+- [ ] `src/main.mjs`: load data with Rayyan's `loadGameData()`, `dispatch(action)` runs
+      `reduce` then redraws. This is the **single-screen mode**
+- [ ] Checkpoint actions `answer`, `pause`, `resume`, `timeout`, using Ghassan's functions.
+      Answers record which `player` gave them (`null` in single-screen mode)
+- [ ] Reject actions that are not allowed at this point by returning the state unchanged
+- [ ] A test that plays a whole game through `reduce` alone
+- [ ] Set `GAME_NAME = 'Zero Hour'` and the business name in `src/config.mjs`
 
-**Done when:** a full game can be played in the browser with no theme, and a test plays
-a whole game through `reduce` alone.
+**Done when:** a full game plays on one screen, and the server can drive the same engine.
 
-## Rayyan: screens and accessibility
+## Rayyan: game engine (rules and helpers)
 
-**Goal:** every stage of the game has a clear, readable screen.
+**Goal:** small pure functions that the reducer, server, screens and theme all share.
+No page code (no `document`), so they work in the browser and on the server.
+One commit per file, each with its own test file.
 
-Files: `src/ui/*.mjs` (one file per screen), `index.html`, `style.css`.
+| # | File                       | What it does                                                   |
+|---|----------------------------|----------------------------------------------------------------|
+| 1 | `src/engine/actions.mjs`   | List of action types; `isValidAction(action)` checks shape, e.g. `select` has a string `id`. Actions may carry a `player` field, set by the server |
+| 2 | `src/engine/selection.mjs` | `selectionSummary(data, selected)` → `{spent, left, categoriesCovered, missing, canConfirm}`; `canSelect(data, selected, id)` → `{ok, reason}`, rejecting unknown IDs, duplicates and **over budget straight away** |
+| 3 | `src/engine/scores.mjs`    | `controlScoreSoFar(state)` (revealed phases only), `phaseScore(state, n)`, `bestPossiblePhaseScore(data, n)` for the vault meter, `behaviourTotal(state)`, `finalTotal(state)` |
+| 4 | `src/engine/phases.mjs`    | `currentPhase(data, state)` → title, time, story; `isLastPhase(data, state)`; `phaseLabel(state)` → "Phase 2 of 4" |
+| 5 | `src/engine/loadData.mjs`  | `loadGameData()` loads and checks `challenge.json` and `questions.json`, with a readable error. Works in the browser and in Node |
 
-- [ ] `render(state, data)` in `src/ui/app.mjs` picks the screen for `state.stage`
-- [ ] **Choose screen:** all 18 controls grouped by Prevent / Detect / Respond with icon
-      (`1-foundation/artwork/icons/`), name, cost and description; live budget left;
-      a tick for each category covered; the 3 controls already in place shown separately
-      as "already in place, scores nothing"; a Confirm button; `state.error` shown clearly
-- [ ] **Story screen:** phase title, `local_time` and `story` from `challenge.json`
-- [ ] **Reveal screen:** each chosen control and the points it scored this phase
-      (`state.result.phases[n].contributions`), phase total, running control score
-- [ ] **Checkpoint screen:** question, four options, time left, Pause/Resume button for
-      the facilitator; after answering show correct/wrong **in words and an icon**, plus
-      the explanation
-- [ ] **Outcome screen:** control score, behaviour points, total, Mo's debrief, Reset button
-- [ ] Accessibility: real `<button>`s, keyboard works, visible focus, text at least 16px,
-      good contrast, nothing told by colour alone
-- [ ] Game and business names come from `src/config.mjs` only
+Do 1 and 2 first: Tejas's `select` and Vansh's server need them.
+After these, help Vansh with the phone screens.
 
-**Done when:** someone who has never seen the game can play it without help.
+**Done when:** each file has passing tests and Tejas and Vansh are using them.
 
 ## Ghassan: checkpoints and questions
 
 **Goal:** a behaviour checkpoint after every phase that follows the brief's rules.
 
-Files: `src/checkpoint/checkpoint.mjs`, `tests/checkpoint.test.mjs`.
+Pure functions only: no page code, and the time is passed in (never `Date.now()` inside),
+so the same code runs the shared timer on the server.
 
-Pure functions only: no DOM, no `Date.now()` inside (the time is passed in), so they can be
-tested.
-
-- [ ] `pickQuestions(bank, phaseId, count)`: choose questions for the phase, using the
-      questions' `phase_id` and the brief's table (phase 1: Q01–Q04, Q29 …). Decide
-      fixed or random and write the rule down for Mo
-- [ ] `markAnswer(question, choice)` → `{correct, points, explanation}`;
-      `POINTS_PER_SECURE_ANSWER` from config, 0 if wrong
+- [ ] `pickQuestions(bank, phaseId, count)`: questions for the phase, using `phase_id` and
+      the brief's table (phase 1: Q01–Q04, Q29 …). Every player gets the same questions
+- [ ] `markAnswer(question, choice)` → `{correct, points, explanation}`
 - [ ] Timer: `startTimer(now)`, `timeLeft(timer, now)`, `pauseTimer(timer, now)`,
-      `resumeTimer(timer, now)`, `isExpired(timer, now)`. A checkpoint never takes more
-      than `CHECKPOINT_SECONDS` (120)
-- [ ] When time runs out, unanswered questions score 0, but their explanation is still
-      shown
+      `resumeTimer(timer, now)`, `isExpired(timer, now)`. Never more than 120 seconds;
+      the host can pause
+- [ ] Time runs out: unanswered questions score 0, explanation still shown
+- [ ] `teamBehaviourPoints(answers, players)`: the **team average** per question (see decisions)
 - [ ] Never change a question's wording, correct answer or explanation
-- [ ] Optional, only if time allows: the harder-question-on-the-same-topic idea from the brief
 
-**Done when:** Tejas can call these from the engine and the checkpoint tests pass.
+**Done when:** Tejas can call these and the checkpoint tests pass.
 
-## Vansh: Incident Room theme
+## Vansh: heist theme, multiplayer and screens
 
-**Goal:** the attack feels live, and what the room shows changes with the player's choices.
+**Goal:** *Zero Hour* playable by a host screen plus phones, built in stages.
+The theme only reads state and never changes scores. Check the theme with the organisers
+at the Saturday desk visit (the brief asks us to, because it is our own theme).
 
-Files: `src/theme/theme.mjs`, `src/theme/*.css`. Read
-`2-extend/themes/incident-room/README.md` and `reference.json` first.
+| Stage | What                                                                         |
+|-------|------------------------------------------------------------------------------|
+| 1     | `src/server/server.mjs`: serves the game files, creates a room (code like `VAULT-42`), players join and get a role. Host shows the code and who joined. `npm start` runs it |
+| 2     | Shared choosing: Gatekeeper = Prevent, Watcher = Detect, Responder = Respond. The **server** checks the role, then calls the engine's `reduce`. Budget updates live (Server-Sent Events). Host confirms |
+| 3     | Host screen heist: blueprint floor plan, crew route, defences light up when they score, vault integrity meter, heist clock (Mon 16:40 → Tue 06:30), messages from The Architect |
+| 4     | Checkpoints on phones, using Ghassan's functions; shared timer the host can pause |
+| 5     | Ending ("Heist foiled" / "The crew got away"), scores shown separately, Mo's debrief, reset |
+| 6     | Multiplayer tests in `tests/multiplayer.test.mjs` (with Mo)                  |
 
-- [ ] `renderTheme(state, data, element)`: reads state only, never changes scores
-- [ ] One "channel" per phase: inbox (phase 1), incident chat (phase 2), call to the night
-      desk (phase 3), morning update (phase 4), using `reference.json`
-- [ ] Messages change with the choices: for each phase, look at which chosen controls
-      scored points (`state.result.phases[n].contributions`) and show a matching message
-      ("Email security quarantined 3 copies" vs "No email filtering: the message
-      reached 40 inboxes")
-- [ ] A status panel (e.g. systems OK / at risk / encrypted) that changes each phase
-- [ ] Always show each control's real name next to any theme wording
-- [ ] Use `2-extend/artwork/incident/` artwork if it helps; list it for Mo's credits
-- [ ] Keep detection and prevention accurate: detecting something is not stopping it
+Rules: real control name always next to the heist name, e.g. "Vault door seal (Email
+security)". No flashing; respect `prefers-reduced-motion`. Feedback not by colour alone.
+No npm packages; nothing online while the game runs.
 
-**Done when:** two different control choices give visibly different incident rooms.
+Hard cases the server must handle: two players over budget at once (first wins, second gets
+a clear message); same control twice; control outside the player's role; phone or host
+refresh (state comes back); joining after confirm (can watch and answer, cannot choose);
+wrong room code (clear error).
+
+**Done when:** host plus two phones (or three browser tabs) play a full game together.
 
 ## Mo: tests, debrief and hand-in
 
-**Goal:** the game is provably correct, the debrief teaches, and the hand-in is ready.
-
-Files: `tests/*.test.mjs`, `src/debrief/debrief.mjs`, `OUR_GAME.md`, slides.
-
-- [ ] `buildDebrief(data, bank, state)` → control score, behaviour points, total, and for
-      each phase: what helped (chosen controls that scored), what was missed (the best
-      unchosen control that phase), and the questions answered with their explanations
-- [ ] Tests for the rules: over budget, missing a category, choosing twice, an
-      already-in-place control can't be chosen, phase scores match `scoreSelection`
-- [ ] Tests for checkpoints: right answer earns points, wrong earns 0, timeout earns 0,
-      pause stops the clock, behaviour points kept separate from the control score
-- [ ] One end-to-end test that plays a whole game through `reduce`
-- [ ] Fill in `OUR_GAME.md` as features land (names and where they're set, how to run,
-      walkthrough, design, tests, what doesn't work, AI use, credits)
-- [ ] 8-minute pitch and a demo walkthrough that has been tested on the real build
-
-**Done when:** `npm test` covers every rule in the brief and `OUR_GAME.md` is complete.
+- [ ] `buildDebrief(data, bank, state)`: for each phase, what helped (chosen controls that
+      scored), what was missed (the best unchosen control), and the questions with explanations
+- [ ] Tests for the rules: budget, categories, duplicates, already-in-place controls, phase
+      scores match `scoreSelection` exactly
+- [ ] Tests for checkpoints: right, wrong, timeout, pause, team average
+- [ ] With Vansh: multiplayer tests (simultaneous picks, roles, rejoining)
+- [ ] `OUR_GAME.md` kept up to date, including where AI tools helped
+- [ ] 8-minute pitch and a demo walkthrough tested on the real build
 
 ---
+
+## Decisions
+
+| Question                              | Decision                                                      |
+|---------------------------------------|---------------------------------------------------------------|
+| Theme                                 | *Zero Hour* heist (our own). Confirm with organisers on Saturday |
+| Who confirms the controls             | The host                                                      |
+| Who answers checkpoint questions      | Every player, on their own phone                              |
+| Behaviour points with many players    | Team average per question, so team size doesn't change the score. Each phone shows that player's own result |
+| Player roles                          | Checked by the server, not the engine, so single-screen mode needs no roles |
+| Vault integrity meter                 | Phase score ÷ best possible score for that phase              |
+| Heist foiled or crew got away         | Rule to be set by Vansh and Mo, written in `OUR_GAME.md` and explained in the debrief. Detecting is not the same as stopping |
+| Fallback                              | Single-screen mode must always work. If multiplayer isn't solid by **Sunday 10:00**, demo single-screen |
 
 ## How the pieces fit
 
 ```
 challenge.json, questions.json
-          │
-     src/main.mjs ── dispatch(action) ──► engine/state.mjs (reduce)
-          │                                   │ calls
-          │                                   ├─ starter/controls.mjs (scoreSelection)
-          │                                   └─ checkpoint/checkpoint.mjs
-          ▼ new state
-   ui/app.mjs render()   theme/theme.mjs renderTheme()   debrief/debrief.mjs
-          (all three only read state)
+          │  loadGameData()
+          ▼
+ phones / host ── action ──► src/server/server.mjs ── role check ──► engine/state.mjs reduce()
+     ▲                                                              │ uses
+     │                                                              ├─ starter/controls.mjs
+     │                                                              ├─ engine helpers (Rayyan)
+     │                                                              └─ checkpoint/ (Ghassan)
+     └──────── new state (Server-Sent Events) ◄─────────────────────┘
+          theme/ and ui/ draw it (read only)       debrief/ explains it
 ```
 
-- **Engine** owns the state and is the only code that changes it.
-- **Checkpoint** and **debrief** are pure functions the engine and UI call.
-- **UI** and **theme** read state and send actions with `dispatch(action)`.
-- **Config** (`src/config.mjs`) is the one place for names and tunable numbers.
+Single-screen mode is the same picture without the server: `src/main.mjs` calls `reduce`
+directly.
 
-### State shape (agreed contract)
+### Engine state shape (agreed contract)
 
 ```js
 {
   stage: 'choose' | 'story' | 'reveal' | 'checkpoint' | 'outcome',
   phase: 0,                 // 0-3, index into challenge.json phases
   selected: [],             // control IDs, e.g. ['P3', 'D3', 'R1']
-  confirmed: false,         // true once the choice is locked
+  confirmed: false,         // true once the host confirms
   result: null,             // output of scoreSelection() after confirm
-  checkpoint: null,         // { questions, index, timer } during a checkpoint
+  checkpoint: null,         // { questions, timer } during a checkpoint
   behaviourPoints: [0, 0, 0, 0],
-  answers: [],              // { phase, questionId, choice, correct }
+  answers: [],              // { phase, questionId, player, choice, correct }
   error: null,              // readable message for the player
 }
 ```
 
-Change this only by agreement, and update this file when you do.
+Rooms and players (code, names, roles, connections) live in `src/server/`, not in this
+state. Change this shape only by agreement, and update this file when you do.
 
 ## Timeline
 
-| When            | What                                                                    |
-|-----------------|-------------------------------------------------------------------------|
-| Sat 13:30–14:00 | Everyone: read this plan, agree the state shape and function names      |
-| Sat 14:00–17:00 | Build own module. Tejas/Rayyan: choose → confirm → story → reveal on screen |
-| **Sat 17:00**   | **Foundation end to end:** checkpoints wired in, outcome screen, reset  |
-| Sat 17:00–19:00 | Theme wired in, debrief on outcome screen, tests filled out             |
-| Sat 19:00–21:00 | Bug fixing, playtests swapping roles; be ready to show code to experts  |
-| Sun 09:00–11:00 | Fixes from feedback, `OUR_GAME.md` final, rehearse pitch twice          |
-| **Sun 11:30**   | **Code freeze.** Only fixes to the hand-in note after this              |
-| **Sun 12:00**   | **Everything committed**                                                |
+| When            | What                                                                      |
+|-----------------|---------------------------------------------------------------------------|
+| Sat afternoon   | Desk visit: check the *Zero Hour* theme with the organisers               |
+| Sat 14:00–17:00 | Engine helpers and reducer; checkpoint functions; server stage 1          |
+| **Sat 17:00**   | **Single-screen game works end to end**                                   |
+| Sat 17:00–21:00 | Multiplayer stages 2–3; debrief; tests filled out                         |
+| Sun 09:00–10:00 | Multiplayer stages 4–5. **10:00: go/no-go on multiplayer for the demo**   |
+| Sun 10:00–11:30 | Fixes, `OUR_GAME.md` final, rehearse the pitch twice                      |
+| **Sun 11:30**   | **Code freeze**                                                           |
+| **Sun 12:00**   | **Everything committed**                                                  |
 
 ## Git workflow
 
-- Everyone works on their own branch and opens a pull request into `main`.
-- Before opening a pull request: pull the latest `main` into your branch, run `npm test`,
-  and check the game still loads.
-- Keep pull requests small and inside your own folder. Tejas merges them.
+- Branch from `dev`, work on your own branch, open a pull request into `dev`.
+- Before a pull request: pull the latest `dev` into your branch and run `npm test`.
+- Keep pull requests small and inside your own files.
+- `dev` goes into `main` for the final hand-in only.
