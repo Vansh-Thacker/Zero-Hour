@@ -1,0 +1,29 @@
+:root { color-scheme: dark; font-family: Arial, sans-serif; background: #101923; color: #f6f8fb; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; min-height: 100vh; background: radial-gradient(circle at top right, #21415a, #101923 60%); }
+.lobby { width: min(100% - 2rem, 46rem); margin: 0 auto; padding: clamp(2rem, 7vw, 5rem) 0; }
+.eyebrow { color: #8ed8bb; font-size: .8rem; font-weight: 700; letter-spacing: .16em; }
+h1 { font-size: clamp(2rem, 7vw, 3.6rem); line-height: 1.08; margin: .8rem 0 1rem; }
+h2 { font-size: 1.25rem; margin-top: 2rem; }
+.intro, .quiet { color: #c4d0d9; line-height: 1.55; }
+.status { min-height: 1.5rem; color: #b4eed8; }
+.status.error { color: #ffd5be; }
+button, input { font: inherit; }
+button { cursor: pointer; border-radius: .65rem; padding: .8rem 1.1rem; font-weight: 700; }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid #f8d35a; outline-offset: 3px; }
+.primary { background: #50c894; color: #092319; border: 2px solid #50c894; }
+.secondary { background: transparent; color: #f6f8fb; border: 2px solid #9bb1bf; }
+button:disabled { opacity: .6; cursor: default; }
+form { display: grid; gap: .65rem; max-width: 28rem; }
+form label { margin-top: .5rem; font-weight: 700; }
+input { width: 100%; border: 2px solid #94abb9; border-radius: .55rem; background: #fff; color: #10212d; padding: .8rem; }
+form button { margin-top: .7rem; }
+section[hidden] { display: none; }
+.code-card { background: #193248; border: 1px solid #638493; border-radius: 1rem; margin-top: 2rem; padding: 1.3rem 1.5rem; }
+.code-card span { display: block; color: #b4eed8; letter-spacing: .14em; font-size: .8rem; font-weight: 700; }
+.code-card strong { display: block; font-size: clamp(2rem, 8vw, 4rem); letter-spacing: .04em; margin: .4rem 0; overflow-wrap: anywhere; }
+.code-card p { color: #d3e2e9; margin: .5rem 0 0; }
+ul { padding-left: 1.4rem; line-height: 1.65; }
+.players li { margin-bottom: .35rem; }
+a { color: #a6e5ff; }

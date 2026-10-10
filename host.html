@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zero Hour · Host</title>
+  <link rel="stylesheet" href="./src/net/lobby.css">
+  <script type="module" src="./src/host.mjs"></script>
+</head>
+<body>
+  <main class="lobby">
+    <p class="eyebrow">ZERO HOUR / HOST SCREEN</p>
+    <h1>Gather your security team.</h1>
+    <p class="intro">Create a room, then ask players to join on their phones. Their roles and names appear here as they arrive.</p>
+    <p id="status" class="status" role="status">Ready to create a room.</p>
+    <button id="create" type="button" class="primary">Create game</button>
+    <section id="room" hidden aria-label="Game room">
+      <div class="code-card">
+        <span>ROOM CODE</span>
+        <strong id="code"></strong>
+      </div>
+      <h2>Join on a phone</h2>
+      <ul id="addresses" class="addresses"></ul>
+      <p>On this laptop, open <a href="./play.html" target="_blank" rel="noopener">the player page</a> in two or three new tabs.</p>
+      <h2>Players <span id="count">0</span></h2>
+      <ul id="players" class="players"></ul>
+      <p id="phase" class="quiet"></p>
+    </section>
+    <p class="quiet"><a href="./index.html">Open the single-screen game</a></p>
+  </main>
+</body>
+</html>

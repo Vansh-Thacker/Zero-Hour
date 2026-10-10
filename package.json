@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node 1-foundation/starter/serve.mjs",
-    "test": "node --test"
+    "test": "node --test",
+    "multiplayer": "node src/server/server.mjs"
   },
   "engines": {
     "node": ">=20"
