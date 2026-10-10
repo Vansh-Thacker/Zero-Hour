@@ -1,0 +1,1182 @@
+{
+ "version": "1.4.1-smooth-assets",
+ "units": "metres",
+ "up_axis": "Y",
+ "origin": "centre of footprint at ground level",
+ "budgets": {
+  "max_bytes_per_model": 5000000,
+  "max_bytes_total": 40000000
+ },
+ "models": [
+  {
+   "file": "cars/car_1.glb",
+   "kind": "car",
+   "bytes": 828052,
+   "triangles": 23714,
+   "footprint_m": [
+    1.95,
+    4.8
+   ],
+   "height_m": 1.16,
+   "title": "Team 1 endurance car",
+   "forward_axis": "-Z",
+   "livery": "Emerald / white centre stripe",
+   "headlights": "emissive meshes + two KHR_lights_punctual spots",
+   "brand_mark": "Supplied ScottishPower three-colour symbol on nose; embedded texture"
+  },
+  {
+   "file": "cars/car_2.glb",
+   "kind": "car",
+   "bytes": 855452,
+   "triangles": 24534,
+   "footprint_m": [
+    1.95,
+    4.8
+   ],
+   "height_m": 1.16,
+   "title": "Team 2 endurance car",
+   "forward_axis": "-Z",
+   "livery": "Sky blue / twin white stripes",
+   "headlights": "emissive meshes + two KHR_lights_punctual spots",
+   "brand_mark": "Supplied ScottishPower three-colour symbol on nose; embedded texture"
+  },
+  {
+   "file": "cars/car_3.glb",
+   "kind": "car",
+   "bytes": 832984,
+   "triangles": 23750,
+   "footprint_m": [
+    1.95,
+    4.8
+   ],
+   "height_m": 1.16,
+   "title": "Team 3 endurance car",
+   "forward_axis": "-Z",
+   "livery": "Sunset orange / forest nose",
+   "headlights": "emissive meshes + two KHR_lights_punctual spots",
+   "brand_mark": "Supplied ScottishPower three-colour symbol on nose; embedded texture"
+  },
+  {
+   "file": "cars/car_4.glb",
+   "kind": "car",
+   "bytes": 831580,
+   "triangles": 23738,
+   "footprint_m": [
+    1.95,
+    4.8
+   ],
+   "height_m": 1.16,
+   "title": "Team 4 endurance car",
+   "forward_axis": "-Z",
+   "livery": "Forest / mint panels",
+   "headlights": "emissive meshes + two KHR_lights_punctual spots",
+   "brand_mark": "Supplied ScottishPower three-colour symbol on nose; embedded texture"
+  },
+  {
+   "file": "cars/car_5.glb",
+   "kind": "car",
+   "bytes": 832576,
+   "triangles": 23750,
+   "footprint_m": [
+    1.95,
+    4.8
+   ],
+   "height_m": 1.16,
+   "title": "Team 5 endurance car",
+   "forward_axis": "-Z",
+   "livery": "White / blue fenders",
+   "headlights": "emissive meshes + two KHR_lights_punctual spots",
+   "brand_mark": "Supplied ScottishPower three-colour symbol on nose; embedded texture"
+  },
+  {
+   "file": "cars/car_6.glb",
+   "kind": "car",
+   "bytes": 833440,
+   "triangles": 23762,
+   "footprint_m": [
+    1.95,
+    4.8
+   ],
+   "height_m": 1.16,
+   "title": "Team 6 endurance car",
+   "forward_axis": "-Z",
+   "livery": "Mint / forest centre stripe",
+   "headlights": "emissive meshes + two KHR_lights_punctual spots",
+   "brand_mark": "Supplied ScottishPower three-colour symbol on nose; embedded texture"
+  },
+  {
+   "file": "cars/car_7.glb",
+   "kind": "car",
+   "bytes": 831572,
+   "triangles": 23726,
+   "footprint_m": [
+    1.95,
+    4.8
+   ],
+   "height_m": 1.16,
+   "title": "Team 7 endurance car",
+   "forward_axis": "-Z",
+   "livery": "Sky blue / orange nose",
+   "headlights": "emissive meshes + two KHR_lights_punctual spots",
+   "brand_mark": "Supplied ScottishPower three-colour symbol on nose; embedded texture"
+  },
+  {
+   "file": "cars/car_8.glb",
+   "kind": "car",
+   "bytes": 834364,
+   "triangles": 23774,
+   "footprint_m": [
+    1.95,
+    4.8
+   ],
+   "height_m": 1.16,
+   "title": "Team 8 endurance car",
+   "forward_axis": "-Z",
+   "livery": "White / emerald with orange wing",
+   "headlights": "emissive meshes + two KHR_lights_punctual spots",
+   "brand_mark": "Supplied ScottishPower three-colour symbol on nose; embedded texture"
+  },
+  {
+   "file": "map/city_outside.glb",
+   "kind": "map_city",
+   "bytes": 199032,
+   "triangles": 3260,
+   "footprint_m": [
+    23.595,
+    23.595
+   ],
+   "height_m": 10.79,
+   "title": "Outside citadel",
+   "node_id": "outside"
+  },
+  {
+   "file": "map/city_workstation.glb",
+   "kind": "map_city",
+   "bytes": 234240,
+   "triangles": 3528,
+   "footprint_m": [
+    23.595,
+    23.595
+   ],
+   "height_m": 5.85,
+   "title": "Workstation citadel",
+   "node_id": "workstation"
+  },
+  {
+   "file": "map/city_identity.glb",
+   "kind": "map_city",
+   "bytes": 215736,
+   "triangles": 3604,
+   "footprint_m": [
+    23.595,
+    23.595
+   ],
+   "height_m": 12.74,
+   "title": "Identity citadel",
+   "node_id": "identity"
+  },
+  {
+   "file": "map/city_documents.glb",
+   "kind": "map_city",
+   "bytes": 278428,
+   "triangles": 4368,
+   "footprint_m": [
+    23.595,
+    23.595
+   ],
+   "height_m": 7.54,
+   "title": "Documents citadel",
+   "node_id": "documents"
+  },
+  {
+   "file": "map/city_casework.glb",
+   "kind": "map_city",
+   "bytes": 247564,
+   "triangles": 4000,
+   "footprint_m": [
+    23.595,
+    23.595
+   ],
+   "height_m": 12.09,
+   "title": "Casework citadel",
+   "node_id": "casework"
+  },
+  {
+   "file": "map/city_workorders.glb",
+   "kind": "map_city",
+   "bytes": 232308,
+   "triangles": 3500,
+   "footprint_m": [
+    23.595,
+    23.595
+   ],
+   "height_m": 7.93,
+   "title": "Work orders citadel",
+   "node_id": "workorders"
+  },
+  {
+   "file": "map/city_backup.glb",
+   "kind": "map_city",
+   "bytes": 202840,
+   "triangles": 3400,
+   "footprint_m": [
+    23.595,
+    23.595
+   ],
+   "height_m": 6.51625,
+   "title": "Backups citadel",
+   "node_id": "backup"
+  },
+  {
+   "file": "map/city_partner.glb",
+   "kind": "map_city",
+   "bytes": 219588,
+   "triangles": 3652,
+   "footprint_m": [
+    23.595,
+    23.595
+   ],
+   "height_m": 10.27,
+   "title": "Partner exchange citadel",
+   "node_id": "partner"
+  },
+  {
+   "file": "map/city_monitor.glb",
+   "kind": "map_city",
+   "bytes": 366640,
+   "triangles": 9000,
+   "footprint_m": [
+    23.595,
+    23.595
+   ],
+   "height_m": 13.39,
+   "title": "Monitoring citadel",
+   "node_id": "monitor"
+  },
+  {
+   "file": "scenery/tree_conifer.glb",
+   "kind": "scenery",
+   "bytes": 17112,
+   "triangles": 320,
+   "footprint_m": [
+    3.5,
+    3.5
+   ],
+   "height_m": 6.9,
+   "title": "Conifer tree"
+  },
+  {
+   "file": "scenery/tree_broadleaf.glb",
+   "kind": "scenery",
+   "bytes": 169692,
+   "triangles": 5696,
+   "footprint_m": [
+    4.93165,
+    4.18247
+   ],
+   "height_m": 6.96,
+   "title": "Broadleaf tree"
+  },
+  {
+   "file": "scenery/wind_turbine.glb",
+   "kind": "scenery",
+   "bytes": 56864,
+   "triangles": 1612,
+   "footprint_m": [
+    19.91858,
+    3.84726
+   ],
+   "height_m": 35.5,
+   "title": "Wind Turbine"
+  },
+  {
+   "file": "scenery/transmission_pylon.glb",
+   "kind": "scenery",
+   "bytes": 88204,
+   "triangles": 1392,
+   "footprint_m": [
+    13.0,
+    7.2363
+   ],
+   "height_m": 26.05464,
+   "title": "Transmission Pylon"
+  },
+  {
+   "file": "scenery/rock_cluster.glb",
+   "kind": "scenery",
+   "bytes": 40840,
+   "triangles": 1568,
+   "footprint_m": [
+    5.4,
+    3.5
+   ],
+   "height_m": 2.3,
+   "title": "Rock Cluster"
+  },
+  {
+   "file": "scenery/mountain.glb",
+   "kind": "scenery",
+   "bytes": 44684,
+   "triangles": 1440,
+   "footprint_m": [
+    42.53575,
+    33.21975
+   ],
+   "height_m": 28.0,
+   "title": "Mountain"
+  },
+  {
+   "file": "scenery/small_building.glb",
+   "kind": "scenery",
+   "bytes": 28012,
+   "triangles": 320,
+   "footprint_m": [
+    6.6,
+    5.6
+   ],
+   "height_m": 6.5,
+   "title": "Small Building"
+  },
+  {
+   "file": "scenery/office.glb",
+   "kind": "scenery",
+   "bytes": 184704,
+   "triangles": 2388,
+   "footprint_m": [
+    14.5,
+    10.5
+   ],
+   "height_m": 18.5,
+   "title": "Office"
+  },
+  {
+   "file": "scenery/substation.glb",
+   "kind": "scenery",
+   "bytes": 65584,
+   "triangles": 936,
+   "footprint_m": [
+    26.0,
+    19.0
+   ],
+   "height_m": 6.95,
+   "title": "Substation"
+  },
+  {
+   "file": "scenery/solar_array.glb",
+   "kind": "scenery",
+   "bytes": 26720,
+   "triangles": 324,
+   "footprint_m": [
+    8.6,
+    3.83469
+   ],
+   "height_m": 2.59568,
+   "title": "Solar Array"
+  },
+  {
+   "file": "scenery/ev_charger.glb",
+   "kind": "scenery",
+   "bytes": 10836,
+   "triangles": 120,
+   "footprint_m": [
+    1.06,
+    0.58031
+   ],
+   "height_m": 1.7,
+   "title": "Ev Charger"
+  },
+  {
+   "file": "scenery/battery_store.glb",
+   "kind": "scenery",
+   "bytes": 5628,
+   "triangles": 72,
+   "footprint_m": [
+    4.0,
+    1.0375
+   ],
+   "height_m": 2.1,
+   "title": "Battery Store"
+  },
+  {
+   "file": "scenery/electric_van.glb",
+   "kind": "scenery",
+   "bytes": 17576,
+   "triangles": 292,
+   "footprint_m": [
+    1.98,
+    4.2
+   ],
+   "height_m": 1.85,
+   "title": "Electric Van"
+  },
+  {
+   "file": "scenery/river_segment.glb",
+   "kind": "scenery",
+   "bytes": 10064,
+   "triangles": 236,
+   "footprint_m": [
+    9.0,
+    40.0
+   ],
+   "height_m": 0.03,
+   "title": "River Segment"
+  },
+  {
+   "file": "scenery/river_bend.glb",
+   "kind": "scenery",
+   "bytes": 10256,
+   "triangles": 236,
+   "footprint_m": [
+    41.47062,
+    41.47062
+   ],
+   "height_m": 0.03,
+   "title": "River Bend"
+  },
+  {
+   "file": "scenery/river_s_bend.glb",
+   "kind": "scenery",
+   "bytes": 12444,
+   "triangles": 236,
+   "footprint_m": [
+    29.20645,
+    58.23138
+   ],
+   "height_m": 0.03,
+   "title": "River S Bend"
+  },
+  {
+   "file": "track/track_straight.glb",
+   "kind": "track",
+   "bytes": 8352,
+   "triangles": 178,
+   "footprint_m": [
+    12.0,
+    40.0
+   ],
+   "height_m": 0.0,
+   "title": "Track Straight"
+  },
+  {
+   "file": "track/track_chicane.glb",
+   "kind": "track",
+   "bytes": 9648,
+   "triangles": 178,
+   "footprint_m": [
+    29.97458,
+    67.84994
+   ],
+   "height_m": 0.0,
+   "title": "Track Chicane"
+  },
+  {
+   "file": "track/track_hairpin.glb",
+   "kind": "track",
+   "bytes": 8436,
+   "triangles": 178,
+   "footprint_m": [
+    45.68049,
+    47.12149
+   ],
+   "height_m": 0.0,
+   "title": "Track Hairpin"
+  },
+  {
+   "file": "track/track_curve.glb",
+   "kind": "track",
+   "bytes": 8448,
+   "triangles": 178,
+   "footprint_m": [
+    56.47638,
+    56.47638
+   ],
+   "height_m": 0.0,
+   "title": "Track Curve"
+  },
+  {
+   "file": "track/pylon_bridge.glb",
+   "kind": "track",
+   "bytes": 452068,
+   "triangles": 7260,
+   "footprint_m": [
+    22.36,
+    42.0
+   ],
+   "height_m": 20.97,
+   "title": "Pylon Bridge"
+  },
+  {
+   "file": "track/pylon_tunnel.glb",
+   "kind": "track",
+   "bytes": 1002456,
+   "triangles": 16416,
+   "footprint_m": [
+    22.36,
+    26.43254
+   ],
+   "height_m": 16.21196,
+   "title": "Pylon Tunnel"
+  },
+  {
+   "file": "track/pylon_gate.glb",
+   "kind": "track",
+   "bytes": 202412,
+   "triangles": 3216,
+   "footprint_m": [
+    20.36,
+    2.43254
+   ],
+   "height_m": 16.21196,
+   "title": "Pylon Gate"
+  },
+  {
+   "file": "controls/P1_endpoint_protection.glb",
+   "kind": "control",
+   "bytes": 34448,
+   "triangles": 396,
+   "footprint_m": [
+    1.239,
+    0.69821
+   ],
+   "height_m": 0.61246,
+   "title": "Endpoint protection platform",
+   "control_id": "P1"
+  },
+  {
+   "file": "race_parts/P1_engine_air_filter.glb",
+   "kind": "race_part",
+   "bytes": 10556,
+   "triangles": 108,
+   "footprint_m": [
+    0.65,
+    0.75
+   ],
+   "height_m": 0.235,
+   "title": "Engine air filter",
+   "control_id": "P1"
+  },
+  {
+   "file": "controls/P2_network_segmentation.glb",
+   "kind": "control",
+   "bytes": 32624,
+   "triangles": 540,
+   "footprint_m": [
+    1.3275,
+    1.2
+   ],
+   "height_m": 0.8,
+   "title": "Network segmentation",
+   "control_id": "P2"
+  },
+  {
+   "file": "race_parts/P2_bulkheads.glb",
+   "kind": "race_part",
+   "bytes": 4188,
+   "triangles": 36,
+   "footprint_m": [
+    1.1,
+    0.86
+   ],
+   "height_m": 0.8,
+   "title": "Bulkheads",
+   "control_id": "P2"
+  },
+  {
+   "file": "controls/P3_patching_and_updates.glb",
+   "kind": "control",
+   "bytes": 14200,
+   "triangles": 360,
+   "footprint_m": [
+    0.6,
+    0.09
+   ],
+   "height_m": 1.355,
+   "title": "Software patching and updates",
+   "control_id": "P3"
+  },
+  {
+   "file": "race_parts/P3_scheduled_servicing.glb",
+   "kind": "race_part",
+   "bytes": 23072,
+   "triangles": 680,
+   "footprint_m": [
+    1.12,
+    1.355
+   ],
+   "height_m": 0.18,
+   "title": "Scheduled servicing",
+   "control_id": "P3"
+  },
+  {
+   "file": "controls/P4_secure_by_design.glb",
+   "kind": "control",
+   "bytes": 8980,
+   "triangles": 84,
+   "footprint_m": [
+    1.13,
+    0.16
+   ],
+   "height_m": 1.0,
+   "title": "Secure by design",
+   "control_id": "P4"
+  },
+  {
+   "file": "race_parts/P4_chassis.glb",
+   "kind": "race_part",
+   "bytes": 14004,
+   "triangles": 168,
+   "footprint_m": [
+    1.0866,
+    2.6866
+   ],
+   "height_m": 0.1,
+   "title": "Chassis",
+   "control_id": "P4"
+  },
+  {
+   "file": "controls/P5_training_and_awareness.glb",
+   "kind": "control",
+   "bytes": 17384,
+   "triangles": 236,
+   "footprint_m": [
+    1.565,
+    0.36
+   ],
+   "height_m": 1.525,
+   "title": "Training and awareness",
+   "control_id": "P5"
+  },
+  {
+   "file": "race_parts/P5_driver_training.glb",
+   "kind": "race_part",
+   "bytes": 15988,
+   "triangles": 392,
+   "footprint_m": [
+    0.89,
+    0.09
+   ],
+   "height_m": 0.89,
+   "title": "Driver training",
+   "control_id": "P5"
+  },
+  {
+   "file": "controls/P6_email_security.glb",
+   "kind": "control",
+   "bytes": 15128,
+   "triangles": 164,
+   "footprint_m": [
+    1.175,
+    0.64
+   ],
+   "height_m": 0.79,
+   "title": "Email security",
+   "control_id": "P6"
+  },
+  {
+   "file": "race_parts/P6_front_grille.glb",
+   "kind": "race_part",
+   "bytes": 11500,
+   "triangles": 120,
+   "footprint_m": [
+    1.2,
+    0.17
+   ],
+   "height_m": 0.45,
+   "title": "Front grille",
+   "control_id": "P6"
+  },
+  {
+   "file": "controls/P7_multi_factor_authentication.glb",
+   "kind": "control",
+   "bytes": 28108,
+   "triangles": 384,
+   "footprint_m": [
+    0.8175,
+    0.17675
+   ],
+   "height_m": 0.62,
+   "title": "Multi-factor authentication and identity management",
+   "control_id": "P7"
+  },
+  {
+   "file": "race_parts/P7_immobiliser.glb",
+   "kind": "race_part",
+   "bytes": 22904,
+   "triangles": 312,
+   "footprint_m": [
+    0.65,
+    0.2525
+   ],
+   "height_m": 0.82445,
+   "title": "Immobiliser",
+   "control_id": "P7"
+  },
+  {
+   "file": "controls/D1_siem.glb",
+   "kind": "control",
+   "bytes": 11528,
+   "triangles": 96,
+   "footprint_m": [
+    1.25,
+    0.35
+   ],
+   "height_m": 1.11,
+   "title": "Security information and event management (SIEM)",
+   "control_id": "D1"
+  },
+  {
+   "file": "race_parts/D1_pit_wall_screens.glb",
+   "kind": "race_part",
+   "bytes": 15536,
+   "triangles": 192,
+   "footprint_m": [
+    2.85,
+    0.35
+   ],
+   "height_m": 1.11,
+   "title": "Pit wall screens",
+   "control_id": "D1"
+  },
+  {
+   "file": "controls/D2_intrusion_detection_and_prevention.glb",
+   "kind": "control",
+   "bytes": 13864,
+   "triangles": 120,
+   "footprint_m": [
+    1.6275,
+    0.35
+   ],
+   "height_m": 1.11,
+   "title": "Intrusion detection and prevention",
+   "control_id": "D2"
+  },
+  {
+   "file": "race_parts/D2_warning_lights_and_cut_outs.glb",
+   "kind": "race_part",
+   "bytes": 8312,
+   "triangles": 252,
+   "footprint_m": [
+    1.1,
+    0.295
+   ],
+   "height_m": 0.45,
+   "title": "Warning lights and cut-outs",
+   "control_id": "D2"
+  },
+  {
+   "file": "controls/D3_threat_hunting_and_honeypots.glb",
+   "kind": "control",
+   "bytes": 14960,
+   "triangles": 392,
+   "footprint_m": [
+    1.37423,
+    0.7
+   ],
+   "height_m": 1.02173,
+   "title": "Threat hunting and honeypots",
+   "control_id": "D3"
+  },
+  {
+   "file": "race_parts/D3_trackside_spotters.glb",
+   "kind": "race_part",
+   "bytes": 17908,
+   "triangles": 272,
+   "footprint_m": [
+    0.73,
+    0.48
+   ],
+   "height_m": 1.525,
+   "title": "Trackside spotters",
+   "control_id": "D3"
+  },
+  {
+   "file": "controls/D4_managed_detection_and_response.glb",
+   "kind": "control",
+   "bytes": 22368,
+   "triangles": 272,
+   "footprint_m": [
+    1.7805,
+    0.35
+   ],
+   "height_m": 1.11,
+   "title": "Managed detection and response (EDR/MDR)",
+   "control_id": "D4"
+  },
+  {
+   "file": "race_parts/D4_live_sensors_on_every_system.glb",
+   "kind": "race_part",
+   "bytes": 22828,
+   "triangles": 464,
+   "footprint_m": [
+    1.22,
+    1.02
+   ],
+   "height_m": 0.21,
+   "title": "Live sensors on every system",
+   "control_id": "D4"
+  },
+  {
+   "file": "controls/D5_network_behaviour_analysis.glb",
+   "kind": "control",
+   "bytes": 21264,
+   "triangles": 496,
+   "footprint_m": [
+    1.34,
+    1.14
+   ],
+   "height_m": 0.54,
+   "title": "Network behaviour analysis",
+   "control_id": "D5"
+  },
+  {
+   "file": "race_parts/D5_track_position_tracking.glb",
+   "kind": "race_part",
+   "bytes": 7780,
+   "triangles": 116,
+   "footprint_m": [
+    0.65,
+    0.4
+   ],
+   "height_m": 0.64,
+   "title": "Track position tracking",
+   "control_id": "D5"
+  },
+  {
+   "file": "controls/R1_incident_response_plan.glb",
+   "kind": "control",
+   "bytes": 6880,
+   "triangles": 60,
+   "footprint_m": [
+    0.75,
+    0.062
+   ],
+   "height_m": 1.0,
+   "title": "Incident response plan",
+   "control_id": "R1"
+  },
+  {
+   "file": "race_parts/R1_pit_stop_plan.glb",
+   "kind": "race_part",
+   "bytes": 6868,
+   "triangles": 60,
+   "footprint_m": [
+    0.75,
+    1.0
+   ],
+   "height_m": 0.062,
+   "title": "Pit stop plan",
+   "control_id": "R1"
+  },
+  {
+   "file": "controls/R2_incident_response_team_24_7.glb",
+   "kind": "control",
+   "bytes": 48560,
+   "triangles": 960,
+   "footprint_m": [
+    1.6775,
+    0.36
+   ],
+   "height_m": 1.525,
+   "title": "Incident response team - 24/7",
+   "control_id": "R2"
+  },
+  {
+   "file": "race_parts/R2_full_night_crew.glb",
+   "kind": "race_part",
+   "bytes": 48560,
+   "triangles": 960,
+   "footprint_m": [
+    1.6775,
+    0.36
+   ],
+   "height_m": 1.525,
+   "title": "Full night crew",
+   "control_id": "R2"
+  },
+  {
+   "file": "controls/R3_incident_response_team_office_hours.glb",
+   "kind": "control",
+   "bytes": 15608,
+   "triangles": 256,
+   "footprint_m": [
+    1.565,
+    0.6
+   ],
+   "height_m": 1.525,
+   "title": "Incident response team - office hours",
+   "control_id": "R3"
+  },
+  {
+   "file": "race_parts/R3_day_crew.glb",
+   "kind": "race_part",
+   "bytes": 15608,
+   "triangles": 256,
+   "footprint_m": [
+    1.565,
+    0.6
+   ],
+   "height_m": 1.525,
+   "title": "Day crew",
+   "control_id": "R3"
+  },
+  {
+   "file": "controls/R4_backup_restores.glb",
+   "kind": "control",
+   "bytes": 15996,
+   "triangles": 192,
+   "footprint_m": [
+    1.25,
+    0.6575
+   ],
+   "height_m": 1.45,
+   "title": "Backup restores",
+   "control_id": "R4"
+  },
+  {
+   "file": "race_parts/R4_spare_parts_in_the_garage.glb",
+   "kind": "race_part",
+   "bytes": 30148,
+   "triangles": 972,
+   "footprint_m": [
+    1.36,
+    0.62
+   ],
+   "height_m": 0.55,
+   "title": "Spare parts in the garage",
+   "control_id": "R4"
+  },
+  {
+   "file": "controls/R5_digital_forensics.glb",
+   "kind": "control",
+   "bytes": 18660,
+   "triangles": 404,
+   "footprint_m": [
+    1.29174,
+    1.31674
+   ],
+   "height_m": 0.16,
+   "title": "Digital forensics services",
+   "control_id": "R5"
+  },
+  {
+   "file": "race_parts/R5_data_recorder.glb",
+   "kind": "race_part",
+   "bytes": 6632,
+   "triangles": 72,
+   "footprint_m": [
+    0.8,
+    0.6
+   ],
+   "height_m": 0.29,
+   "title": "Data recorder",
+   "control_id": "R5"
+  },
+  {
+   "file": "controls/R6_incident_response_retainer.glb",
+   "kind": "control",
+   "bytes": 17392,
+   "triangles": 236,
+   "footprint_m": [
+    1.26225,
+    0.234
+   ],
+   "height_m": 1.0,
+   "title": "Incident response retainer",
+   "control_id": "R6"
+  },
+  {
+   "file": "race_parts/R6_recovery_truck_on_call.glb",
+   "kind": "race_part",
+   "bytes": 21788,
+   "triangles": 340,
+   "footprint_m": [
+    1.98,
+    5.13277
+   ],
+   "height_m": 3.61035,
+   "title": "Recovery truck on call",
+   "control_id": "R6"
+  },
+  {
+   "file": "controls/IP_firewall_and_ddos_protection.glb",
+   "kind": "control",
+   "bytes": 12380,
+   "triangles": 144,
+   "footprint_m": [
+    1.07,
+    0.2
+   ],
+   "height_m": 0.78,
+   "title": "Firewall and DDoS protection",
+   "control_id": "IP_firewall_and_ddos_protection",
+   "already_in_place": true
+  },
+  {
+   "file": "race_parts/IP_firewall_and_ddos_protection.glb",
+   "kind": "race_part",
+   "bytes": 2080,
+   "triangles": 12,
+   "footprint_m": [
+    1.3,
+    0.07
+   ],
+   "height_m": 1.0,
+   "title": "Firewall",
+   "control_id": "IP_firewall_and_ddos_protection",
+   "already_in_place": true
+  },
+  {
+   "file": "controls/IP_vulnerability_scanning.glb",
+   "kind": "control",
+   "bytes": 24088,
+   "triangles": 476,
+   "footprint_m": [
+    1.44174,
+    0.76
+   ],
+   "height_m": 1.45,
+   "title": "Vulnerability scanning",
+   "control_id": "IP_vulnerability_scanning",
+   "already_in_place": true
+  },
+  {
+   "file": "race_parts/IP_vulnerability_scanning.glb",
+   "kind": "race_part",
+   "bytes": 18776,
+   "triangles": 420,
+   "footprint_m": [
+    1.155,
+    1.0
+   ],
+   "height_m": 0.062,
+   "title": "Pre-race inspection",
+   "control_id": "IP_vulnerability_scanning",
+   "already_in_place": true
+  },
+  {
+   "file": "controls/IP_penetration_testing.glb",
+   "kind": "control",
+   "bytes": 34444,
+   "triangles": 396,
+   "footprint_m": [
+    1.225,
+    0.69821
+   ],
+   "height_m": 0.71,
+   "title": "Penetration testing",
+   "control_id": "IP_penetration_testing",
+   "already_in_place": true
+  },
+  {
+   "file": "race_parts/IP_penetration_testing.glb",
+   "kind": "race_part",
+   "bytes": 123068,
+   "triangles": 2804,
+   "footprint_m": [
+    1.5,
+    1.95917
+   ],
+   "height_m": 0.3648,
+   "title": "Pre-season testing",
+   "control_id": "IP_penetration_testing",
+   "already_in_place": true
+  },
+  {
+   "file": "scenery/everyday_E1-email.glb",
+   "kind": "scenery",
+   "bytes": 12784,
+   "triangles": 140,
+   "footprint_m": [
+    1.0,
+    0.64
+   ],
+   "height_m": 0.094,
+   "title": "E1 Email"
+  },
+  {
+   "file": "scenery/everyday_E2-laptop.glb",
+   "kind": "scenery",
+   "bytes": 32084,
+   "triangles": 372,
+   "footprint_m": [
+    0.9,
+    0.69821
+   ],
+   "height_m": 0.61196,
+   "title": "E2 Laptop"
+  },
+  {
+   "file": "scenery/everyday_E3-phone.glb",
+   "kind": "scenery",
+   "bytes": 6640,
+   "triangles": 72,
+   "footprint_m": [
+    0.32,
+    0.077
+   ],
+   "height_m": 0.62,
+   "title": "E3 Phone"
+  },
+  {
+   "file": "scenery/everyday_E4-usb.glb",
+   "kind": "scenery",
+   "bytes": 46060,
+   "triangles": 776,
+   "footprint_m": [
+    1.02,
+    1.273
+   ],
+   "height_m": 0.256,
+   "title": "E4 Usb"
+  },
+  {
+   "file": "scenery/incident_desk.glb",
+   "kind": "scenery",
+   "bytes": 5068,
+   "triangles": 36,
+   "footprint_m": [
+    1.8,
+    0.85
+   ],
+   "height_m": 0.815,
+   "title": "Desk"
+  },
+  {
+   "file": "scenery/incident_monitor.glb",
+   "kind": "scenery",
+   "bytes": 11528,
+   "triangles": 96,
+   "footprint_m": [
+    1.25,
+    0.35
+   ],
+   "height_m": 1.11,
+   "title": "Monitor"
+  },
+  {
+   "file": "scenery/incident_operator.glb",
+   "kind": "scenery",
+   "bytes": 13688,
+   "triangles": 176,
+   "footprint_m": [
+    0.73,
+    0.36
+   ],
+   "height_m": 1.525,
+   "title": "Operator"
+  },
+  {
+   "file": "scenery/turbine_rotor.glb",
+   "kind": "scenery",
+   "bytes": 8028,
+   "triangles": 128,
+   "footprint_m": [
+    19.91858,
+    1.0
+   ],
+   "height_m": 17.40588,
+   "title": "Turbine rotor",
+   "pivot_note": "Base origin; hub offset supplied in dimensions metadata. Animate the whole rotor after centering on hub."
+  }
+ ]
+}

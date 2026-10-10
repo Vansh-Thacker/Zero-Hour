@@ -1,0 +1,309 @@
+{
+  "name": "Ransomware attack in four phases",
+  "version": "2.0.0",
+  "about": "The challenge scenario: the budget, the 18 controls that can be chosen, the three controls already in place, and the four phases with their stories and points. Players choose all their controls once, before the attack starts. This is the only file the scoring module needs.",
+  "setting": {
+    "business": "Fictional energy services organisation",
+    "services": [
+      "Customer casework",
+      "Field work-order administration",
+      "Internal document access"
+    ],
+    "boundary": "No live grid, real customer data or actual company infrastructure"
+  },
+  "learning_objectives": [
+    "Explain prevention, detection and response as complementary layers",
+    "Report concerns with useful context",
+    "Support a colleague who reports a mistake",
+    "Verify unexpected requests through a trusted independent route",
+    "Apply a principle to an unfamiliar situation"
+  ],
+  "budget": 3000000,
+  "controls": [
+    {
+      "id": "P1",
+      "name": "Endpoint protection platform",
+      "category": "Prevent",
+      "cost": 350000,
+      "description": "Blocks known malicious software and flags suspicious files on covered devices.",
+      "use_case": "Useful where malicious files may arrive on a laptop or workstation.",
+      "limitation": "Coverage and configuration matter; not every attack is recognised."
+    },
+    {
+      "id": "P2",
+      "name": "Network segmentation",
+      "category": "Prevent",
+      "cost": 1000000,
+      "description": "Separates network areas and controls permitted communication between them.",
+      "use_case": "Can restrict paths from a compromised workstation to other systems.",
+      "limitation": "It does not clean an infected device or remove the need for response."
+    },
+    {
+      "id": "P3",
+      "name": "Software patching and updates",
+      "category": "Prevent",
+      "cost": 200000,
+      "description": "Addresses known weaknesses in covered software.",
+      "use_case": "Useful when an attacker relies on a known unpatched weakness.",
+      "limitation": "Only covered systems and fixed weaknesses benefit."
+    },
+    {
+      "id": "P4",
+      "name": "Secure by design",
+      "category": "Prevent",
+      "cost": 200000,
+      "description": "Builds security requirements and safe defaults into systems from the start.",
+      "use_case": "Reduces avoidable weaknesses and unsafe configurations.",
+      "limitation": "It is an ongoing design discipline, not a guarantee."
+    },
+    {
+      "id": "P5",
+      "name": "Training and awareness",
+      "category": "Prevent",
+      "cost": 250000,
+      "description": "Helps people recognise concerns, seek help and respond constructively.",
+      "use_case": "Useful alongside clear reporting routes and supportive colleagues.",
+      "limitation": "People can still make mistakes; training complements technical controls."
+    },
+    {
+      "id": "P6",
+      "name": "Email security",
+      "category": "Prevent",
+      "cost": 250000,
+      "description": "Filters some malicious messages, links and attachments.",
+      "use_case": "Useful against email-delivered threats.",
+      "limitation": "Some suspicious messages will still arrive and should be reported."
+    },
+    {
+      "id": "P7",
+      "name": "Multi-factor authentication and identity management",
+      "category": "Prevent",
+      "cost": 400000,
+      "description": "Requires a second factor to sign in and controls who holds which access.",
+      "use_case": "Stops a stolen password being reused on its own, and limits what one account can reach.",
+      "limitation": "A second factor can still be talked out of someone; it raises the effort, it does not remove the risk."
+    },
+    {
+      "id": "D1",
+      "name": "Security information and event management (SIEM)",
+      "category": "Detect",
+      "cost": 700000,
+      "description": "Collects and correlates security data from many systems to support investigation.",
+      "use_case": "Useful when clues exist across multiple systems at once.",
+      "limitation": "A platform is distinct from the people who investigate and respond."
+    },
+    {
+      "id": "D2",
+      "name": "Intrusion detection and prevention",
+      "category": "Detect",
+      "cost": 300000,
+      "description": "Inspects activity for suspicious patterns and can block some of it.",
+      "use_case": "Useful for recognised attacks crossing the network.",
+      "limitation": "An alert is not proof that an incident has been contained."
+    },
+    {
+      "id": "D3",
+      "name": "Threat hunting and honeypots",
+      "category": "Detect",
+      "cost": 100000,
+      "description": "Combines proactive investigation with decoys that reveal suspicious activity.",
+      "use_case": "Useful for finding threats that routine alerts miss.",
+      "limitation": "Neither technique proves the absence of a threat."
+    },
+    {
+      "id": "D4",
+      "name": "Managed detection and response (EDR/MDR)",
+      "category": "Detect",
+      "cost": 1000000,
+      "description": "Monitors endpoint behaviour continuously and can isolate a device that is behaving badly.",
+      "use_case": "The strongest single source of evidence once an attacker is already inside.",
+      "limitation": "Detection still needs people to investigate and decide."
+    },
+    {
+      "id": "D5",
+      "name": "Network behaviour analysis",
+      "category": "Detect",
+      "cost": 700000,
+      "description": "Analyses network activity for unusual patterns of communication and movement.",
+      "use_case": "Shows an attacker moving sideways, and shows a device calling out to somewhere it should not.",
+      "limitation": "Observation and blocking are different capabilities; this one observes."
+    },
+    {
+      "id": "R1",
+      "name": "Incident response plan",
+      "category": "Respond",
+      "cost": 50000,
+      "description": "Defines roles, decisions and escalation routes before anything goes wrong.",
+      "use_case": "Useful in every phase, because someone always has to decide who does what.",
+      "limitation": "Having a plan is different from having practised it."
+    },
+    {
+      "id": "R2",
+      "name": "Incident response team - 24/7",
+      "category": "Respond",
+      "cost": 500000,
+      "description": "Provides response capability around the clock.",
+      "use_case": "Much of this attack happens overnight, when an office-hours team is not available.",
+      "limitation": "Availability does not mean instant resolution, and by the recovery phase the work has shifted to restoring systems."
+    },
+    {
+      "id": "R3",
+      "name": "Incident response team - office hours",
+      "category": "Respond",
+      "cost": 250000,
+      "description": "Provides response capability Monday to Friday, 09:00-17:00.",
+      "use_case": "Cheaper. Covers the working day, Monday to Friday, 09:00 to 17:00.",
+      "limitation": "Out-of-hours coverage has to be arranged some other way."
+    },
+    {
+      "id": "R4",
+      "name": "Backup restores",
+      "category": "Respond",
+      "cost": 400000,
+      "description": "Restores usable data from suitable backup copies.",
+      "use_case": "The main route back after files are encrypted.",
+      "limitation": "Restoration does not undo prior exposure of information."
+    },
+    {
+      "id": "R5",
+      "name": "Digital forensics services",
+      "category": "Respond",
+      "cost": 200000,
+      "description": "Preserves and analyses evidence to establish what actually happened.",
+      "use_case": "Useful for investigation, for regulators, and for not repeating the incident.",
+      "limitation": "Findings do not automatically prove who did it or why."
+    },
+    {
+      "id": "R6",
+      "name": "Incident response retainer",
+      "category": "Respond",
+      "cost": 100000,
+      "description": "A contract that brings in outside incident experts when they are needed.",
+      "use_case": "Adds specialist help with investigation and recovery.",
+      "limitation": "With a four-hour response time, they arrive in time to help with recovery, not before."
+    }
+  ],
+  "already_in_place": [
+    {
+      "name": "Firewall and DDoS protection",
+      "description": "Filters network traffic at the boundary and absorbs some denial-of-service load.",
+      "why_no_score": "Already in place across the fictional business. It is doing its job at the perimeter, and this incident began with an email that was allowed through on purpose."
+    },
+    {
+      "name": "Vulnerability scanning",
+      "description": "Regularly identifies known weaknesses across systems for assessment and remediation.",
+      "why_no_score": "Already in place and running quarterly. It found nothing relevant here because the attacker used a person, not an unpatched service."
+    },
+    {
+      "name": "Penetration testing",
+      "description": "Authorised, controlled testing to probe defences and test assumptions.",
+      "why_no_score": "Completed eight weeks ago. Its findings are already reflected in the controls you can buy."
+    }
+  ],
+  "phases": [
+    {
+      "id": "phase_1",
+      "title": "Delivery and exploitation",
+      "local_time": "Monday 16:40",
+      "story": "Monday, 16:40. Near the end of the working day, an employee opens a trusted-looking message and malicious software reaches their laptop. This rehearsal assumes the attacker gets in. The question is how well your defences and your people limit the damage.",
+      "scores": {
+        "P1": 1,
+        "P2": 0,
+        "P3": 0,
+        "P4": 0,
+        "P5": 3,
+        "P6": 2,
+        "P7": 1,
+        "D1": 3,
+        "D2": 1,
+        "D3": 0,
+        "D4": 2,
+        "D5": 0,
+        "R1": 2,
+        "R2": 3,
+        "R3": 1,
+        "R4": 0,
+        "R5": 0,
+        "R6": 0
+      }
+    },
+    {
+      "id": "phase_2",
+      "title": "Discovery",
+      "local_time": "Tuesday 02:00",
+      "story": "Tuesday, 02:00. While almost nobody is watching, the attacker quietly explores the business's systems. Your team needs useful reports and technical evidence to understand what is happening.",
+      "scores": {
+        "P1": 0,
+        "P2": 3,
+        "P3": 2,
+        "P4": 0,
+        "P5": 0,
+        "P6": 0,
+        "P7": 3,
+        "D1": 2,
+        "D2": 0,
+        "D3": 1,
+        "D4": 3,
+        "D5": 3,
+        "R1": 2,
+        "R2": 3,
+        "R3": 0,
+        "R4": 0,
+        "R5": 1,
+        "R6": 0
+      }
+    },
+    {
+      "id": "phase_3",
+      "title": "Command and control",
+      "local_time": "Tuesday 03:30",
+      "story": "Tuesday, 03:30. The attacker now controls the infected laptop remotely. A caller claiming to be from IT rings the night-shift work-order desk. The team must check the request through a trusted route and coordinate what it does.",
+      "scores": {
+        "P1": 2,
+        "P2": 1,
+        "P3": 2,
+        "P4": 3,
+        "P5": 0,
+        "P6": 0,
+        "P7": 2,
+        "D1": 1,
+        "D2": 0,
+        "D3": 0,
+        "D4": 3,
+        "D5": 3,
+        "R1": 2,
+        "R2": 3,
+        "R3": 0,
+        "R4": 0,
+        "R5": 1,
+        "R6": 0
+      }
+    },
+    {
+      "id": "phase_4",
+      "title": "Encryption and ransom demand",
+      "local_time": "Tuesday 06:30",
+      "story": "Tuesday, 06:30. Just before the day shift starts, business files are encrypted and a ransom demand appears. Practise recovery, clear communication and an honest debrief. The game does not advise on paying a ransom or give real incident instructions.",
+      "scores": {
+        "P1": 3,
+        "P2": 0,
+        "P3": 0,
+        "P4": 1,
+        "P5": 0,
+        "P6": 0,
+        "P7": 1,
+        "D1": 0,
+        "D2": 2,
+        "D3": 1,
+        "D4": 3,
+        "D5": 1,
+        "R1": 2,
+        "R2": 0,
+        "R3": 0,
+        "R4": 3,
+        "R5": 1,
+        "R6": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="504.3 483.3 162.2 80.1" width="162" height="80">
+<polygon points="648.3,527.9 633.3,536.6 633.3,527.9 648.3,519.2" fill="#E4E6E4" stroke="#3A3735" stroke-width="1.5" stroke-linejoin="round" />
+<polygon points="585.0,508.7 633.3,536.6 633.3,527.9 585.0,500.0" fill="#D2D5D2" stroke="#3A3735" stroke-width="1.5" stroke-linejoin="round" />
+<polygon points="600.0,491.3 648.3,519.2 633.3,527.9 585.0,500.0" fill="#FFFFFF" stroke="#3A3735" stroke-width="1.5" stroke-linejoin="round" />
+<polygon points="658.5,536.3 649.9,541.2 649.9,535.0 658.5,530.1" fill="#D2D5D2" stroke="#3A3735" stroke-width="1.5" stroke-linejoin="round" />
+<polygon points="636.5,533.5 649.9,541.2 649.9,535.0 636.5,527.3" fill="#BFC3BF" stroke="#3A3735" stroke-width="1.5" stroke-linejoin="round" />
+<polygon points="645.1,522.3 658.5,530.1 649.9,535.0 636.5,527.3" fill="#E4E6E4" stroke="#3A3735" stroke-width="1.5" stroke-linejoin="round" />
+<line x1="590.3" y1="507.4" x2="572.3" y2="531.4" stroke="#3A3735" stroke-width="1.0" stroke-linecap="round" />
+<rect x="512.3" y="529.4" width="104" height="26" rx="6" fill="#FFFFFF" stroke="#3A3735" stroke-width="1.2"/>
+<text x="564.3" y="547.4" font-family="Arial, 'Liberation Sans', 'DejaVu Sans', sans-serif" font-size="13" font-weight="normal" fill="#3A3735" text-anchor="middle" >Payroll Data</text>
+</svg>

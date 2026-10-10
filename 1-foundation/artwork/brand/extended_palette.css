@@ -1,0 +1,29 @@
+:root {
+  --sp-white: #FFFFFF;
+  --sp-ground: #F3F4F3;
+  --sp-grey: #E4E6E4;
+  --sp-stone: #D2D5D2;
+  --sp-darkgrey: #BFC3BF;
+  --sp-ink: #3A3735;
+  --sp-green: #008C39;
+  --sp-darkgreen: #00402A;
+  --sp-lightgreen: #26BF64;
+  --sp-palegreen: #5BD38C;
+  --sp-leaf: #00A443;
+  --sp-amber: #E3850D;
+  --sp-blue: #0792E5;
+  --sp-lamp_white: #FFFFFF;
+  --sp-mistgreen: #DCEBE1;
+  --sp-deepgreen: #007F33;
+  --sp-deepblue: #007ACB;
+  --sp-brightblue: #0DA9FF;
+  --sp-lightblue: #3CC2FF;
+  --sp-paleblue: #6BDAFF;
+  --sp-burntorange: #C66D00;
+  --sp-lightamber: #FF9C1A;
+  --sp-gold: #FFB536;
+  --sp-palegold: #FFCD52;
+  --sp-cream: #FFF5EC;
+  --sp-warmstone: #D8CFC7;
+  --sp-warmgrey: #89837E;
+}

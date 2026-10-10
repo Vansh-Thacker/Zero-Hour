@@ -1,0 +1,13 @@
+{
+  "name": "cyber-awareness-challenge",
+  "version": "3.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node 1-foundation/starter/serve.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

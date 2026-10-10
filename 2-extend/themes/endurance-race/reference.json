@@ -1,0 +1,122 @@
+{
+  "theme": "The Endurance Race",
+  "idea": "The business is the car. Each control fits a part of the car or the support team. Each phase of the attack is one stint. You build the race and explain how decisions affect it.",
+  "terms": {
+    "stint": "One driver's spell at the wheel. Here, one stint per phase.",
+    "setup": "All controls are chosen before the race starts and stay fitted for every stint."
+  },
+  "stints": [
+    {
+      "phase_id": "phase_1",
+      "label": "Stint 1, Monday 16:40"
+    },
+    {
+      "phase_id": "phase_2",
+      "label": "Stint 2, Tuesday 02:00"
+    },
+    {
+      "phase_id": "phase_3",
+      "label": "Stint 3, Tuesday 03:30"
+    },
+    {
+      "phase_id": "phase_4",
+      "label": "Stint 4, Tuesday 06:30"
+    }
+  ],
+  "questions": "Use the question bank. You decide how answers affect the driver, the pit crew and the race.",
+  "parts": {
+    "P1": {
+      "part": "Engine air filter",
+      "meaning": "Stops known debris reaching the engine. The last filter at the engine itself."
+    },
+    "P2": {
+      "part": "Bulkheads",
+      "meaning": "A fire in one section does not spread to the next."
+    },
+    "P3": {
+      "part": "Scheduled servicing",
+      "meaning": "Replaces known worn parts before they fail."
+    },
+    "P4": {
+      "part": "Chassis",
+      "meaning": "Built safe from the start rather than patched later."
+    },
+    "P5": {
+      "part": "Driver training",
+      "meaning": "The driver notices problems and reports them."
+    },
+    "P6": {
+      "part": "Front grille",
+      "meaning": "Catches debris before it reaches the engine."
+    },
+    "P7": {
+      "part": "Immobiliser",
+      "meaning": "Only the right driver can start and drive the car."
+    },
+    "D1": {
+      "part": "Pit wall screens",
+      "meaning": "All the car's data in one place."
+    },
+    "D2": {
+      "part": "Warning lights and cut-outs",
+      "meaning": "Warns about known problems and can cut out some of them automatically."
+    },
+    "D3": {
+      "part": "Trackside spotters",
+      "meaning": "People looking for trouble the sensors miss."
+    },
+    "D4": {
+      "part": "Live sensors on every system",
+      "meaning": "Watched by an engineer who can isolate a failing system."
+    },
+    "D5": {
+      "part": "Track position tracking",
+      "meaning": "An odd line round the track shows something is wrong."
+    },
+    "R1": {
+      "part": "Pit stop plan",
+      "meaning": "Everyone knows who does what before the car comes in."
+    },
+    "R2": {
+      "part": "Full night crew",
+      "meaning": "Someone is in the garage at every hour of the race."
+    },
+    "R3": {
+      "part": "Day crew",
+      "meaning": "A good crew, but they have gone home by 02:00."
+    },
+    "R4": {
+      "part": "Spare parts in the garage",
+      "meaning": "A way back after something breaks."
+    },
+    "R5": {
+      "part": "Data recorder",
+      "meaning": "Shows afterwards exactly what happened."
+    },
+    "R6": {
+      "part": "Recovery truck on call",
+      "meaning": "Arrives in time to help recover the car, not to prevent the damage."
+    }
+  },
+  "already_fitted": {
+    "Firewall and DDoS protection": {
+      "part": "Firewall",
+      "meaning": "A real car part: the panel between the engine and the driver."
+    },
+    "Vulnerability scanning": {
+      "part": "Pre-race inspection",
+      "meaning": "Done before the race, and passed."
+    },
+    "Penetration testing": {
+      "part": "Pre-season testing",
+      "meaning": "Done weeks ago. What it found is already fixed."
+    }
+  },
+  "rules": [
+    "Show each control's real name with its car part.",
+    "Keep the control score equal to the scoring module's result for the same purchases, and show it.",
+    "Make question answers affect the race in a way the player can see.",
+    "A simple 2D track is enough. Driving physics, collisions, animation and 3D are optional.",
+    "The race must not suggest that detecting an attack always prevents the damage."
+  ]
+}

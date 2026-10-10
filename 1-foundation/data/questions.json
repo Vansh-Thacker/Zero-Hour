@@ -1,0 +1,889 @@
+{
+  "name": "Cyber awareness question bank",
+  "version": "2.0.0",
+  "about": "40 behaviour questions from the Cyber team. Each has four options, one correct answer and an explanation. 16 questions match a phase of the attack story (phase_id); the rest are general and can be used at any checkpoint (phase_id is null). related_controls lists the controls in challenge.json that deal with the same risk as the question. Training and awareness (P5) relates to every question.",
+  "tiers": [
+    {
+      "tier": 1,
+      "label": "Spot the Risk",
+      "meaning": "Recognise an obvious risk or warning sign."
+    },
+    {
+      "tier": 2,
+      "label": "Read the Signs",
+      "meaning": "Notice context, clues and unsafe workarounds."
+    },
+    {
+      "tier": 3,
+      "label": "Choose Your Response",
+      "meaning": "Apply a secure behaviour in a realistic workplace situation."
+    },
+    {
+      "tier": 4,
+      "label": "Pressure Test",
+      "meaning": "Maintain secure behaviour under trust, urgency, authority or social pressure."
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q01",
+      "category": "Phishing",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Recognise Suspicious Emails",
+      "question": "You receive an email asking you to confirm your password to avoid losing access to your account. What is the biggest warning sign?",
+      "options": {
+        "A": "The email has a company logo",
+        "B": "The sender asks for your password",
+        "C": "The email contains text",
+        "D": "The email arrives in the morning"
+      },
+      "correct": "B",
+      "explanation": "Legitimate organisations should never ask you to reveal your password by email. Requests for passwords are a common phishing technique used to gain access to accounts.",
+      "difficulty_driver": "Curiosity",
+      "phase_id": "phase_1",
+      "related_controls": [
+        "P6",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q02",
+      "category": "Phishing",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Inspect Before Interacting",
+      "question": "You receive an email that appears to come from a supplier asking you to review an attached invoice you were not expecting. What should you do?",
+      "options": {
+        "A": "Open the attachment immediately",
+        "B": "Forward it to colleagues for advice",
+        "C": "Pause and verify the request before opening the attachment",
+        "D": "Reply asking if it's genuine"
+      },
+      "correct": "C",
+      "explanation": "Unexpected attachments should always be treated with caution. Verifying before opening helps prevent malware infections and phishing attacks.",
+      "difficulty_driver": "Urgency",
+      "phase_id": "phase_1",
+      "related_controls": [
+        "P6",
+        "P1",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q03",
+      "category": "Phishing",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Verify Unexpected Requests",
+      "question": "You are covering for a colleague and receive an urgent invoice approval request shortly before a deadline. The sender appears legitimate but you were not expecting the request. What should you do?",
+      "options": {
+        "A": "Approve it to avoid delays",
+        "B": "Verify the request through an independent channel first",
+        "C": "Forward it to your entire team",
+        "D": "Delete it immediately"
+      },
+      "correct": "B",
+      "explanation": "Business pressures and deadlines can encourage quick decisions. Taking time to verify unusual requests helps prevent fraud and phishing attacks.",
+      "difficulty_driver": "Time Pressure",
+      "phase_id": "phase_1",
+      "related_controls": [
+        "P6",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q04",
+      "category": "Phishing",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Pause Before Acting",
+      "question": "You receive an email from your manager requesting an urgent payment approval. The email references a genuine project, uses your manager's usual writing style and states the supplier must be paid within the next hour. What should you do?",
+      "options": {
+        "A": "Approve the payment immediately",
+        "B": "Forward it to Finance",
+        "C": "Verify the request using a trusted method before taking action",
+        "D": "Reply asking for more information"
+      },
+      "correct": "C",
+      "explanation": "This scenario is difficult because it combines urgency, familiarity and genuine business context. Attackers often mimic trusted individuals and real projects to bypass normal verification processes.",
+      "difficulty_driver": "Familiarity + Urgency",
+      "phase_id": "phase_1",
+      "related_controls": [
+        "P6",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q05",
+      "category": "Passwords",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Use Unique Passwords",
+      "question": "A colleague tells you they use the same password for several websites. What is the main risk?",
+      "options": {
+        "A": "The password is easier to remember",
+        "B": "If one account is compromised, multiple accounts may be affected",
+        "C": "The password may expire",
+        "D": "It reduces internet speed"
+      },
+      "correct": "B",
+      "explanation": "Using different passwords for different accounts limits the impact of a single compromise and helps protect personal and work accounts.",
+      "difficulty_driver": "Convenience",
+      "phase_id": null,
+      "related_controls": [
+        "P7",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q06",
+      "category": "Passwords",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Protect Credentials",
+      "question": "A colleague messages you saying they cannot access an urgent system and asks you to send your password so they can complete a task before a deadline. What should you do?",
+      "options": {
+        "A": "Refuse and direct them to the correct support process",
+        "B": "Log in yourself and let them use your session",
+        "C": "Send your password to help them",
+        "D": "Share part of your password"
+      },
+      "correct": "A",
+      "explanation": "Passwords should never be shared, even with trusted colleagues. Individual accounts provide accountability and help protect systems and information. Colleagues should use approved support channels to resolve access issues.",
+      "difficulty_driver": "Helping Colleague",
+      "phase_id": null,
+      "related_controls": [
+        "P7",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q07",
+      "category": "Passwords",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Use Individual Accounts",
+      "question": "A colleague cannot access a system and asks if they can quickly sign in using your account to finish an urgent task. What should you do?",
+      "options": {
+        "A": "Allow them to use your account",
+        "B": "Share your password verbally",
+        "C": "Refuse and direct them to the correct support process",
+        "D": "Log in for them and walk away"
+      },
+      "correct": "C",
+      "explanation": "Sharing accounts removes accountability and can create security risks. Everyone should use their own authorised access.",
+      "difficulty_driver": "Helping Colleague",
+      "phase_id": null,
+      "related_controls": [
+        "P7",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q08",
+      "category": "Passwords",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Verify Identity Before Sharing Information",
+      "question": "You receive a Teams message from someone claiming to be IT Support. They know your manager's name, employee number and office location. They ask you to confirm your password reset details. What should you do?",
+      "options": {
+        "A": "Provide the requested information",
+        "B": "Share part of the information",
+        "C": "Verify the request independently and do not share passwords",
+        "D": "Ignore all future IT communications"
+      },
+      "correct": "C",
+      "explanation": "This scenario is difficult because the individual knows genuine information that creates trust. Legitimate support teams do not need your password, and identity should always be verified independently.",
+      "difficulty_driver": "Trust + Authority",
+      "phase_id": "phase_3",
+      "related_controls": [
+        "P7",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q09",
+      "category": "Multi-Factor Authentication (MFA)",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Recognise Unexpected MFA Requests",
+      "question": "You receive an MFA approval request on your phone that you were not expecting. What should you do?",
+      "options": {
+        "A": "Approve it quickly",
+        "B": "Ignore or deny the request and investigate if necessary",
+        "C": "Approve it later",
+        "D": "Forward it to a colleague"
+      },
+      "correct": "B",
+      "explanation": "Unexpected MFA prompts can indicate somebody is attempting to access your account. Never approve a request you did not initiate.",
+      "difficulty_driver": "Awareness",
+      "phase_id": "phase_2",
+      "related_controls": [
+        "P7",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q10",
+      "category": "Multi-Factor Authentication (MFA)",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Report Suspicious Activity",
+      "question": "You receive an unexpected MFA prompt, decline it, and no further prompts appear. What should you do?",
+      "options": {
+        "A": "Ignore it because the prompts stopped",
+        "B": "Approve the next prompt if it appears",
+        "C": "Change your password immediately without reporting it",
+        "D": "Report the unexpected MFA request through the appropriate process"
+      },
+      "correct": "D",
+      "explanation": "Unexpected MFA prompts may indicate someone is attempting to access your account. Even if the prompts stop, reporting suspicious activity helps security teams investigate and protect accounts.",
+      "difficulty_driver": "Assumption",
+      "phase_id": "phase_2",
+      "related_controls": [
+        "P7",
+        "R1",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q11",
+      "category": "Multi-Factor Authentication (MFA)",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Resist MFA Fatigue",
+      "question": "You are working on an urgent task when several MFA prompts appear unexpectedly on your device. What should you do?",
+      "options": {
+        "A": "Approve one to stop the notifications",
+        "B": "Ignore them and continue working",
+        "C": "Treat them as suspicious, do not approve and report them",
+        "D": "Switch MFA off"
+      },
+      "correct": "C",
+      "explanation": "Unexpected MFA requests can indicate attempted account compromise. Convenience should never override secure behaviour.",
+      "difficulty_driver": "Time Pressure",
+      "phase_id": "phase_2",
+      "related_controls": [
+        "P7",
+        "R1",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q12",
+      "category": "Multi-Factor Authentication (MFA)",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Approve Only Your Own Requests",
+      "question": "A caller claiming to be technical support explains they are fixing an issue affecting your account. While on the call, an MFA request appears and they ask you to approve it so they can continue. What should you do?",
+      "options": {
+        "A": "Approve it because they called first",
+        "B": "Approve it if they know your details",
+        "C": "Refuse, verify independently and only approve requests you personally initiate",
+        "D": "Approve it once and change your password later"
+      },
+      "correct": "C",
+      "explanation": "This scenario is difficult because the caller appears helpful and creates urgency. Attackers frequently use MFA fatigue and social engineering to gain account access. Only approve requests connected to your own actions.",
+      "difficulty_driver": "Authority + Urgency",
+      "phase_id": "phase_3",
+      "related_controls": [
+        "P7",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q13",
+      "category": "Vishing & Smishing",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Recognise Suspicious Messages",
+      "question": "You receive a text message claiming to be from your bank asking you to click a link to verify your account. What is the biggest warning sign?",
+      "options": {
+        "A": "The message contains a link",
+        "B": "The message arrives on your phone",
+        "C": "The message uses your name",
+        "D": "The message contains text"
+      },
+      "correct": "A",
+      "explanation": "Unexpected messages asking you to click links or provide information should be treated with caution. Criminals often use text messages to lead people to fake websites.",
+      "difficulty_driver": "Curiosity",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q14",
+      "category": "Vishing & Smishing",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Verify Requests Independently",
+      "question": "You receive a text message claiming a parcel delivery has failed and asks you to pay a small fee using a provided link. What should you do?",
+      "options": {
+        "A": "Pay the fee immediately",
+        "B": "Click the link to investigate",
+        "C": "Forward the message to friends",
+        "D": "Verify the delivery through a trusted source before taking action"
+      },
+      "correct": "D",
+      "explanation": "Unexpected messages often create urgency to encourage quick decisions. Using trusted sources helps avoid scams and protects personal information.",
+      "difficulty_driver": "Urgency",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q15",
+      "category": "Vishing & Smishing",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Protect Personal Information",
+      "question": "You receive a phone call from someone claiming to be from IT Support. They explain there is a problem with your account and ask you to provide information to help them resolve it. What should you do?",
+      "options": {
+        "A": "Provide the information requested",
+        "B": "Verify the caller's identity through official channels before sharing information",
+        "C": "Ask them to call back later and then provide the details",
+        "D": "Share only part of the information"
+      },
+      "correct": "B",
+      "explanation": "Phone calls can be used to build trust and obtain sensitive information. Always verify identities before sharing information or taking action.",
+      "difficulty_driver": "Trust",
+      "phase_id": "phase_3",
+      "related_controls": [
+        "P7",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q16",
+      "category": "Vishing & Smishing",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Challenge Urgent Requests",
+      "question": "A caller claims to be from IT Support and knows your manager's name, department and recent project. They explain an urgent security issue is affecting your account and ask you to confirm account details immediately. What should you do?",
+      "options": {
+        "A": "Provide the information because they know internal details",
+        "B": "Share limited information to help them investigate",
+        "C": "Verify the request independently before sharing any information",
+        "D": "Ask a colleague what they would do and then comply"
+      },
+      "correct": "C",
+      "explanation": "This scenario is difficult because the caller appears credible and uses genuine information to build trust. Attackers often combine urgency and familiarity to persuade people to bypass verification processes.",
+      "difficulty_driver": "Trust + Familiarity",
+      "phase_id": "phase_3",
+      "related_controls": [
+        "P7",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q17",
+      "category": "QR Codes & Mobile Threats",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Use Approved Technology",
+      "question": "A colleague recommends a free mobile app that makes work tasks faster, but it is not an approved company application. What should you do?",
+      "options": {
+        "A": "Check whether the app is approved before using it for work",
+        "B": "Install the app because it improves productivity",
+        "C": "Install it temporarily and remove it later",
+        "D": "Ask colleagues whether they use it and follow their lead"
+      },
+      "correct": "A",
+      "explanation": "Only approved applications should be used for company work. Unapproved software can introduce security, privacy or compliance risks.",
+      "difficulty_driver": "Convenience",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q18",
+      "category": "QR Codes & Mobile Threats",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Check Before Scanning",
+      "question": "While travelling, you see a QR code offering free access to airport Wi-Fi. What should you do?",
+      "options": {
+        "A": "Scan it immediately",
+        "B": "Verify that the Wi-Fi service and QR code are legitimate before using them",
+        "C": "Install software suggested by the QR code",
+        "D": "Use any website the QR code opens"
+      },
+      "correct": "B",
+      "explanation": "Criminals sometimes replace legitimate QR codes with malicious versions. Verifying the source helps prevent phishing and malware attacks.",
+      "difficulty_driver": "Convenience",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q19",
+      "category": "QR Codes & Mobile Threats",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Verify Digital Content",
+      "question": "You are attending a conference and a QR code is displayed to access event materials. The session is about to start and attendees are already scanning it. What should you do?",
+      "options": {
+        "A": "Scan it immediately because everyone else is doing so",
+        "B": "Ignore all conference QR codes",
+        "C": "Take a photo and share it online",
+        "D": "Check that it belongs to the event organiser before using it"
+      },
+      "correct": "D",
+      "explanation": "Even in legitimate settings, it is good practice to verify links before using them. Social pressure should not replace good judgement.",
+      "difficulty_driver": "Social Pressure",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q20",
+      "category": "QR Codes & Mobile Threats",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Trust but Verify",
+      "question": "A colleague sends you a QR code in a Teams chat saying it provides immediate access to a shared project folder needed for an urgent meeting. The colleague appears genuine and the project is real. What should you do?",
+      "options": {
+        "A": "Scan the code immediately",
+        "B": "Use the QR code because the project is genuine",
+        "C": "Verify the source and destination before accessing the content",
+        "D": "Forward the QR code to the whole team"
+      },
+      "correct": "C",
+      "explanation": "This scenario is difficult because it involves a genuine colleague, real project and time pressure. Attackers often exploit trusted channels to encourage quick decisions without verification.",
+      "difficulty_driver": "Trust + Urgency",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q21",
+      "category": "Social Engineering",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Protect Internal Information",
+      "question": "A stranger asks questions about your workplace and internal systems. What should you do?",
+      "options": {
+        "A": "Share information to be helpful",
+        "B": "Provide only publicly available information",
+        "C": "Be cautious about sharing internal information",
+        "D": "Answer all questions politely"
+      },
+      "correct": "C",
+      "explanation": "Social engineering often starts with gathering information. Seemingly harmless details can be used to support future attacks.",
+      "difficulty_driver": "Desire to Help",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q22",
+      "category": "Social Engineering",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Challenge Unsafe Behaviour",
+      "question": "You overhear someone encouraging colleagues to bypass a security process because it takes too long. What should you do?",
+      "options": {
+        "A": "Ignore the conversation",
+        "B": "Follow the shortcut because others are doing it",
+        "C": "Suggest additional shortcuts",
+        "D": "Challenge the behaviour appropriately or report the concern through the correct channel"
+      },
+      "correct": "D",
+      "explanation": "Security controls are in place to protect people, systems and information. Concerns about bypassing controls should be challenged or reported appropriately.",
+      "difficulty_driver": "Social Pressure",
+      "phase_id": "phase_4",
+      "related_controls": [
+        "R1",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q23",
+      "category": "Social Engineering",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Verify Access Requests",
+      "question": "You are approached by a visitor who appears lost and asks if you can let them into the building using your pass. They seem friendly and professional. What should you do?",
+      "options": {
+        "A": "Provide detailed information and directions",
+        "B": "Do not let them enter using your pass. Direct them to reception or security and follow local access procedures",
+        "C": "Escort them everywhere they ask to go",
+        "D": "Give them a company directory"
+      },
+      "correct": "B",
+      "explanation": "Friendly interactions can still be used to gain unauthorised access. Situational awareness helps balance helpfulness with security.",
+      "difficulty_driver": "Trust",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q24",
+      "category": "Social Engineering",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Question Requests to Know More",
+      "question": "A contractor working on a legitimate project knows several colleagues by name and asks questions about systems, processes and security arrangements. They explain the information will help them complete their work more quickly. What should you do?",
+      "options": {
+        "A": "Provide the information because they are working on a genuine project",
+        "B": "Give high-level answers only",
+        "C": "Assume approval has already been granted",
+        "D": "Verify they have a legitimate business need to know before sharing information"
+      },
+      "correct": "D",
+      "explanation": "This scenario is difficult because the request involves a genuine contractor and legitimate business activity. Attackers can exploit trust and familiarity to gather information that can support future attacks.",
+      "difficulty_driver": "Trust + Familiarity",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q25",
+      "category": "Physical Security",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Lock Devices When Unattended",
+      "question": "You notice a colleague has left their laptop unlocked while away from their desk. What is the main security risk?",
+      "options": {
+        "A": "The battery may run out",
+        "B": "Someone could access information or systems using the device",
+        "C": "The device may go to sleep",
+        "D": "The device may disconnect from Wi-Fi"
+      },
+      "correct": "B",
+      "explanation": "Unlocked devices can provide unauthorised access to information, systems and accounts. Locking devices helps protect company information.",
+      "difficulty_driver": "Distraction",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q26",
+      "category": "Physical Security",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Prevent Tailgating",
+      "question": "You notice someone following closely behind employees through a secure door without using an access badge. What should you do?",
+      "options": {
+        "A": "Ignore it because someone else let them in",
+        "B": "Challenge politely or follow local security procedures",
+        "C": "Hold the door open for them",
+        "D": "Assume they are authorised"
+      },
+      "correct": "B",
+      "explanation": "Secure areas rely on access controls. Tailgating can allow unauthorised individuals to enter restricted locations.",
+      "difficulty_driver": "Politeness",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q27",
+      "category": "Physical Security",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Maintain a Clear Desk",
+      "question": "You are working in an office and step away for a short meeting. Several documents containing business information are visible on your desk. What should you do?",
+      "options": {
+        "A": "Leave them visible because you will be back soon",
+        "B": "Store or secure sensitive information before leaving",
+        "C": "Ask a colleague to watch the desk",
+        "D": "Turn the documents upside down"
+      },
+      "correct": "B",
+      "explanation": "Good physical security includes protecting information from unnecessary exposure. A clear desk helps reduce accidental disclosure.",
+      "difficulty_driver": "Workplace Pressure",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q28",
+      "category": "Physical Security",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Follow Physical Access Controls",
+      "question": "A visitor carrying equipment arrives at a secure office entrance. They know a colleague's name, appear professional and explain they are running late for an important meeting. They ask you to hold the door so they do not need to sign in again. What should you do?",
+      "options": {
+        "A": "Allow them in because they appear legitimate",
+        "B": "Let them in if they know a colleague's name",
+        "C": "Follow visitor access procedures and ensure they use the proper sign-in process",
+        "D": "Ask whether they promise to sign in later"
+      },
+      "correct": "C",
+      "explanation": "This scenario is difficult because the visitor appears genuine and creates urgency. Physical security controls are effective only when procedures are followed consistently.",
+      "difficulty_driver": "Trust + Urgency",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q29",
+      "category": "Safe Data Handling",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Report Incidents Promptly",
+      "question": "You accidentally send an email containing business information to the wrong recipient. What should you do first?",
+      "options": {
+        "A": "Report the incident through the appropriate process as soon as possible",
+        "B": "Wait to see if the recipient notices",
+        "C": "Delete the email from your Sent Items",
+        "D": "Send another email asking the recipient to ignore it and take no further action"
+      },
+      "correct": "A",
+      "explanation": "Mistakes can happen. Prompt reporting allows appropriate action to be taken quickly and helps reduce the impact of a potential information security incident.",
+      "difficulty_driver": "Human Error",
+      "phase_id": "phase_1",
+      "related_controls": [
+        "R1",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q30",
+      "category": "Safe Data Handling",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Use Approved Sharing Methods",
+      "question": "A colleague is working from home and cannot access a company system. They ask if you can send a report containing customer information to their personal email account so they can finish an urgent task. What should you do?",
+      "options": {
+        "A": "Send it immediately",
+        "B": "Upload it to a free file-sharing site",
+        "C": "Send part of the information",
+        "D": "Use approved company methods only"
+      },
+      "correct": "D",
+      "explanation": "Using approved company methods helps protect sensitive information and ensures the appropriate security controls remain in place.",
+      "difficulty_driver": "Helping Colleague",
+      "phase_id": "phase_4",
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q31",
+      "category": "Safe Data Handling",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Share Information Responsibly",
+      "question": "You are preparing a presentation for a management meeting and discover a spreadsheet containing employee personal information attached to your working files. The meeting starts in 15 minutes and colleagues are waiting for the final version. What should you do?",
+      "options": {
+        "A": "Leave the spreadsheet attached because you are short on time",
+        "B": "Review whether the information is needed and remove unnecessary personal data before sharing",
+        "C": "Send the presentation and explain the issue later",
+        "D": "Share the spreadsheet separately so everyone has the same information"
+      },
+      "correct": "B",
+      "explanation": "Deadlines should not override good information-handling practices. Only information that is genuinely needed should be shared.",
+      "difficulty_driver": "Deadline Pressure",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q32",
+      "category": "Safe Data Handling",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Verify Authority Before Sharing Data",
+      "question": "A trusted colleague working on a genuine project urgently requests sensitive information and says approval has already been given. You cannot verify this. What should you do?",
+      "options": {
+        "A": "Send the information because the project is genuine",
+        "B": "Send part of the information",
+        "C": "Verify approval through the appropriate process before sharing",
+        "D": "Assume approval exists and proceed"
+      },
+      "correct": "C",
+      "explanation": "This scenario is difficult because it involves a genuine colleague, project and business need. Attackers often use urgency and trust to encourage people to bypass normal controls.",
+      "difficulty_driver": "Trust + Urgency",
+      "phase_id": "phase_4",
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q33",
+      "category": "Online Safety & Digital Footprint",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Think Before You Share",
+      "question": "Which information should generally not be shared publicly online?",
+      "options": {
+        "A": "Favourite football team",
+        "B": "Holiday photos",
+        "C": "Internal company information",
+        "D": "Favourite food"
+      },
+      "correct": "C",
+      "explanation": "Information shared publicly can be used by attackers to learn about an organisation or individual and support future attacks.",
+      "difficulty_driver": "Recognition",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q34",
+      "category": "Online Safety & Digital Footprint",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Protect Organisational Information",
+      "question": "Someone claiming to work for a supplier contacts you on LinkedIn. They ask what security tools your organisation uses so they can understand compatibility requirements. What should you do?",
+      "options": {
+        "A": "Share the information because they appear professional",
+        "B": "Ignore all LinkedIn messages",
+        "C": "Avoid sharing internal information and verify the request through appropriate channels",
+        "D": "Add them to company groups"
+      },
+      "correct": "C",
+      "explanation": "Professional networking platforms can be used for information gathering. Internal information should only be shared through approved and verified channels.",
+      "difficulty_driver": "Professional Curiosity",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q35",
+      "category": "Online Safety & Digital Footprint",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Share Only Approved Information",
+      "question": "You are updating your professional networking profile and want to highlight projects you have worked on since joining the company. Which approach is most appropriate?",
+      "options": {
+        "A": "Share only information approved for public release and keep internal details private",
+        "B": "List confidential projects but avoid naming the company",
+        "C": "Include details of technologies, suppliers and internal systems",
+        "D": "Upload screenshots of project dashboards"
+      },
+      "correct": "A",
+      "explanation": "Professional profiles should balance personal achievements with protecting sensitive company information.",
+      "difficulty_driver": "Professional Recognition",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q36",
+      "category": "Online Safety & Digital Footprint",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Recognise Information Gathering",
+      "question": "Someone on a professional networking platform has mutual contacts, appears genuine and knows information about your organisation. They ask questions about internal systems and security arrangements. What should you do?",
+      "options": {
+        "A": "Answer because they appear legitimate",
+        "B": "Share high-level details only",
+        "C": "Verify the purpose and avoid sharing information that could assist an attacker",
+        "D": "Connect first and answer later"
+      },
+      "correct": "C",
+      "explanation": "This scenario is difficult because the individual appears credible and has genuine connections. Attackers often use trust and familiarity to gather information gradually.",
+      "difficulty_driver": "Familiarity + Trust",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q37",
+      "category": "Remote Working & Secure Connectivity",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Keep Security Controls Enabled",
+      "question": "A security tool on your device is preventing an application from running correctly. What should you do?",
+      "options": {
+        "A": "Follow the appropriate support process rather than disabling the security control",
+        "B": "Ask a colleague how they bypassed the control",
+        "C": "Disable the security tool so the application works",
+        "D": "Uninstall the security tool permanently"
+      },
+      "correct": "A",
+      "explanation": "Security controls should not be disabled without proper authorisation. If a tool causes a problem, use the approved support process so the issue can be investigated safely.",
+      "difficulty_driver": "Convenience",
+      "phase_id": "phase_2",
+      "related_controls": [
+        "P1",
+        "P5"
+      ]
+    },
+    {
+      "id": "Q38",
+      "category": "Remote Working & Secure Connectivity",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Connect Securely",
+      "question": "Your train is delayed and you need to submit an urgent report. A free public Wi-Fi network appears with a name that looks legitimate. What should you do?",
+      "options": {
+        "A": "Connect immediately because the report is urgent",
+        "B": "Use approved secure access methods, such as a VPN where required",
+        "C": "Disable security software to improve connectivity",
+        "D": "Send the report before checking the connection"
+      },
+      "correct": "B",
+      "explanation": "Urgency should not override secure working practices. Public networks should be approached cautiously and used according to company guidance.",
+      "difficulty_driver": "Urgency",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q39",
+      "category": "Remote Working & Secure Connectivity",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Protect Information in Public",
+      "question": "You are working in a busy airport lounge and need to review a report containing sensitive business information before an important meeting. What should you do?",
+      "options": {
+        "A": "Continue working normally because nobody appears interested",
+        "B": "Take steps to reduce visibility of sensitive information and remain aware of your surroundings",
+        "C": "Increase screen brightness so the report is easier to read",
+        "D": "Send the report to your personal device to review later"
+      },
+      "correct": "B",
+      "explanation": "Situational awareness is important when working in public. Information can be exposed through shoulder surfing and other risks.",
+      "difficulty_driver": "Workplace Context",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    },
+    {
+      "id": "Q40",
+      "category": "Remote Working & Secure Connectivity",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Work Securely Under Pressure",
+      "question": "You are in a hotel. The Wi-Fi appears genuine, colleagues are already connected and you urgently need access to company systems before an important meeting. What should you do?",
+      "options": {
+        "A": "Connect because others are already using it",
+        "B": "Bypass security controls because it is urgent",
+        "C": "Follow approved secure access methods and verify the network before accessing sensitive information",
+        "D": "Use the same password for personal and work services"
+      },
+      "correct": "C",
+      "explanation": "This scenario is difficult because urgency and social proof make the situation appear safe. Secure access procedures should still be followed even when time pressure exists.",
+      "difficulty_driver": "Social Proof + Urgency",
+      "phase_id": null,
+      "related_controls": [
+        "P5"
+      ]
+    }
+  ]
+}
