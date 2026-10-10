@@ -10,8 +10,8 @@ There is a Word version, `OUR_GAME.docx`, if you prefer. Fill in one or the othe
 
 - Team name: Team 20
 - Team members: Tejas (engine and integration), Rayyan (screens and accessibility), Ghassan (checkpoints and questions), Vansh (Incident Room theme and multiplayer), Mo (tests, debrief and hand-in)
-- Name of our game: **TODO** (currently "Untitled Cyber Game")
-- Name of our fictional business: **TODO** (currently "Fictional Energy Co")
+- Name of our game: **Zero Hour** (set once, as `GAME_NAME` in `src/config.mjs`)
+- Name of our fictional business: **Lochside Energy** (set once, as `BUSINESS_NAME` in `src/config.mjs`)
 - Where each name is set, so it can be changed (file and line): `src/config.mjs`, line 3 (`GAME_NAME`) and line 4 (`BUSINESS_NAME`). Nothing else in the code holds either name; the page reads them from there.
 
 ## What we built

@@ -7,7 +7,9 @@
 //            so the engine stays pure and one clock (the server's) can drive every screen.
 
 import {scoreSelection} from '../../1-foundation/starter/controls.mjs';
-import {CHECKPOINT_SECONDS, POINTS_PER_SECURE_ANSWER, QUESTIONS_PER_CHECKPOINT} from '../config.mjs';
+import {QUESTIONS_PER_CHECKPOINT} from '../config.mjs';
+import {canSelect, selectionSummary} from './selection.mjs';
+import {pickQuestions, markAnswer, startTimer, timeLeft, pauseTimer, resumeTimer, teamBehaviourPoints} from '../checkpoint/checkpoint.mjs';
 
 export function createInitialState() {
   return {
@@ -26,51 +28,26 @@ export function createInitialState() {
 const pounds = n => '£' + n.toLocaleString('en-GB');
 
 // Returns a readable reason if the control cannot be added, or null if it can.
-// TODO: replace with canSelect() from selection.mjs once Rayyan's helper lands.
+// The rule itself is canSelect() in selection.mjs; this only puts it into words.
 function selectProblem(data, state, id) {
   if (state.confirmed) return 'The choice is confirmed and can no longer change.';
+  const {ok, reason} = canSelect(data, state.selected, id);
+  if (ok) return null;
   const control = data.controls.find(c => c.id === id);
-  if (!control) return `"${id}" is not a control.`;
-  if (state.selected.includes(id)) return `${control.name} is already chosen. Each control can only be chosen once.`;
-  const spent = state.selected.reduce((sum, chosen) => sum + data.controls.find(c => c.id === chosen).cost, 0);
-  const left = data.budget - spent;
-  if (control.cost > left) return `Not enough budget for ${control.name}: it costs ${pounds(control.cost)} and ${pounds(left)} is left.`;
-  return null;
-}
-
-// --- Stand-ins for Ghassan's checkpoint module, with the names agreed in TEAM_PLAN.md. ---
-// TODO: import these from ../checkpoint/checkpoint.mjs once they land.
-const LIMIT_MS = CHECKPOINT_SECONDS * 1000;
-
-function pickQuestions(bank, phaseId, count) {
-  return bank.questions.filter(q => q.phase_id === phaseId).slice(0, count);
-}
-
-function markAnswer(question, choice) {
-  const correct = choice === question.correct;
-  return {correct, points: correct ? POINTS_PER_SECURE_ANSWER : 0, explanation: question.explanation};
-}
-
-function startTimer(now) {
-  return {startedAt: now, pausedAt: null, pausedMs: 0};
-}
-
-export function timeLeft(timer, now) {
-  const pausedFor = timer.pausedMs + (timer.pausedAt === null ? 0 : now - timer.pausedAt);
-  return Math.max(0, LIMIT_MS - (now - timer.startedAt - pausedFor));
-}
-
-// Team average per question, so the number of players does not change the score.
-function teamBehaviourPoints(answers) {
-  const byQuestion = new Map();
-  for (const a of answers) byQuestion.set(a.questionId, [...(byQuestion.get(a.questionId) ?? []), a]);
-  let points = 0;
-  for (const given of byQuestion.values()) {
-    points += POINTS_PER_SECURE_ANSWER * given.filter(a => a.correct).length / given.length;
+  switch (reason) {
+    case 'UNKNOWN_CONTROL':
+      return `"${id}" is not a control.`;
+    case 'ALREADY_SELECTED':
+      return `${control.name} is already chosen. Each control can only be chosen once.`;
+    case 'OVER_BUDGET':
+      return `Not enough budget for ${control.name}: it costs ${pounds(control.cost)} and ${pounds(selectionSummary(data, state.selected).left)} is left.`;
+    default:
+      return `${control?.name ?? id} cannot be chosen.`;
   }
-  return points;
 }
-// --- End of stand-ins. ---
+
+// The checkpoint screen and main.mjs read the countdown through the engine.
+export {timeLeft};
 
 function startCheckpoint(game, state, now) {
   const phaseId = game.data.phases[state.phase].id;
@@ -128,10 +105,10 @@ function timerAction(state, action) {
   switch (action.type) {
     case 'pause':
       if (timer.pausedAt !== null) return state;
-      return {...state, checkpoint: {...checkpoint, timer: {...timer, pausedAt: action.now}}};
+      return {...state, checkpoint: {...checkpoint, timer: pauseTimer(timer, action.now)}};
     case 'resume':
       if (timer.pausedAt === null) return state;
-      return {...state, checkpoint: {...checkpoint, timer: {...timer, pausedAt: null, pausedMs: timer.pausedMs + action.now - timer.pausedAt}}};
+      return {...state, checkpoint: {...checkpoint, timer: resumeTimer(timer, action.now)}};
     case 'timeout':
       // Only believed if the time really has run out, so no screen can end a checkpoint early.
       if (timeLeft(timer, action.now) > 0) return state;
