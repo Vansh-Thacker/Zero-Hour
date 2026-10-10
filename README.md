@@ -16,7 +16,7 @@ Open a terminal in this folder and run:
 npm start
 ```
 
-Then open **http://127.0.0.1:8080** in your browser. It opens Zero Hour (`/index.html`). Press Ctrl+C in the terminal to stop the server.
+Then open **http://127.0.0.1:8080** in your browser. It opens Zero Hour (`/index.html`). The same server runs single player and multiplayer, so players on the same Wi-Fi can join from their phones. Press Ctrl+C in the terminal to stop the server.
 
 If port 8080 is in use, choose another: `set PORT=3000 && npm start` (Windows) or `PORT=3000 npm start` (macOS, Linux), then open http://127.0.0.1:3000.
 

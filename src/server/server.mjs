@@ -1,6 +1,6 @@
 import http from 'node:http';
 import {randomInt} from 'node:crypto';
-import {readFile, realpath} from 'node:fs/promises';
+import {readdir, readFile, realpath, stat} from 'node:fs/promises';
 import {networkInterfaces} from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -91,6 +91,21 @@ function joinAddresses() {
   return addresses;
 }
 
+// The artwork viewer (2-extend/artwork.html) asks for a list of the artwork files.
+const ASSET_FOLDERS = ['1-foundation/artwork', '2-extend/artwork', '2-extend/previews', '2-extend/worlds'];
+
+async function listAssets(folder, found = []) {
+  let entries = [];
+  try { entries = await readdir(path.join(root, folder), {withFileTypes: true}); } catch { return found; }
+  for (const entry of entries) {
+    if (entry.name.startsWith('.')) continue;
+    const relative = `${folder}/${entry.name}`;
+    if (entry.isDirectory()) await listAssets(relative, found);
+    else if (entry.isFile()) found.push({path: relative, bytes: (await stat(path.join(root, relative))).size});
+  }
+  return found;
+}
+
 async function serveFile(req, res, pathname) {
   const name = pathname === '/' ? '/index.html' : pathname.endsWith('/') ? `${pathname}index.html` : pathname;
   const file = await realpath(path.resolve(root, '.' + name));
@@ -135,6 +150,13 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
+    if (req.method === 'GET' && pathname === '/api/assets') {
+      const files = [];
+      for (const folder of ASSET_FOLDERS) await listAssets(folder, files);
+      files.sort((a, b) => a.path.localeCompare(b.path));
+      return reply(res, 200, {files});
+    }
+
     if (req.method === 'GET' && pathname === '/api/join-addresses') {
       return reply(res, 200, {addresses: joinAddresses()});
     }
@@ -157,9 +179,11 @@ setInterval(() => {
 }, 30000);
 
 server.on('error', error => {
-  console.error(`Could not start multiplayer: ${error.message}`);
+  console.error(error.code === 'EADDRINUSE'
+    ? `Could not start Zero Hour: port ${port} is already in use. Another server is still running; stop it with Ctrl+C in its terminal, or choose another port with PORT.`
+    : `Could not start Zero Hour: ${error.message}`);
   process.exitCode = 1;
 });
 server.listen(port, '0.0.0.0', () => {
-  console.log(`Zero Hour multiplayer at http://127.0.0.1:${server.address().port}/host.html`);
+  console.log(`Zero Hour at http://127.0.0.1:${server.address().port}/  (single player and multiplayer; Ctrl+C to stop)`);
 });
