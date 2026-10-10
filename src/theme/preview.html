@@ -51,7 +51,7 @@ function draw() {
   ];
   document.getElementById('controls').innerHTML = buttons.join('');
 
-  const state = { chosen: teams[team], phaseIndex: showOutcome ? data.phases.length - 1 : phaseIndex };
+  const state = { selected: teams[team], phase: showOutcome ? data.phases.length - 1 : phaseIndex };
   renderTheme(document.getElementById('heist'), state, data, { showOutcome });
 }
 
