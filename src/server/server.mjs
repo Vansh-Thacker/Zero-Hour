@@ -6,7 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {loadGameData} from '../engine/loadData.mjs';
 import {timeLeft} from '../engine/state.mjs';
-import {act, createRoom, joinRoom, viewFor} from './rooms.mjs';
+import {MAX_TEAMS, actCompetition, competitionView, createCompetition, joinCompetition, sharedState} from './competition.mjs';
 
 const root = await realpath(fileURLToPath(new URL('../../', import.meta.url)));
 const port = Number(process.env.PORT || 8080);
@@ -39,12 +39,19 @@ async function readJson(req) {
     }
     chunks.push(chunk);
   }
-  try { return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); }
+  let body;
+  try { body = JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}'); }
   catch {
     const error = new Error('Send valid JSON.');
     error.status = 400;
     throw error;
   }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    const error = new Error('Send a JSON object.');
+    error.status = 400;
+    throw error;
+  }
+  return body;
 }
 
 function newCode() {
@@ -62,7 +69,7 @@ function findRoom(code, res) {
 
 function send(client, room) {
   // serverNow lets each screen line its countdown up with the server's clock.
-  client.res.write(`data: ${JSON.stringify({...viewFor(room, client.token), serverNow: Date.now()})}\n\n`);
+  client.res.write(`data: ${JSON.stringify({...competitionView(room, client.token), serverNow: Date.now()})}\n\n`);
 }
 
 function broadcast(room) {
@@ -70,7 +77,7 @@ function broadcast(room) {
 }
 
 function openStream(req, res, room, token) {
-  if (!viewFor(room, token)) return reply(res, 403, {error: 'This seat is not part of this game.'});
+  if (!competitionView(room, token)) return reply(res, 403, {error: 'This seat is not part of this game.'});
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-store',
@@ -135,11 +142,11 @@ const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://localhost');
     const pathname = decodeURIComponent(url.pathname);
-    const match = /^\/api\/rooms\/([^/]+)\/(join|events|actions)$/.exec(pathname);
+    const match = /^\/api\/rooms\/([^/]+)\/(join|events|actions|teams)$/.exec(pathname);
 
     if (req.method === 'POST' && pathname === '/api/rooms') {
       await readJson(req);
-      const room = createRoom(newCode());
+      const room = createCompetition(newCode());
       rooms.set(room.code, room);
       streams.set(room.code, new Set());
       return reply(res, 201, {code: room.code, token: room.hostToken});
@@ -148,25 +155,32 @@ const server = http.createServer(async (req, res) => {
     if (match) {
       const room = findRoom(match[1], res);
       if (!room) return;
+      if (match[2] === 'teams' && req.method === 'GET') {   // for the join screen: which teams exist
+        return reply(res, 200, {
+          teams: room.teams.map(team => ({name: team.name, players: team.players.length})),
+          started: sharedState(room).confirmed,
+          maxTeams: MAX_TEAMS,
+        });
+      }
       if (match[2] === 'join' && req.method === 'POST') {
-        const {name} = await readJson(req);
-        const player = joinRoom(room, name);
-        reply(res, 200, {code: room.code, token: player.token, category: player.category});
+        const {name, team: teamName} = await readJson(req);
+        const {player, team} = joinCompetition(room, name, teamName);
+        reply(res, 200, {code: room.code, token: player.token, category: player.category, team: team.name});
         return broadcast(room);
       }
       if (match[2] === 'actions' && req.method === 'POST') {
         const {token, action} = await readJson(req);
         try {
-          act(room, token, action, game);
+          actCompetition(room, token, action, game);
         } catch (error) {
-          if (viewFor(room, token)) broadcast(room); // a refusal still shows in everyone's log
+          if (competitionView(room, token)) broadcast(room); // a refusal still shows in everyone's log
           throw error;
         }
         reply(res, 200, {ok: true});
         return broadcast(room);
       }
       if (match[2] === 'events' && req.method === 'HEAD') { // "is my seat still in this game?"
-        res.writeHead(viewFor(room, url.searchParams.get('token')) ? 200 : 403);
+        res.writeHead(competitionView(room, url.searchParams.get('token')) ? 200 : 403);
         return res.end();
       }
       if (match[2] === 'events' && req.method === 'GET') {
@@ -199,9 +213,9 @@ const server = http.createServer(async (req, res) => {
 // One clock for every screen: when a checkpoint's time runs out, end it for the whole room.
 setInterval(() => {
   for (const room of rooms.values()) {
-    const {stage, checkpoint} = room.state;
+    const {stage, checkpoint} = sharedState(room);
     if (stage !== 'checkpoint' || checkpoint.expired || timeLeft(checkpoint.timer, Date.now()) > 0) continue;
-    act(room, room.hostToken, {type: 'timeout'}, game);
+    actCompetition(room, room.hostToken, {type: 'timeout'}, game);
     broadcast(room);
   }
 }, 1000);

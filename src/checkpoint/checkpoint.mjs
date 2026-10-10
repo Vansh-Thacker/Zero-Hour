@@ -46,14 +46,16 @@ export function markAnswer(question, choice) {
 // Team average per question, so the number of players does not change the score.
 // One player: full points for a secure answer, none otherwise. Two players, one secure: half.
 // answers: [{questionId, correct}, ...] for one checkpoint.
-export function teamBehaviourPoints(answers) {
+// teamSize (multiplayer): how many players are in the team. A player who has not answered
+// counts as 0 for that question, so staying silent never beats a wrong answer.
+export function teamBehaviourPoints(answers, teamSize = 0) {
   const byQuestion = new Map();
   for (const answer of answers) {
     byQuestion.set(answer.questionId, [...(byQuestion.get(answer.questionId) ?? []), answer]);
   }
   let points = 0;
   for (const given of byQuestion.values()) {
-    points += POINTS_PER_SECURE_ANSWER * given.filter(a => a.correct).length / given.length;
+    points += POINTS_PER_SECURE_ANSWER * given.filter(a => a.correct).length / Math.max(given.length, teamSize);
   }
   return points;
 }

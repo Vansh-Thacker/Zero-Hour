@@ -7,6 +7,7 @@
 //            so the engine stays pure and one clock (the server's) can drive every screen.
 
 import {scoreSelection} from '../../1-foundation/starter/controls.mjs';
+import {scorePlan} from './scores.mjs';
 import {QUESTIONS_PER_CHECKPOINT} from '../config.mjs';
 import {
   pickQuestions, markAnswer, teamBehaviourPoints,
@@ -89,7 +90,7 @@ function answer(game, state, action) {
   const {correct} = markAnswer(question, action.choice);
   const answers = [...state.answers, {phase: state.phase, questionId: question.id, player, choice: action.choice, correct}];
   const behaviourPoints = [...state.behaviourPoints];
-  behaviourPoints[state.phase] = teamBehaviourPoints(answers.filter(a => a.phase === state.phase));
+  behaviourPoints[state.phase] = teamBehaviourPoints(answers.filter(a => a.phase === state.phase), action.teamSize);
   return {...state, answers, behaviourPoints, error: null};
 }
 
@@ -108,7 +109,12 @@ function timerAction(state, action) {
     case 'timeout':
       // Only believed if the time really has run out, so no screen can end a checkpoint early.
       if (!isExpired(timer, action.now)) return state;
-      return {...state, checkpoint: {...checkpoint, expired: true}};
+      {
+        // Work the points out again with the whole team: anyone who missed a question scores 0 for it.
+        const behaviourPoints = [...state.behaviourPoints];
+        behaviourPoints[state.phase] = teamBehaviourPoints(state.answers.filter(a => a.phase === state.phase), action.teamSize);
+        return {...state, behaviourPoints, checkpoint: {...checkpoint, expired: true}};
+      }
   }
 }
 
@@ -128,7 +134,8 @@ export function reduce(game, state, action) {
     case 'confirm': {
       if (state.confirmed) return state;
       try {
-        const result = scoreSelection(data, state.selected);
+        // anyCategories: set by the server in a team battle, where a team may skip a category.
+        const result = action.anyCategories ? scorePlan(data, state.selected) : scoreSelection(data, state.selected);
         return {...state, confirmed: true, result, stage: 'story', error: null};
       } catch (e) {
         return {...state, error: e.message};

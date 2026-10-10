@@ -777,6 +777,69 @@ a.btn { text-decoration: none; }
   .room-log li:nth-child(n + 2) { display: none; }
 }
 
+/* ---------- Team battle (multiplayer with several teams) ---------- */
+
+.hint { color: var(--muted); font-size: 0.88rem; margin: 0 0 6px; }
+.team-picks { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0 6px; }
+.team-pick { cursor: pointer; border: 1px solid var(--line-strong); }
+.team-pick.is-on, .team-pick:hover { border-color: var(--brand-light); color: var(--text); }
+.room-team-name { color: var(--brand-light); font-weight: 700; }
+
+.team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 16px; }
+.team-card { display: grid; gap: 10px; align-content: start; }
+.team-card.is-ready { border-color: var(--secure); box-shadow: 0 0 0 1px var(--secure), var(--shadow); }
+.team-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.team-head h3 { margin: 0; font-size: 1.2rem; text-transform: uppercase; }
+.team-players { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 0.92rem; }
+.team-players li { display: flex; align-items: center; gap: 8px; }
+.team-players .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--cat, var(--muted)); flex: none; }
+.team-players li[data-cat="Prevent"] { --cat: var(--prevent); }
+.team-players li[data-cat="Detect"] { --cat: var(--detect); }
+.team-players li[data-cat="Respond"] { --cat: var(--respond); }
+.team-budget { color: var(--muted); font-size: 0.88rem; margin: 0; }
+.team-answers { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+
+.wall-bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.wall-bar { display: grid; grid-template-columns: minmax(110px, 180px) 1fr auto; gap: 4px 14px; align-items: center; }
+.wall-name { font-weight: 700; }
+.wall-track { height: 16px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); border: 1px solid var(--line); overflow: hidden; }
+.wall-track i { display: block; height: 100%; background: var(--secure); }
+.wall-bar.is-holding .wall-track i { background: var(--gold); }
+.wall-bar.is-weak .wall-track i { background: var(--notice); }
+.wall-value { font: 700 1rem/1 var(--font-mono); }
+.wall-note { grid-column: 2 / -1; color: var(--muted); font-size: 0.85rem; }
+
+.standings { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.standings th, .standings td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+.standings thead th { color: var(--muted); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.standings tbody tr:first-child th { color: var(--gold); }
+.standings tr.is-own { background: rgba(38, 191, 100, 0.12); }
+
+.final-teams { display: grid; gap: 16px; }
+.final-team { display: grid; grid-template-columns: 56px 130px 1fr; gap: 18px; align-items: center; }
+.final-team.is-winner { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), var(--shadow); }
+.final-rank { font: 700 2rem/1 var(--font-mono); color: var(--gold); text-align: center; }
+.final-vault { margin: 0; display: grid; justify-items: center; gap: 6px; }
+.final-vault .safe { width: 110px; }
+.final-vault figcaption { font-size: 0.85rem; font-weight: 700; text-align: center; }
+.final-team.is-secure .final-vault figcaption { color: var(--secure); }
+.final-team.is-damaged .final-vault figcaption { color: var(--gold); }
+.final-team.is-breached .final-vault figcaption { color: var(--notice); }
+.final-body { display: grid; gap: 10px; }
+.final-body h3 { margin: 0; font-size: 1.3rem; text-transform: uppercase; }
+.final-body .wall-bar { list-style: none; }
+.final-scores { margin: 0; color: var(--muted); }
+.final-scores strong { color: var(--text); font-family: var(--font-mono); }
+.team-place { display: grid; gap: 12px; margin-bottom: 24px; }
+
+@media (max-width: 860px) {
+  .final-team { grid-template-columns: 1fr; justify-items: start; }
+  .wall-bar { grid-template-columns: 1fr auto; }
+  .wall-track { grid-column: 1 / -1; grid-row: 2; }
+  .standings { font-size: 0.85rem; }
+  .standings th, .standings td { padding: 6px; }
+}
+
 /* ---------- Small screens ---------- */
 
 @media (max-width: 860px) {
