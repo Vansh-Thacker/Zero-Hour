@@ -18,7 +18,7 @@ costumes or music from any existing show.
 | Mo      | Tests, debrief and hand-in             | `tests/`, `src/debrief/`, `OUR_GAME.md`, slides             |
 
 Only edit files you own. If you need a change in someone else's files, ask them.
-Do not edit the root `style.css` (the brief and demo pages use it) or anything in
+Do not edit the root `style.css` (the brief and artwork pages use it) or anything in
 `1-foundation/starter/`.
 
 Everyone writes basic tests for their own module. Mo owns the overall test suite and keeps

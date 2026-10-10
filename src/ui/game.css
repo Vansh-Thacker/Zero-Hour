@@ -1,31 +1,33 @@
 /* Zero Hour: the game's look.
-   An original heist-film style: a dark vault, bold red for the crew, gold for the prize,
-   and the ScottishPower greens and blues for the defenders.
+   An original heist-film style in ScottishPower colours, following the pack's brand style guide
+   (1-foundation/artwork/brand/): green is our business, dark green for headings and the vault,
+   amber for the thing to notice and the attacker, blue for detection only. Arial throughout.
    Rules: no flashing, nothing told by colour alone, motion off under prefers-reduced-motion. */
 
 :root {
-  --bg: #07090d;
-  --bg-2: #0c1118;
-  --panel: #111821;
-  --panel-2: #18212d;
-  --line: rgba(255, 255, 255, 0.09);
-  --line-strong: rgba(255, 255, 255, 0.18);
-  --text: #eef2f6;
-  --muted: #a3afbd;
+  --bg: #011a12;           /* night-time version of ScottishPower dark green #00402A */
+  --bg-2: #03231a;
+  --panel: #062b1f;
+  --panel-2: #0a3527;
+  --line: rgba(220, 235, 225, 0.10);
+  --line-strong: rgba(220, 235, 225, 0.22);
+  --text: #f3f4f3;         /* ScottishPower ground */
+  --muted: #b4cabd;
 
-  --red: #ef3e42;          /* the crew, alerts */
-  --red-deep: #8f1d22;
-  --gold: #ffb536;         /* the prize, highlights (ScottishPower gold) */
-  --prevent: #26bf64;      /* ScottishPower light green */
-  --detect: #3cc2ff;       /* ScottishPower light blue */
-  --respond: #ff9c1a;      /* ScottishPower light amber */
+  --brand: #008c39;        /* ScottishPower green: our business, main actions */
+  --brand-light: #26bf64;  /* ScottishPower light green */
+  --notice: #e3850d;       /* ScottishPower amber: the thing to notice, the attacker */
+  --gold: #ffb536;         /* ScottishPower gold: scores and the clock */
+  --prevent: #26bf64;      /* category colours from the style guide: Prevent green, */
+  --detect: #3cc2ff;       /* Detect blue, */
+  --respond: #ff9c1a;      /* Respond amber */
   --secure: #5bd38c;
-  --danger: #ff6b6e;
+  --danger: #ffa94d;       /* wrong answers: always shown with ✗ and words too */
 
   --radius: 14px;
   --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
-  --font-display: "Bahnschrift", "DIN Alternate", "Arial Narrow", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --font-display: Arial, Helvetica, sans-serif;
+  --font-body: Arial, Helvetica, sans-serif;
   --font-mono: "Cascadia Mono", "SF Mono", Consolas, ui-monospace, monospace;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   color-scheme: dark;
@@ -41,8 +43,8 @@ body {
   color: var(--text);
   font: 17px/1.55 var(--font-body);
   background:
-    radial-gradient(1200px 600px at 85% -10%, rgba(239, 62, 66, 0.16), transparent 60%),
-    radial-gradient(900px 500px at -10% 110%, rgba(60, 194, 255, 0.10), transparent 60%),
+    radial-gradient(1200px 600px at 85% -10%, rgba(38, 191, 100, 0.16), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(7, 146, 229, 0.12), transparent 60%),
     linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 32px 32px,
     linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 32px 32px,
     var(--bg);
@@ -73,7 +75,7 @@ p { margin: 0 0 0.8em; }
   position: sticky; top: 0; z-index: 20;
   display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
   padding: 14px 20px; margin: 0 -20px 24px;
-  background: rgba(7, 9, 13, 0.82);
+  background: rgba(1, 26, 18, 0.85);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
@@ -90,7 +92,7 @@ p { margin: 0 0 0.8em; }
   font-family: var(--font-display); font-weight: 700; font-size: 1.5rem;
   letter-spacing: 0.18em; text-transform: uppercase;
 }
-.wordmark span { color: var(--red); }
+.wordmark span { color: var(--brand-light); }
 .brand-sub { color: var(--muted); font-size: 0.82rem; letter-spacing: 0.04em; }
 
 .chips { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -116,8 +118,8 @@ p { margin: 0 0 0.8em; }
 }
 .track .time { display: block; font-family: var(--font-mono); color: var(--text); }
 .track li.is-done::before { background: var(--panel-2); color: var(--secure); }
-.track li.is-now { border-color: var(--red); background: linear-gradient(180deg, rgba(239, 62, 66, 0.16), var(--panel)); color: var(--text); }
-.track li.is-now::before { background: var(--red); border-color: var(--red); color: #fff; }
+.track li.is-now { border-color: var(--brand-light); background: linear-gradient(180deg, rgba(38, 191, 100, 0.18), var(--panel)); color: var(--text); }
+.track li.is-now::before { background: var(--brand); border-color: var(--brand-light); color: #fff; }
 
 /* ---------- Screen entrance ---------- */
 
@@ -130,7 +132,7 @@ p { margin: 0 0 0.8em; }
 .eyebrow {
   display: inline-flex; align-items: center; gap: 8px;
   font: 700 0.8rem/1 var(--font-display); letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--red);
+  color: var(--brand-light);
 }
 .eyebrow::before { content: ""; width: 22px; height: 2px; background: currentColor; }
 
@@ -157,11 +159,11 @@ p { margin: 0 0 0.8em; }
 .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4); }
 .btn:active { transform: translateY(0); }
 .btn-primary {
-  --btn-bg: linear-gradient(180deg, #ff5357, var(--red));
+  --btn-bg: linear-gradient(180deg, #00a443, var(--brand));
   border-color: transparent; color: #fff;
-  box-shadow: 0 8px 22px rgba(239, 62, 66, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 22px rgba(0, 140, 57, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
-.btn-primary:hover { box-shadow: 0 14px 30px rgba(239, 62, 66, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+.btn-primary:hover { box-shadow: 0 14px 30px rgba(0, 140, 57, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
 .btn-ghost { --btn-bg: transparent; }
 .btn[aria-disabled="true"] { opacity: 0.55; }
 
@@ -170,9 +172,9 @@ p { margin: 0 0 0.8em; }
 .alert {
   display: flex; gap: 10px; align-items: flex-start;
   padding: 12px 16px; border-radius: 12px; margin: 0 0 16px;
-  background: rgba(239, 62, 66, 0.12); border: 1px solid rgba(239, 62, 66, 0.5);
+  background: rgba(227, 133, 13, 0.14); border: 1px solid rgba(227, 133, 13, 0.6);
 }
-.alert::before { content: "⚠"; font-weight: 700; color: var(--danger); }
+.alert::before { content: "⚠"; font-weight: 700; color: var(--gold); }
 
 /* ---------- 3D cards ---------- */
 
@@ -193,7 +195,7 @@ p { margin: 0 0 0.8em; }
 
 .brief { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; align-items: center; margin-bottom: 28px; }
 .brief-art { position: relative; height: 220px; }
-.brief-art img { position: absolute; filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.55)); }
+.brief-art img { position: absolute; max-height: 100%; object-fit: contain; filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.55)); }
 .brief-art .a { width: 62%; left: 0; bottom: 0; }
 .brief-art .b { width: 46%; right: 0; top: 0; }
 .rules { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
@@ -210,10 +212,10 @@ p { margin: 0 0 0.8em; }
 .meter { height: 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); overflow: hidden; border: 1px solid var(--line); }
 .meter > i {
   display: block; height: 100%; width: var(--fill, 0%);
-  background: linear-gradient(90deg, var(--gold), #ffd27a);
+  background: linear-gradient(90deg, var(--brand), var(--brand-light));
   transition: width 0.6s var(--ease);
 }
-.meter.is-low > i { background: linear-gradient(90deg, var(--red), #ff7a7d); }
+.meter.is-low > i { background: linear-gradient(90deg, var(--notice), var(--gold)); }
 .coverage { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 .cover {
   padding: 4px 10px; border-radius: 999px; font-size: 0.85rem;
@@ -239,7 +241,7 @@ p { margin: 0 0 0.8em; }
 .crew-head p { color: var(--muted); margin: 0; }
 .crew-tag {
   font: 700 0.75rem/1 var(--font-display); letter-spacing: 0.16em; text-transform: uppercase;
-  padding: 6px 10px; border-radius: 6px; color: #07090d; background: var(--cat);
+  padding: 6px 10px; border-radius: 6px; color: #00261a; background: var(--cat);
 }
 .crew[data-cat="Prevent"] { --cat: var(--prevent); }
 .crew[data-cat="Detect"] { --cat: var(--detect); }
@@ -265,7 +267,7 @@ p { margin: 0 0 0.8em; }
 .card:hover .card-art img { transform: translateY(-4px) scale(1.04); }
 .card-body { padding: 4px 16px 14px; flex: 1; display: flex; flex-direction: column; gap: 6px; transform: translateZ(14px); }
 .card-id { font: 700 0.75rem/1 var(--font-mono); color: var(--cat, var(--gold)); letter-spacing: 0.08em; }
-.card h3 { font-size: 1.05rem; margin: 0; letter-spacing: 0.02em; font-family: var(--font-body); font-weight: 650; }
+.card h3 { font-size: 1.05rem; margin: 0; letter-spacing: 0.02em; font-family: var(--font-body); font-weight: 700; }
 .card .heist-name { color: var(--gold); font-size: 0.85rem; }
 .card .desc { color: var(--muted); font-size: 0.92rem; margin: 0; }
 .card details { font-size: 0.88rem; color: var(--muted); }
@@ -281,12 +283,12 @@ p { margin: 0 0 0.8em; }
 }
 .pick:hover { transform: translateY(-1px); border-color: var(--cat); }
 .card.is-chosen { border-color: var(--cat); box-shadow: 0 0 0 1px var(--cat), 0 18px 40px rgba(0, 0, 0, 0.5); }
-.card.is-chosen .pick { background: var(--cat); color: #07090d; border-color: var(--cat); }
+.card.is-chosen .pick { background: var(--cat); color: #00261a; border-color: var(--cat); }
 .card.is-chosen .badge-chosen { display: inline-flex; }
 .badge-chosen {
   display: none; position: absolute; top: 12px; right: 12px; z-index: 2;
   padding: 4px 8px; border-radius: 6px; font: 700 0.72rem/1 var(--font-display); letter-spacing: 0.12em;
-  background: var(--cat); color: #07090d; text-transform: uppercase;
+  background: var(--cat); color: #00261a; text-transform: uppercase;
 }
 .card.is-unaffordable:not(.is-chosen) { opacity: 0.6; }
 .card .over { font-size: 0.8rem; color: var(--danger); }
@@ -314,8 +316,8 @@ p { margin: 0 0 0.8em; }
 .evidence .stamp {
   position: absolute; left: 6%; bottom: 10%; rotate: -8deg;
   font: 700 1rem/1 var(--font-display); letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--red); border: 3px solid var(--red); padding: 8px 12px; border-radius: 6px;
-  background: rgba(7, 9, 13, 0.75);
+  color: var(--notice); border: 3px solid var(--notice); padding: 8px 12px; border-radius: 6px;
+  background: rgba(1, 26, 18, 0.8);
 }
 @keyframes float { 50% { transform: translateY(-10px); } }
 
@@ -361,9 +363,9 @@ p { margin: 0 0 0.8em; }
 .ring {
   --p: 100;
   width: 92px; height: 92px; border-radius: 50%; display: grid; place-items: center;
-  background: conic-gradient(var(--gold) calc(var(--p) * 1%), rgba(255, 255, 255, 0.08) 0);
+  background: conic-gradient(var(--brand-light) calc(var(--p) * 1%), rgba(255, 255, 255, 0.08) 0);
 }
-.ring.is-low { background: conic-gradient(var(--red) calc(var(--p) * 1%), rgba(255, 255, 255, 0.08) 0); }
+.ring.is-low { background: conic-gradient(var(--notice) calc(var(--p) * 1%), rgba(255, 255, 255, 0.08) 0); }
 .ring span {
   width: 74px; height: 74px; border-radius: 50%; display: grid; place-items: center;
   background: var(--bg-2); font: 700 1.4rem/1 var(--font-mono);
@@ -391,6 +393,7 @@ p { margin: 0 0 0.8em; }
 .option.is-picked-wrong { border-color: var(--danger); background: rgba(255, 107, 110, 0.10); }
 .option[disabled] { cursor: default; transform: none; }
 .option { flex-wrap: wrap; }
+.option .letter + span { flex: 1 1 0; min-width: 0; }
 .option-note { flex-basis: 100%; padding-left: 40px; font-size: 0.85rem; font-weight: 700; }
 .option.is-correct .option-note { color: var(--secure); }
 .option.is-picked-wrong .option-note { color: var(--danger); }
