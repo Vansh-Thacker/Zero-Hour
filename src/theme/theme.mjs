@@ -2,7 +2,7 @@
  * theme.mjs
  * ----------
  * Puts the heist theme together: blueprint, vault meter, heist clock,
- * this phase's defences and The Architect's messages.
+ * this phase's defences, The Architect's messages and the final outcome.
  *
  * renderTheme() is the one function the host screen calls.
  * buildThemeHtml() does the real work and returns a string, so it can be
@@ -13,18 +13,28 @@
  */
 
 import { HEIST_NAME, MASTERMIND, heistLabel, heistPhase, roleFor } from './heistNames.mjs';
+import { LAYER_MARKERS, SCENE, controlIcon } from './artwork.mjs';
 import { architectMessages } from './architect.mjs';
-import { blueprintSvg, layerCoverage } from './blueprint.mjs';
+import { blueprintLegendHtml, blueprintSvg, layerCoverage } from './blueprint.mjs';
 import { heistClock } from './clock.mjs';
 import {
-  chosenControlIds, currentPhaseIndex, heistOutcome, phaseScore,
-  bestPossiblePhaseScore, pointsFor, vaultIntegrity,
+  bestPossiblePhaseScore, chosenControlIds, currentPhaseIndex,
+  heistOutcome, phaseScore, pointsFor, vaultIntegrity,
 } from './vault.mjs';
 
 /** Escapes text from the data before it goes into HTML. */
 function escape(text) {
   return String(text).replace(/[&<>"']/g, ch =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+}
+
+/**
+ * A pack image. alt="" because the text next to it already says the same thing,
+ * so screen readers do not read it twice.
+ */
+function image(src, className = 'heist-icon', size = 28) {
+  if (!src) return '';
+  return `<img class="${className}" src="${escape(src)}" alt="" width="${size}" height="${size}">`;
 }
 
 /** A word and icon for the vault meter, so it never relies on colour alone. */
@@ -34,6 +44,16 @@ function vaultStatus(integrity) {
   return { icon: '🚨', word: 'Critical', level: 'bad' };
 }
 
+/** The three controls the business already has, as full control objects. */
+function alreadyInPlace(data) {
+  return (data.already_in_place ?? []).map(item =>
+    typeof item === 'string' ? (data.controls.find(c => c.id === item) ?? { id: item, name: item }) : item);
+}
+
+// ---------------------------------------------------------------------------
+// Sections
+// ---------------------------------------------------------------------------
+
 function headerHtml(data, n) {
   const { title } = heistPhase(data.phases[n].id, n);
   const clock = heistClock(data, n);
@@ -41,9 +61,12 @@ function headerHtml(data, n) {
 
   return `
     <header class="heist-header">
-      <div>
-        <p class="heist-eyebrow">${escape(HEIST_NAME)} · Phase ${n + 1} of ${data.phases.length}</p>
-        <h2 class="heist-title">${escape(title)}</h2>
+      <div class="heist-header-title">
+        ${image(SCENE.building, 'heist-building', 56)}
+        <div>
+          <p class="heist-eyebrow">${escape(HEIST_NAME)} · Phase ${n + 1} of ${data.phases.length}</p>
+          <h2 class="heist-title">${escape(title)}</h2>
+        </div>
       </div>
       <div class="heist-clock" aria-label="Heist clock: ${escape(clock.label)}">
         <span class="heist-clock-time">⏱ ${escape(clock.label)}</span>
@@ -79,17 +102,19 @@ function defencesHtml(data, state, n) {
   const rows = scored.map(({ control, points }) => `
       <li class="${points > 0 ? 'is-lit' : 'is-dark'}">
         <span class="mark">${points > 0 ? '✓' : '–'}</span>
+        ${image(controlIcon(control))}
         <span>${escape(heistLabel(control))}</span>
         <span class="pts">${points} pts</span>
       </li>`).join('');
 
   const gaps = layerCoverage(data, state, n)
     .filter(layer => !layer.covered)
-    .map(layer => {
-      const { icon, role } = roleFor(layer.category);
-      return `<li class="is-gap"><span class="mark">✗</span>
-        <span>${icon} No ${escape(role)} defence (${escape(layer.category)}) worked in this room</span></li>`;
-    }).join('');
+    .map(layer => `
+      <li class="is-gap">
+        <span class="mark">✗</span>
+        ${image(LAYER_MARKERS[layer.category])}
+        <span>No ${escape(roleFor(layer.category).role)} defence (${escape(layer.category)}) worked in this room</span>
+      </li>`).join('');
 
   const score = phaseScore(data, state, n);
   const best = bestPossiblePhaseScore(data, n);
@@ -108,21 +133,43 @@ function architectHtml(data, state, n) {
 
   return `
     <section class="heist-architect" aria-live="polite" aria-label="Message from ${escape(MASTERMIND)}">
-      <h3>📞 ${escape(MASTERMIND)}</h3>
+      <h3>${image(SCENE.architect)} ${escape(MASTERMIND)} is calling</h3>
       <ul>${lines}</ul>
+    </section>`;
+}
+
+function inPlaceHtml(data) {
+  const controls = alreadyInPlace(data);
+  if (controls.length === 0) return '';
+
+  const items = controls.map(control =>
+    `<li>${image(controlIcon(control))} <span>${escape(heistLabel(control))}</span></li>`).join('');
+
+  return `
+    <section class="heist-inplace" aria-label="Already in place">
+      <h3>Already in place before tonight <span>(cannot be chosen, score nothing)</span></h3>
+      <ul>${items}</ul>
     </section>`;
 }
 
 function outcomeHtml(data, state) {
   const outcome = heistOutcome(data, state);
-  const heading = outcome.result === 'foiled' ? '✓ Heist foiled. The vault holds.' : '✗ The crew got away.';
+  const foiled = outcome.result === 'foiled';
+  const heading = foiled ? '✓ Heist foiled. The vault holds.' : '✗ The crew got away.';
 
   return `
     <section class="heist-outcome is-${outcome.result}" role="status">
-      <h2>${heading}</h2>
-      <p>${escape(outcome.reason)}</p>
+      ${image(foiled ? SCENE.foiled : SCENE.escaped, 'heist-outcome-art', 64)}
+      <div>
+        <h2>${heading}</h2>
+        <p>${escape(outcome.reason)}</p>
+      </div>
     </section>`;
 }
+
+// ---------------------------------------------------------------------------
+// Public functions
+// ---------------------------------------------------------------------------
 
 /**
  * The whole theme panel as an HTML string.
@@ -138,11 +185,13 @@ export function buildThemeHtml(state, data, { showOutcome = false } = {}) {
     ${showOutcome ? outcomeHtml(data, state) : ''}
     ${headerHtml(data, n)}
     <div class="heist-blueprint">${blueprintSvg(data, state, n)}</div>
+    ${blueprintLegendHtml()}
     ${vaultMeterHtml(data, state, n)}
     <div class="heist-columns">
       ${defencesHtml(data, state, n)}
       ${architectHtml(data, state, n)}
     </div>
+    ${inPlaceHtml(data)}
   </div>`;
 }
 

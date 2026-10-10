@@ -41,7 +41,6 @@
 .bp text { fill: var(--bp-line); font-family: inherit; font-size: 12px; }
 .bp-corridor { stroke: var(--bp-muted); stroke-width: 1; stroke-dasharray: 2 6; }
 .bp-route { stroke: var(--bp-route); stroke-width: 3; stroke-dasharray: 8 6; fill: none; }
-.bp-crew polygon { fill: var(--bp-route); }
 .bp-crew text { fill: var(--bp-route); font-weight: 700; }
 
 .bp-room rect, .bp-vault rect { fill: var(--bp-paper); stroke: var(--bp-line); stroke-width: 2; }
@@ -93,3 +92,27 @@
   .bp-crew { animation: none; }
   .heist-vault-meter i { transition: none; }
 }
+
+/* Pack artwork. Images sit on a light badge so dark artwork stays visible on the blueprint. */
+.heist-icon { width: 28px; height: 28px; flex: none; background: #f4f7fb; border-radius: 6px; padding: 3px; object-fit: contain; vertical-align: middle; }
+.heist-header-title { display: flex; align-items: center; gap: 12px; }
+.heist-building { width: 56px; height: 56px; background: #f4f7fb; border-radius: 8px; padding: 4px; object-fit: contain; }
+.bp-badge { fill: #f4f7fb; }
+.bp-room.is-ahead .bp-badge { opacity: 0.5; }
+
+.heist-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: -4px 0 20px; font-size: 0.8rem; color: var(--bp-muted); }
+.heist-legend li { display: flex; align-items: center; gap: 6px; }
+.heist-legend .heist-icon { width: 20px; height: 20px; padding: 2px; }
+
+.heist-defences li { grid-template-columns: 1.5em 28px 1fr auto; align-items: center; }
+.heist-defences .is-gap { grid-template-columns: 1.5em 28px 1fr; }
+.heist-architect h3 { display: flex; align-items: center; gap: 8px; }
+
+.heist-inplace { margin-top: 16px; border: 1px dashed var(--bp-muted); border-radius: 8px; padding: 14px; }
+.heist-inplace h3 { font-size: 1rem; }
+.heist-inplace h3 span { font-weight: 400; color: var(--bp-muted); font-size: 0.85rem; }
+.heist-inplace ul { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+.heist-inplace li { display: flex; align-items: center; gap: 8px; }
+
+.heist-outcome { display: flex; gap: 16px; align-items: center; }
+.heist-outcome-art { width: 64px; height: 64px; flex: none; background: #f4f7fb; border-radius: 10px; padding: 6px; object-fit: contain; }
