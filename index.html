@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cyber Game</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main id="app">
+    <h1 id="game-name"></h1>
+    <p id="business-name"></p>
+    <p>Loading…</p>
+  </main>
+  <script type="module">
+    import {GAME_NAME, BUSINESS_NAME} from '/src/config.mjs';
+    document.title = GAME_NAME;
+    document.getElementById('game-name').textContent = GAME_NAME;
+    document.getElementById('business-name').textContent = BUSINESS_NAME;
+  </script>
+</body>
+</html>
