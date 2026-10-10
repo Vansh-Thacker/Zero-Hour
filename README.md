@@ -9,7 +9,7 @@ You need Node.js version 20 or later. Nothing else needs installing: no packages
 Open a terminal in this folder and run:
 
 ```
-npm test
+npm test 
 npm start
 ```
 
