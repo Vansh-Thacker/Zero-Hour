@@ -17,8 +17,9 @@ const LEVEL = {strong: '▲ Strong', holding: '◆ Holding', weak: '✖ Weak'};
 export function outcomeVault(data, bank, state) {
   const summary = nightSummary(data, bank, state);
   return el('figure', {class: `outcome-vault is-${summary.vault}`},
-    vaultSafe(summary.vault),
-    el('figcaption', {}, VAULT_WORD[summary.vault], el('span', {}, ` · walls held ${summary.average}% on average`)));
+    vaultSafe(summary.vault, 'Data vault', summary.damage),
+    el('figcaption', {}, VAULT_WORD[summary.vault],
+      el('span', {}, ` · ${summary.reached} of ${summary.attacks} attacks reached it`)));
 }
 
 export function nightReport(data, bank, state) {

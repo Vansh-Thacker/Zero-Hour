@@ -386,7 +386,24 @@ p { margin: 0 0 0.8em; }
 .safe .safe-light { fill: var(--secure); }
 .safe.is-damaged .safe-light { fill: var(--gold); }
 .safe.is-breached .safe-light { fill: var(--notice); }
-.safe .safe-crack { fill: none; stroke: #0b130f; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+.safe .safe-crack {
+  fill: none; stroke: #0b130f; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 160; stroke-dashoffset: 160;
+  animation: crack 0.6s ease-out forwards; animation-delay: calc(0.6s + var(--c) * 0.12s);
+}
+.safe .safe-dent { fill: rgba(0, 0, 0, 0.35); stroke: rgba(255, 255, 255, 0.18); stroke-width: 1.5; }
+.safe .bolt-hole { fill: #0b130f; stroke: #26332d; stroke-width: 2; }
+.safe-smoke circle {
+  fill: rgba(190, 200, 195, 0.35); opacity: 0;
+  transform-box: fill-box; transform-origin: center;
+  animation: smoke 3s ease-out infinite; animation-delay: calc(var(--s) * 1s);
+}
+@keyframes smoke {
+  0% { transform: translateY(10px) scale(0.6); opacity: 0; }
+  30% { opacity: 0.8; }
+  100% { transform: translateY(-34px) scale(1.7); opacity: 0; }
+}
+.vault-hits { font-size: 0.7rem; letter-spacing: 0.04em; text-transform: none; color: var(--notice); }
 .safe .safe-scratch { fill: none; stroke: rgba(255, 255, 255, 0.4); stroke-width: 2; stroke-linecap: round; }
 .safe-wheel { transform-box: view-box; transform-origin: 100px 100px; animation: wheel-lock 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both; }
 .safe.is-breached .safe-wheel { animation-name: wheel-loose; }
@@ -637,5 +654,6 @@ dialog.weak-alert[open] { animation: rise 0.35s var(--ease) both; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001s !important; animation-delay: 0s !important; transition-duration: 0.001s !important; }
   .evidence .object { animation: none; }
+  .safe-smoke { display: none; }   /* smoke only makes sense moving; the cracks and scorch still show the damage */
   [data-tilt] { transform: none; }
 }

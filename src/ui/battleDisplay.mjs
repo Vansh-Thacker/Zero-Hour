@@ -5,7 +5,7 @@
 // question answer visibly changes the next phase. It is a picture, never a separate score.
 
 import {el} from './dom.mjs';
-import {defenceStrength} from './defenceStrength.mjs';
+import {defenceStrength, vaultDamageSoFar} from './defenceStrength.mjs';
 import {vaultSafe} from './vaultSafe.mjs';
 
 const VAULT_STATUS = {strong: 'secure', holding: 'damaged', weak: 'breached'};
@@ -82,10 +82,12 @@ function peopleLine(result, n) {
 export function battleDisplay(state, data) {
   const n = state.phase;
   const result = defenceStrength(data, state, n);
+  const damage = vaultDamageSoFar(data, state, n);   // builds up phase by phase
   const text = LEVEL_TEXT[result.level];
   const summary = `${text.line} ${result.held} of ${result.attacks} attacks held back: `
     + `${result.heldByControls} by your controls and ${result.heldByPeople} by your people. `
-    + `Your controls scored ${result.score} of the ${result.best} points the best £3m plan could get in this phase.`;
+    + `Your controls scored ${result.score} of the ${result.best} points the best £3m plan could get in this phase. `
+    + `${damage.reached} attacks have reached the vault so far tonight.`;
 
   const attacks = fates(result).map((fate, i) => el('span', {
     class: `attack is-${fate === 'through' ? 'through' : 'held'}${fate === 'people' ? ' by-people' : ''}`,
@@ -103,7 +105,10 @@ export function battleDisplay(state, data) {
       el('div', {class: 'battle-crew'}, el('span', {}, 'The crew')),
       el('div', {class: 'battle-lane'}, attacks),
       wall,
-      el('div', {class: 'battle-vault'}, vaultSafe(VAULT_STATUS[result.level], 'Vault this phase'), el('span', {}, 'Vault'))),
+      el('div', {class: 'battle-vault'},
+        vaultSafe(VAULT_STATUS[result.level], 'Vault so far', damage.damage),
+        el('span', {}, 'Vault'),
+        el('span', {class: 'vault-hits'}, `${damage.reached} hit${damage.reached === 1 ? '' : 's'}`))),
     el('div', {class: 'battle-caption'},
       el('span', {class: 'level-chip'}, `${text.mark} ${text.word} · ${result.wallPercent}%`),
       el('span', {}, `${result.held} of ${result.attacks} attacks held back`),
