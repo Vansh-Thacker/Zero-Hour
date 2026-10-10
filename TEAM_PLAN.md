@@ -4,12 +4,23 @@ Who owns what, how the pieces fit, and how we use git. Read `BRIEF.html` for the
 
 ## Roles
 
-| Person  | Role                              | Owns                                   |
-|---------|-----------------------------------|----------------------------------------|
-| Tejas   | Game engine and integration lead  | `src/engine/`, `src/config.mjs`, merges into `dev` |
-| Ghassan | Checkpoints and questions         | `src/checkpoint/`                      |
-| Rayyan  | Screens and accessibility         | `src/ui/`, `index.html`, `style.css`   |
-| Vansh   | Theme, hand-in note and pitch     | `src/theme/`, `OUR_GAME.md`, slides    |
+| Person          | Role                                  | Owns                                                  |
+|-----------------|---------------------------------------|-------------------------------------------------------|
+| Tejas & Rayyan  | Game engine, screens and integration  | `src/engine/`, `src/ui/`, `src/config.mjs`, `index.html`, `style.css` |
+| Ghassan         | Checkpoints and questions             | `src/checkpoint/`                                     |
+| Vansh           | Theme (Extend level)                  | `src/theme/`                                          |
+| Mo              | Testing, debrief and hand-in          | `tests/`, `src/debrief/`, `OUR_GAME.md`, slides       |
+
+- **Tejas & Rayyan:** the flow choose → confirm → 4 phases → outcome → reset, wired to
+  `controls.mjs`; every screen (control picker with live budget and category check, story,
+  score reveal, checkpoint, final outcome); readable text, feedback not by colour alone.
+  Split the pair's work by feature, not by file, and pull from each other often.
+- **Ghassan:** pick questions per phase, 2-minute pausable timer, unanswered = 0 points but
+  still show the explanation, behaviour points kept separate from the control score.
+- **Vansh:** Incident Room theme that reacts to the player's choices; reads state only,
+  never changes scores; always shows each control's real name.
+- **Mo:** debrief text (what happened and why), tests for budget, categories, phase scores
+  and checkpoint points, `OUR_GAME.md` kept up to date, 8-minute pitch and demo walkthrough.
 
 Only edit files you own. If you need a change in someone else's folder, ask them.
 
