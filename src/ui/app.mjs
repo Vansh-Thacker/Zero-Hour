@@ -10,6 +10,7 @@ import {storyScreen} from './storyScreen.mjs';
 import {revealScreen} from './revealScreen.mjs';
 import {checkpointScreen, updateTimer} from './checkpointScreen.mjs';
 import {outcomeScreen} from './outcomeScreen.mjs';
+import {openWeakWarning} from './battleDisplay.mjs';
 
 const SCREENS = {choose: chooseScreen, story: storyScreen, reveal: revealScreen, checkpoint: checkpointScreen, outcome: outcomeScreen};
 
@@ -56,6 +57,7 @@ export function render(root, state, game, dispatch, extras) {
     window.scrollTo({top: 0, behavior: 'instant'});
     countUp(screen);
   }
+  if (state.stage === 'reveal') openWeakWarning(screen, state);
   if (focusedKey) root.querySelector(`[data-key="${CSS.escape(focusedKey)}"]`)?.focus({preventScroll: true});
 }
 

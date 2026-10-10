@@ -3,6 +3,7 @@
 
 import {controlRender} from './assets.mjs';
 import {el, img} from './dom.mjs';
+import {battleDisplay} from './battleDisplay.mjs';
 
 export function revealScreen(state, {data}, dispatch, extras) {
   const phase = data.phases[state.phase];
@@ -31,6 +32,7 @@ export function revealScreen(state, {data}, dispatch, extras) {
       el('div', {class: 'bigscore', 'aria-live': 'polite'},
         el('div', {class: 'num', 'data-count-to': scored.score}, String(scored.score)),
         el('div', {class: 'label'}, `control points this phase · ${soFar} so far`))),
+    battleDisplay(state, data),
     el('div', {class: 'flips'}, flips),
     el('div', {class: 'theme-slot', id: 'theme-slot'}),
     el('div', {class: 'actions'},
