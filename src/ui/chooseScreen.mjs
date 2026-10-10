@@ -18,7 +18,9 @@ export function chooseScreen(state, {data}, dispatch, extras, room) {
       el('p', {class: 'lead'}, `Hackers strike at ${firstPhase.local_time}. Shop for defences to stop them!`),
       el('ul', {class: 'mission-steps', 'aria-label': 'The rules'},
         el('li', {}, el('span', {'aria-hidden': 'true'}, '💰'), `Spend up to ${shortMoney(data.budget)}`),
-        el('li', {}, el('span', {'aria-hidden': 'true'}, '🛡️🔍🚒'), 'One from each squad'),
+        room?.team
+          ? el('li', {}, el('span', {'aria-hidden': 'true'}, '🛡️🔍🚒'), 'Mix all 3 squads: a gap lets attacks through')
+          : el('li', {}, el('span', {'aria-hidden': 'true'}, '🛡️🔍🚒'), 'One from each squad'),
         el('li', {}, el('span', {'aria-hidden': 'true'}, '🔒'), 'Lock it in: no changes after')),
       room ? el('p', {class: 'role-rule'}, roleRule(room)) : null),
     el('div', {class: 'brief-art', 'aria-hidden': 'true'},
@@ -36,7 +38,7 @@ export function chooseScreen(state, {data}, dispatch, extras, room) {
         'aria-valuemin': 0, 'aria-valuemax': data.budget, 'aria-valuenow': summary.spent, style: `--fill:${fill}%`}, el('i')),
       el('div', {class: 'coverage'}, CATEGORIES.map(cat =>
         el('span', {class: `cover${summary.covered[cat] ? ' is-on' : ''}`, 'data-cat': cat},
-          `${SQUADS[cat].icon} ${SQUADS[cat].name} `, summary.covered[cat] ? '✓' : '— needed',
+          `${SQUADS[cat].icon} ${SQUADS[cat].name} `, summary.covered[cat] ? '✓' : room?.team ? '○' : '— needed',
           el('span', {class: 'visually-hidden'}, ` (${cat})`))))),
     hostOnly(room,
       el('button', {class: `btn btn-primary btn-big${summary.ready ? ' is-ready' : ''}`, type: 'button', 'data-key': 'confirm',
@@ -45,7 +47,8 @@ export function chooseScreen(state, {data}, dispatch, extras, room) {
       'The host locks the plan when the team is ready.'));
 
   // On a phone, the player's own category comes first.
-  const order = room?.you.category ? [room.you.category, ...CATEGORIES.filter(c => c !== room.you.category)] : CATEGORIES;
+  const mine = room?.you.category ? room.you.categories ?? [room.you.category] : [];
+  const order = [...mine, ...CATEGORIES.filter(c => !mine.includes(c))];
   const crews = order.map(cat => el('section', {class: `crew${room && !picksFor(room, cat) ? ' is-others' : ''}`, 'data-cat': cat, 'aria-labelledby': `crew-${cat}`},
     el('div', {class: 'crew-head'},
       el('span', {class: 'squad-icon', 'aria-hidden': 'true'}, SQUADS[cat].icon),
@@ -60,14 +63,16 @@ export function chooseScreen(state, {data}, dispatch, extras, room) {
 
 function roleRule(room) {
   if (room.you.host) return '📱 Your players shop on their phones. You lock it in.';
-  return `📱 You shop for the ${SQUADS[room.you.category].name} (${room.you.category}). Your teammates do the rest.`;
+  const mine = (room.you.categories ?? [room.you.category]).map(cat => `${SQUADS[cat].icon} ${SQUADS[cat].name}`).join(' and ');
+  const team = room.team ? ` for team ${room.team.name}` : '';
+  return `📱 You shop for the ${mine}${team}. Your teammates do the rest.`;
 }
 
 // After the squad's job: whose squad it is (multiplayer) or the heist role (theme).
 function crewWho(cat, room, extras) {
   const role = extras.roleName?.(cat);
   if (!room) return role ? ` · ${role}` : '';
-  const owners = room.players.filter(p => p.category === cat).map(p => p.name);
+  const owners = room.players.filter(p => (p.categories ?? [p.category]).includes(cat)).map(p => p.name);
   const who = picksFor(room, cat) ? '⭐ Your squad' : owners.length ? `Shopped by ${owners.join(', ')}` : 'Nobody yet';
   return ` · ${role ? `${role} · ` : ''}${who}`;
 }

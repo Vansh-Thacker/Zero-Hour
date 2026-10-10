@@ -5,6 +5,8 @@
 import {el, points, hostOnly} from './dom.mjs';
 import {nightReport, outcomeVault} from './nightReport.mjs';
 import {badges, nightStars} from './fun.mjs';
+import {standings} from './standings.mjs';
+import {leaderboard, medal} from './standingsTable.mjs';
 
 export function outcomeScreen(state, {data, bank}, dispatch, extras, room) {
   const control = state.result.total;
@@ -40,6 +42,11 @@ export function outcomeScreen(state, {data, bank}, dispatch, extras, room) {
     el('h2', {id: 'debrief-title'}, 'Debrief: what happened and why'),
     el('div', {class: 'debrief'}, data.phases.map((phase, n) => phaseDebrief(phase, n, state, data, bank, room))));
 
+  // Multiplayer with several teams: how every team's wall held, with this team marked.
+  const teamResults = room?.teams?.length > 1
+    ? teamPlace(standings(data, room.teams, data.phases.length - 1), data, room.team?.id)
+    : null;
+
   const report = sheet('sheet-report', 'night-title', nightReport(data, bank, state));
   const details = sheet('sheet-debrief', 'debrief-title', debrief);
 
@@ -54,7 +61,7 @@ export function outcomeScreen(state, {data, bank}, dispatch, extras, room) {
   el('span', {class: 'report-go', 'aria-hidden': 'true'}, 'Open →'));
 
   return [
-    hero, scores, shelf,
+    hero, teamResults, scores, shelf,
     el('section', {class: 'report-buttons', 'aria-label': 'Reports'}, open(report, 'open-report'), open(details, 'open-debrief')),
     report, details,
     el('div', {class: 'actions'}, hostOnly(room,
@@ -120,3 +127,17 @@ function byQuestion(answers) {
   for (const a of answers) groups.set(a.questionId, [...(groups.get(a.questionId) ?? []), a]);
   return [...groups];
 }
+
+// Where this team finished, then the full table of every team.
+function teamPlace(rows, data, ownId) {
+  const own = rows.find(row => row.id === ownId);
+  return el('section', {class: 'team-place', 'aria-label': 'Team results'},
+    own ? el('div', {class: `place-banner${own.rank === 1 ? ' is-first' : ''}`},
+      el('span', {class: 'place-medal', 'aria-hidden': 'true'}, medal(own.rank)),
+      el('div', {},
+        el('strong', {}, own.rank === 1 ? 'Your team won!' : `Your team came ${ordinal(own.rank)} of ${rows.length}`),
+        el('span', {}, `🧱 Your wall held ${own.wallPercent}% of the attacks · ${own.cracks} of ${own.attacks} cracked through`))) : null,
+    leaderboard(rows, data, '🏁 Every team, side by side', ownId));
+}
+
+const ordinal = n => `${n}${n % 10 === 1 && n % 100 !== 11 ? 'st' : n % 10 === 2 && n % 100 !== 12 ? 'nd' : n % 10 === 3 && n % 100 !== 13 ? 'rd' : 'th'}`;

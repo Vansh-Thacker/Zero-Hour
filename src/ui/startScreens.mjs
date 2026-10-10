@@ -130,21 +130,40 @@ export function nameProblem(name) {
 
 // --- Multiplayer pages (play.html and host.html), in the same look as the start screens. ---
 
-// Phone: room code and username. join(code, name) tries to join; `error` is a readable message.
-export function joinScreen({code = '', name = '', error = null, busy = false}, join) {
+// Phone: room code, username and team. join(code, name, team) tries to join; `error` is a readable message.
+// teams: the teams already in the room ([{name, players}]), shown as quick picks.
+export function joinScreen({code = '', name = '', team = '', teams = [], error = null, busy = false}, join, lookUp = () => {}) {
   const codeInput = el('input', {id: 'room-code', class: 'field field-code', name: 'code', value: code, autocomplete: 'off',
     autocapitalize: 'characters', spellcheck: 'false', required: true, placeholder: 'VAULT-00', 'data-key': 'code'});
   const nameInput = el('input', {id: 'player-name', class: 'field', name: 'name', value: name, maxlength: NAME_LIMIT,
     autocomplete: 'nickname', required: true, placeholder: 'e.g. Sam', 'data-key': 'name'});
 
+  const teamInput = el('input', {id: 'team-name', class: 'field', name: 'team', value: team, maxlength: NAME_LIMIT,
+    autocomplete: 'off', required: true, placeholder: 'e.g. Red Team', 'data-key': 'team', list: 'team-list'});
+  codeInput.addEventListener('change', () => lookUp(codeInput.value.trim(), {name: nameInput.value, team: teamInput.value}));
+
+  const picks = teams.length
+    ? el('div', {class: 'team-picks', role: 'group', 'aria-label': 'Teams already in the room'},
+      el('span', {class: 'hint'}, '👆 Tap your team:'),
+      teams.map(t => el('button', {class: `chip team-pick${t.name === team ? ' is-on' : ''}`, type: 'button', 'data-key': `pick-${t.name}`,
+        onclick: event => {
+          teamInput.value = t.name;
+          event.currentTarget.parentElement.querySelectorAll('.team-pick').forEach(b => b.classList.toggle('is-on', b === event.currentTarget));
+        }}, `🚩 ${t.name} · ${t.players} 👤`)))
+    : el('p', {class: 'hint'}, '💡 New team? Make up a name. Teammates type the same name to join you.');
+
   const form = el('form', {class: 'panel name-form join-form', novalidate: true, onsubmit: event => {
     event.preventDefault();
-    join(codeInput.value.trim(), nameInput.value.trim());
+    join(codeInput.value.trim(), nameInput.value.trim(), teamInput.value.trim());
   }},
   el('label', {for: 'room-code'}, '🔑 Room code'),
   codeInput,
   el('label', {for: 'player-name'}, '😎 Your name'),
   nameInput,
+  el('label', {for: 'team-name'}, '🚩 Your team'),
+  teamInput,
+  el('datalist', {id: 'team-list'}, teams.map(t => el('option', {value: t.name}))),
+  picks,
   error ? el('p', {class: 'alert', role: 'alert'}, error) : null,
   el('div', {class: 'actions'},
     el('a', {class: 'btn btn-ghost', href: '/index.html', 'data-key': 'back'}, '← Home'),
@@ -154,7 +173,7 @@ export function joinScreen({code = '', name = '', error = null, busy = false}, j
     el('section', {class: 'name-head'},
       el('span', {class: 'eyebrow'}, '📱 Multiplayer · Join'),
       el('h1', {class: 'screen-title'}, 'Join the defence team'),
-      el('p', {class: 'lead'}, 'Type the code from the big screen. You’ll get a squad:'),
+      el('p', {class: 'lead'}, 'Type the code from the big screen, pick a team name, and beat the other teams! You’ll get a squad:'),
       squadStrip()),
     form);
 }
@@ -174,8 +193,9 @@ export function hostStartScreen({error = null, busy = false}, create) {
         el('p', {class: 'lead'}, 'Put this screen where everyone can see it.'),
         el('ol', {class: 'host-steps'},
           step('🔓', 'Open a room', 'Get a code'),
-          step('📱', 'Team joins', 'On their phones'),
-          step('🎮', 'Play together', 'You run the night')),
+          step('📱', 'Teams join', 'Phones + a team name'),
+          step('🏆', 'Battle it out', 'Best wall wins')),
+        el('p', {class: 'hint'}, '👥 At least 2 players per team · up to 15 teams · each team gets £3m'),
         error ? el('p', {class: 'alert', role: 'alert'}, error) : null,
         el('div', {class: 'actions start-actions'},
           el('a', {class: 'btn btn-ghost', href: '/index.html', 'data-key': 'back'}, '← Home'),

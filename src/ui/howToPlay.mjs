@@ -34,16 +34,16 @@ function steps(data, room, step) {
   const emoji = text => el('span', {class: 'htp-emoji'}, text);
   if (room?.you.host) {
     return [
-      step(1, emoji('📱'), 'Share the code', `Players join on their phones with code ${room.code}. Each gets a squad.`, squads),
-      step(2, emoji('🛒'), 'They go shopping', `Together they spend ${money(data.budget)}. You lock it in when every squad has picked.`),
-      step(3, vaultSafe('secure', 'Data vault', 0), 'You run the night', 'Show each attack on this screen, then start the quiz on their phones.'),
+      step(1, emoji('📱'), 'Share the code', `Players join with code ${room.code} and a team name. Each gets a squad.`, squads),
+      step(2, emoji('🛒'), 'Teams go shopping', `Each team spends its own ${money(data.budget)}. You lock it in when they’re ready.`),
+      step(3, emoji('🏆'), 'Run the battle', 'Show each attack here, start the quiz on their phones. Best wall wins!'),
     ];
   }
   if (room) {
     const mine = SQUADS[room.you.category];
     return [
       step(1, emoji(mine.icon), `Shop for the ${mine.name}`, `You buy the ${room.you.category} defences. ${mine.job}!`),
-      step(2, vaultSafe('secure', 'Data vault', 0), 'Watch the attack', 'The big screen shows how your team’s defences hold.'),
+      step(2, vaultSafe('secure', 'Data vault', 0), 'Watch the attack', room.team ? 'The big screen shows whose wall held best. Beat the other teams!' : 'The big screen shows how your team’s defences hold.'),
       step(3, emoji('❓'), 'Quiz on your phone', 'Answer like a pro to earn points and patch the wall.'),
     ];
   }
