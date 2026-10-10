@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {scoreSelection} from '../1-foundation/starter/controls.mjs';
 import {bestPossiblePhaseScore} from '../src/engine/scores.mjs';
-import {defenceStrength, peopleRate, ATTACKS} from '../src/ui/defenceStrength.mjs';
+import {defenceStrength, peopleRate, vaultDamageSoFar, ATTACKS} from '../src/ui/defenceStrength.mjs';
 import {POINTS_PER_SECURE_ANSWER, QUESTIONS_PER_CHECKPOINT} from '../src/config.mjs';
 
 const data = JSON.parse(readFileSync(new URL('../1-foundation/data/challenge.json', import.meta.url)));
@@ -126,4 +126,28 @@ test('attacks held by controls and people, plus those through, always add up to 
 test('the people rate is the share of the previous checkpoint answered securely', () => {
   assert.equal(peopleRate({behaviourPoints: [ALL_SECURE / 2, 0, 0, 0]}, 1), 0.5);
   assert.equal(peopleRate({behaviourPoints: [0, 0, 0, 0]}, 0), null);
+});
+
+// ---------------------------------------------------------------- damage to the vault
+
+test('vault damage is every attack that got through so far, out of the whole night', () => {
+  const state = withAnswers(CHEAPEST, 0);
+  const through = [0, 1, 2].reduce((sum, n) => sum + defenceStrength(data, state, n).through, 0);
+  const damage = vaultDamageSoFar(data, state, 2);
+  assert.equal(damage.reached, through);
+  assert.equal(damage.attacks, ATTACKS * 4);
+  assert.equal(damage.damage, through / (ATTACKS * 4));
+});
+
+test('vault damage only ever goes up as the night goes on', () => {
+  const state = withAnswers(CHEAPEST, ALL_SECURE);
+  const damage = [0, 1, 2, 3].map(n => vaultDamageSoFar(data, state, n).reached);
+  assert.deepEqual(damage, [...damage].sort((a, b) => a - b));
+});
+
+test('a weak plan damages the vault far more than a strong one', () => {
+  const weak = vaultDamageSoFar(data, withAnswers(CHEAPEST, 0), 3).damage;
+  const strong = vaultDamageSoFar(data, withAnswers(STRONGEST, ALL_SECURE), 3).damage;
+  assert.ok(weak > 0.6);
+  assert.ok(strong < 0.25);
 });

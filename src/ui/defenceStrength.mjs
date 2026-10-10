@@ -35,6 +35,14 @@ export function peopleRate(state, n) {
   return Math.max(0, Math.min(1, earned / possible));
 }
 
+// Damage dealt to the vault so far: attacks that got through in phases 0..n, as a share of
+// every attack in the night. Only goes up as the night goes on.
+export function vaultDamageSoFar(data, state, n) {
+  let reached = 0;
+  for (let i = 0; i <= n; i++) reached += defenceStrength(data, state, i).through;
+  return {reached, attacks: ATTACKS * data.phases.length, damage: reached / (ATTACKS * data.phases.length)};
+}
+
 export function defenceStrength(data, state, n) {
   const phase = state.result.phases[n];
   const best = bestFor(data, n);

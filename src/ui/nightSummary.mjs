@@ -2,7 +2,7 @@
 // what was lacking, and what would have done better. Pure: no page code.
 // It builds on defenceStrength(), so it always agrees with the battle display and the scores.
 
-import {defenceStrength, STRONG_FROM, WEAK_BELOW} from './defenceStrength.mjs';
+import {defenceStrength, ATTACKS, STRONG_FROM, WEAK_BELOW} from './defenceStrength.mjs';
 import {POINTS_PER_SECURE_ANSWER, QUESTIONS_PER_CHECKPOINT} from '../config.mjs';
 
 const CATEGORIES = ['Prevent', 'Detect', 'Respond'];
@@ -51,9 +51,16 @@ export function nightSummary(data, bank, state) {
   }
   const weakestTopic = [...missedTopics].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0] ?? null;
 
+  // Damage dealt to the vault: every attack that got through, out of all attacks in the night.
+  const reached = phases.reduce((sum, p) => sum + p.through, 0);
+  const attacks = ATTACKS * phases.length;
+
   return {
     phases,
     average,
+    reached,
+    attacks,
+    damage: reached / attacks,
     rating,
     vault: VAULT[rating],
     strongest: byWall[0],

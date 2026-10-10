@@ -87,6 +87,12 @@ test('with every answer secure there is no topic to revisit', () => {
   assert.equal(nightSummary(data, bank, game(CHEAPEST, ALL_SECURE, answers)).weakestTopic, null);
 });
 
+test('the vault damage in the report is the attacks that reached it across the night', () => {
+  const summary = nightSummary(data, bank, game(CHEAPEST));
+  assert.equal(summary.reached, summary.phases.reduce((s, p) => s + p.through, 0));
+  assert.equal(summary.damage, summary.reached / summary.attacks);
+});
+
 test('the report never changes the game state', () => {
   const state = game(CHEAPEST, ALL_SECURE);
   const before = JSON.stringify(state);
