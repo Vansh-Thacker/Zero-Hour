@@ -1,0 +1,95 @@
+/* theme.css: the "Zero Hour" blueprint look.
+   Everything is scoped under .heist so it cannot affect the rest of the game.
+   No flashing. Animations switch off under prefers-reduced-motion.
+   States always have an icon and a word as well as a colour. */
+
+.heist {
+  --bp-paper: #0f2a4a;
+  --bp-grid: rgba(255, 255, 255, 0.07);
+  --bp-line: #dbe8f7;
+  --bp-muted: #8fa8c4;
+  --bp-good: #7ee0a8;
+  --bp-bad: #ff8f87;
+  --bp-warn: #ffd27a;
+  --bp-route: #ff6b5e;
+
+  background: var(--bp-paper);
+  color: var(--bp-line);
+  border-radius: 12px;
+  padding: 20px;
+  font-family: ui-monospace, "Cascadia Mono", "Consolas", monospace;
+  line-height: 1.5;
+}
+.heist h2, .heist h3 { margin: 0 0 8px; line-height: 1.25; }
+.heist ul { list-style: none; margin: 0; padding: 0; }
+
+/* Header and clock */
+.heist-header { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+.heist-eyebrow { margin: 0; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bp-muted); }
+.heist-title { font-size: 1.6rem; }
+.heist-clock { min-width: 220px; display: grid; gap: 4px; }
+.heist-clock-time { font-size: 1.15rem; font-weight: 700; }
+.heist-clock-bar { height: 6px; background: var(--bp-grid); border: 1px solid var(--bp-muted); border-radius: 3px; overflow: hidden; }
+.heist-clock-bar i { display: block; height: 100%; background: var(--bp-line); }
+.heist-clock-note { font-size: 0.8rem; color: var(--bp-muted); }
+
+/* Blueprint SVG */
+.heist-blueprint { margin: 16px 0; overflow-x: auto; }
+.bp { width: 100%; min-width: 640px; height: auto; display: block; }
+.bp-paper { fill: var(--bp-paper); }
+#bp-grid path { fill: none; stroke: var(--bp-grid); stroke-width: 1; }
+.bp text { fill: var(--bp-line); font-family: inherit; font-size: 12px; }
+.bp-corridor { stroke: var(--bp-muted); stroke-width: 1; stroke-dasharray: 2 6; }
+.bp-route { stroke: var(--bp-route); stroke-width: 3; stroke-dasharray: 8 6; fill: none; }
+.bp-crew polygon { fill: var(--bp-route); }
+.bp-crew text { fill: var(--bp-route); font-weight: 700; }
+
+.bp-room rect, .bp-vault rect { fill: var(--bp-paper); stroke: var(--bp-line); stroke-width: 2; }
+.bp-room.is-ahead rect { stroke: var(--bp-muted); stroke-dasharray: 6 4; }
+.bp-room.is-ahead text { fill: var(--bp-muted); }
+.bp-room.is-held rect { stroke: var(--bp-good); }
+.bp-room.is-breached rect { stroke: var(--bp-bad); stroke-width: 3; }
+.bp-room-name { font-weight: 700; font-size: 13px; }
+.bp-room-phase { fill: var(--bp-muted) !important; font-size: 11px; }
+.bp-status { font-weight: 700; }
+.bp-room.is-held .bp-status { fill: var(--bp-good); }
+.bp-room.is-breached .bp-status { fill: var(--bp-bad); }
+.bp-layer { font-size: 11px; }
+.bp-layer.is-covered { fill: var(--bp-good); }
+.bp-layer.is-gap { fill: var(--bp-bad); }
+.bp-vault circle { fill: none; stroke: var(--bp-line); stroke-width: 2; }
+
+/* Vault meter */
+.heist-vault-label { margin: 0 0 6px; }
+.heist-vault-meter { height: 14px; border: 1px solid var(--bp-line); border-radius: 7px; overflow: hidden; }
+.heist-vault-meter i { display: block; height: 100%; background: var(--bp-good); transition: width 0.8s ease; }
+.heist-vault.is-warn .heist-vault-meter i { background: var(--bp-warn); }
+.heist-vault.is-bad .heist-vault-meter i { background: var(--bp-bad); }
+
+/* Defences and The Architect, side by side on wide screens */
+.heist-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px; }
+.heist-defences, .heist-architect { border: 1px solid var(--bp-muted); border-radius: 8px; padding: 14px; }
+.heist-defences h3, .heist-architect h3 { font-size: 1rem; }
+.heist-defences li { display: grid; grid-template-columns: 1.5em 1fr auto; gap: 8px; padding: 4px 0; border-bottom: 1px dashed var(--bp-grid); }
+.heist-defences .is-lit .mark { color: var(--bp-good); }
+.heist-defences .is-dark { color: var(--bp-muted); }
+.heist-defences .is-gap { grid-template-columns: 1.5em 1fr; color: var(--bp-bad); }
+.heist-defences .pts { font-variant-numeric: tabular-nums; }
+.heist-architect li { padding: 6px 0 6px 12px; border-left: 3px solid var(--bp-muted); margin-bottom: 8px; font-style: italic; }
+.heist-architect li.is-gap { border-color: var(--bp-bad); }
+.heist-architect li.is-defence { border-color: var(--bp-good); }
+.heist-architect li.is-summary { border-color: var(--bp-route); font-weight: 700; }
+
+/* Final outcome banner */
+.heist-outcome { border: 2px solid var(--bp-line); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+.heist-outcome.is-foiled { border-color: var(--bp-good); }
+.heist-outcome.is-escaped { border-color: var(--bp-bad); }
+
+/* The crew marker drifts gently. No flashing, and off for reduced motion. */
+@keyframes heist-drift { from { opacity: 0.75; } to { opacity: 1; } }
+.bp-crew { animation: heist-drift 1.6s ease-in-out infinite alternate; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bp-crew { animation: none; }
+  .heist-vault-meter i { transition: none; }
+}
