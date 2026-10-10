@@ -4,9 +4,8 @@ Everything you need for the core game, with the behaviour questions built in. Re
 
 | What | Where |
 |---|---|
-| The demo page. Open it with `npm start` from the pack folder | `demo.html` |
 | The scoring code for control purchases | `starter/controls.mjs` |
-| The local web server | `starter/serve.mjs` |
+| The local web server. `npm start` serves Zero Hour (`/index.html`) | `starter/serve.mjs` |
 | Tests for the scoring code and the data | `tests/` |
 | The scenario: budget, 18 controls, 3 already in place, 4 phases | `data/challenge.json` |
 | The 40 behaviour questions | `data/questions.json` |
