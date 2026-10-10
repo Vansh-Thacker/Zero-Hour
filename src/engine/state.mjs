@@ -17,6 +17,25 @@ export function createInitialState() {
   };
 }
 
+// Each phase runs story -> reveal -> checkpoint. After the last checkpoint the game
+// moves to the outcome. 'choose' and 'outcome' are left with 'confirm' and 'reset'.
+function nextStage(data, state) {
+  if (!state.confirmed) return state;
+  switch (state.stage) {
+    case 'story':
+      return {...state, stage: 'reveal'};
+    case 'reveal':
+      return {...state, stage: 'checkpoint'};
+    case 'checkpoint': {
+      const lastPhase = data.phases.length - 1;
+      if (state.phase >= lastPhase) return {...state, stage: 'outcome'};
+      return {...state, stage: 'story', phase: state.phase + 1};
+    }
+    default:
+      return state;
+  }
+}
+
 // Pure: returns a new state, never changes the old one.
 export function reduce(data, state, action) {
   switch (action.type) {
@@ -37,9 +56,10 @@ export function reduce(data, state, action) {
         return {...state, error: e.message};
       }
     }
+    case 'next':
+      return nextStage(data, state);
     case 'reset':
       return createInitialState();
-    // TODO (Tejas): 'next' through story -> reveal -> checkpoint for each phase, then 'outcome'.
     default:
       return state;
   }

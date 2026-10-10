@@ -38,6 +38,44 @@ test('the choice cannot change after confirming', () => {
   assert.deepEqual(state.selected, ['P3', 'D3', 'R1']);
 });
 
+const confirmed = () => reduce(data, pick(createInitialState(), 'P3', 'D3', 'R1'), {type: 'confirm'});
+const next = (state, times = 1) => {
+  for (let i = 0; i < times; i++) state = reduce(data, state, {type: 'next'});
+  return state;
+};
+
+test('next does nothing before the choice is confirmed', () => {
+  const state = pick(createInitialState(), 'P3', 'D3', 'R1');
+  assert.equal(next(state), state);
+});
+
+test('each phase runs story, then reveal, then checkpoint', () => {
+  let state = confirmed();
+  assert.equal(state.stage, 'story');
+  state = next(state);
+  assert.equal(state.stage, 'reveal');
+  state = next(state);
+  assert.equal(state.stage, 'checkpoint');
+  assert.equal(state.phase, 0);
+});
+
+test('after a checkpoint the next phase starts with its story', () => {
+  const state = next(confirmed(), 3);
+  assert.equal(state.stage, 'story');
+  assert.equal(state.phase, 1);
+});
+
+test('after the fourth checkpoint the game shows the outcome', () => {
+  const state = next(confirmed(), 12);
+  assert.equal(state.stage, 'outcome');
+  assert.equal(state.phase, 3);
+});
+
+test('next does nothing on the outcome screen', () => {
+  const outcome = next(confirmed(), 12);
+  assert.equal(next(outcome), outcome);
+});
+
 test('reset starts a new game', () => {
   const state = reduce(data, pick(createInitialState(), 'P3'), {type: 'reset'});
   assert.deepEqual(state, createInitialState());
