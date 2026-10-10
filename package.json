@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node 1-foundation/starter/serve.mjs",
+    "start": "node src/server/server.mjs",
     "test": "node --test",
     "multiplayer": "node src/server/server.mjs"
   },

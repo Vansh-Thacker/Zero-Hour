@@ -1,4 +1,6 @@
-// Single-screen mode: load the data, hold the state, and redraw after every action.
+// The page starts on the home screen (single player or multiplayer), then the name screen.
+// Single player: load the data, hold the state, and redraw after every action.
+// Multiplayer: open the join page (play.html), which talks to the multiplayer server.
 // The multiplayer server drives the same reduce() function; see TEAM_PLAN.md.
 
 import {validateData} from '../1-foundation/starter/controls.mjs';
@@ -6,6 +8,7 @@ import {GAME_NAME, DATA_PATHS} from './config.mjs';
 import {createInitialState, reduce, timeLeft} from './engine/state.mjs';
 import {loadExtras, render, tick} from './ui/app.mjs';
 import {enableTilt} from './ui/effects.mjs';
+import {homeScreen, nameScreen, nameProblem} from './ui/startScreens.mjs';
 
 const root = document.getElementById('app');
 
@@ -31,17 +34,55 @@ setInterval(() => {
   else tick(root, state);
 }, 1000);
 
-try {
-  const [data, bank] = await Promise.all([loadJson(DATA_PATHS.challenge), loadJson(DATA_PATHS.questions)]);
-  validateData(data);
-  game = {data, bank};
-  extras = await loadExtras();
-  state = createInitialState();
-  document.title = GAME_NAME;
-  enableTilt();
-  render(root, state, game, dispatch, extras);
-} catch (e) {
-  root.replaceChildren(Object.assign(document.createElement('p'), {
-    className: 'alert', role: 'alert', textContent: `The game could not start: ${e.message}`,
-  }));
+// --- Start screens: home, then name. Nothing here touches the game state. ---
+
+const NAME_KEY = 'zero-hour-player-name';
+
+function savedName() {
+  try { return sessionStorage.getItem(NAME_KEY) ?? ''; } catch { return ''; }
 }
+
+function saveName(name) {
+  try { sessionStorage.setItem(NAME_KEY, name); } catch { /* Private browsing: the name just isn't remembered. */ }
+}
+
+function showHome() {
+  root.replaceChildren(homeScreen(mode => showName({mode, name: savedName()})));
+  window.scrollTo({top: 0, behavior: 'instant'});
+}
+
+function showName(view) {
+  root.replaceChildren(nameScreen(view, {
+    back: showHome,
+    go: name => {
+      const problem = nameProblem(name);
+      if (problem) return showName({...view, name, error: problem});
+      saveName(name);
+      if (view.mode === 'multi') location.assign('/play.html');
+      else startGame();
+    },
+  }));
+  root.querySelector('#player-name')?.focus();
+}
+
+// --- Single player ---
+
+async function startGame() {
+  root.replaceChildren(Object.assign(document.createElement('p'), {style: 'padding: 24px', textContent: 'Loading the night…'}));
+  try {
+    const [data, bank] = await Promise.all([loadJson(DATA_PATHS.challenge), loadJson(DATA_PATHS.questions)]);
+    validateData(data);
+    game = {data, bank};
+    extras = await loadExtras();
+    state = createInitialState();
+    render(root, state, game, dispatch, extras);
+  } catch (e) {
+    root.replaceChildren(Object.assign(document.createElement('p'), {
+      className: 'alert', role: 'alert', textContent: `The game could not start: ${e.message}`,
+    }));
+  }
+}
+
+document.title = GAME_NAME;
+enableTilt();
+showHome();
