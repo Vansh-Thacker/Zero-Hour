@@ -22,11 +22,19 @@ function showStart(view = {}) {
 }
 
 // The addresses phones can open, with the room code filled in for them.
+// Opened as localhost, this page's address only works on this laptop, so ask the server for its
+// Wi-Fi addresses. Opened at any other address (the deployed site, or the laptop's own IP),
+// that address is the one phones can reach: behind a host like Render, the server's own
+// addresses are internal and no phone could open them.
+const ONLY_THIS_DEVICE = new Set(['localhost', '127.0.0.1', '[::1]']);
+
 async function joinAddresses(code) {
+  const withCode = url => `${url}?code=${encodeURIComponent(code)}`;
+  const here = new URL('/play.html', location.origin).href;
+  if (!ONLY_THIS_DEVICE.has(location.hostname)) return [withCode(here)];
   try {
     const {addresses} = await fetch('/api/join-addresses').then(r => r.json());
-    const urls = addresses.length ? addresses : [new URL('/play.html', location.origin).href];
-    return urls.map(url => `${url}?code=${encodeURIComponent(code)}`);
+    return (addresses.length ? addresses : [here]).map(withCode);
   } catch {
     return [];
   }
