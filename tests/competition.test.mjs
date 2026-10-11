@@ -37,6 +37,34 @@ const team = (room, name) => room.teams.find(t => t.name === name);
 
 // ================================================================ forming teams
 
+test('a refused join never leaves an empty team behind that would stop the night starting', () => {
+  const room = createCompetition('VAULT-2');
+  assert.throws(() => joinCompetition(room, '   ', 'Ghosts'), /Enter your name/);
+  assert.throws(() => joinCompetition(room, 42, 'Ghosts'), /Enter your name/);
+  assert.equal(room.teams.length, 0);
+});
+
+test('joining again with the same name in the same team gets the same seat back, not a ghost player', () => {
+  const {room, red} = twoTeams();
+  const again = joinCompetition(room, '  ana ', 'red');   // a closed tab or a new phone: same person
+  assert.equal(again.player.token, red[0].token);
+  assert.equal(team(room, 'Red').players.length, 2, 'the team does not grow');
+  assert.deepEqual(competitionView(room, red[0].token).you.categories, ['Prevent', 'Respond'], 'squads are not reshuffled');
+});
+
+test("a player who comes back does not lower their team's quiz points", () => {
+  const t = lockedTeams();
+  actCompetition(t.room, t.host, {type: 'next'}, game, 2_000);
+  actCompetition(t.room, t.host, {type: 'next'}, game, 3_000);
+  const back = joinCompetition(t.room, 'Ben', 'Red').player;   // Ben's phone reloaded in a new tab
+  const questions = team(t.room, 'Red').state.checkpoint.questionIds;
+  const secure = id => game.bank.questions.find(q => q.id === id).correct;
+  for (const p of [t.red[0], back]) {
+    for (const id of questions) actCompetition(t.room, p.token, {type: 'answer', questionId: id, choice: secure(id)}, game, 4_000);
+  }
+  assert.equal(team(t.room, 'Red').state.behaviourPoints[0], POINTS_PER_SECURE_ANSWER * questions.length, 'full points, not shared with a ghost');
+});
+
 test('players join a team by name, and the same name in any case is the same team', () => {
   const room = createCompetition('VAULT-1');
   joinCompetition(room, 'Ana', 'Red Team');

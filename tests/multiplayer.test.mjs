@@ -719,3 +719,21 @@ test('server: hidden files and folders such as .git are never served to the Wi-F
   }
   assert.equal((await fetch(`${base}/index.html`)).status, 200, 'normal game files are still served');
 });
+
+test('server: a backslash path cannot reach .git on Windows, and broken addresses are refused', async t => {
+  const base = await startServer(t);
+  for (const path of ['/src%5c..%5c.git%5cHEAD', '/src%5c..%5c.gitignore']) {
+    const res = await fetch(base + path);
+    assert.equal(res.status, 404, path);
+    assert.doesNotMatch(await res.text(), /ref:/, path);
+  }
+  for (const path of ['/%E0%A4%A', '/%00']) assert.equal((await fetch(base + path)).status, 400, path);
+});
+
+test('server: a room code typed in lower case finds the room', async t => {
+  const base = await startServer(t);
+  const {body: {code}} = await postJson(`${base}/api/rooms`, {});
+  const joined = await postJson(`${base}/api/rooms/${code.toLowerCase()}/join`, {name: 'Ana', team: 'Red'});
+  assert.equal(joined.status, 200);
+  assert.equal(joined.body.code, code);
+});

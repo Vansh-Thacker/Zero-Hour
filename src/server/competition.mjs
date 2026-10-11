@@ -43,9 +43,19 @@ function findSeat(competition, token) {
  * the night starts; an existing team can still be joined later (its plan stays as it is).
  */
 export function joinCompetition(competition, name, teamName = DEFAULT_TEAM) {
+  // Check the player's name first, so a refused join never leaves an empty team behind
+  // (an empty team could never reach the minimum size, so the night could never start).
+  if (typeof name !== 'string' || !name.trim()) throw refuse(400, 'Enter your name to join the game.');
   if (teamName != null && typeof teamName !== 'string') throw refuse(400, 'Enter a team name.');
   const wanted = (teamName ?? '').trim().slice(0, NAME_LIMIT) || DEFAULT_TEAM;
   let team = competition.teams.find(t => t.name.toLowerCase() === wanted.toLowerCase());
+
+  // The same name in the same team is the same person coming back: a closed tab, a new phone,
+  // or "Leave room". They get their old seat back, so the team never gains a ghost player who
+  // can't answer (team points are averaged over every player) and nobody's squad is reshuffled.
+  const cleanName = name.trim().slice(0, NAME_LIMIT).toLowerCase();
+  const returning = team?.players.find(p => p.name.toLowerCase() === cleanName);
+  if (returning) return {player: returning, team};
 
   if (!team) {
     if (started(competition)) throw refuse(409, `The night has started, so new teams can't join. Join one of: ${competition.teams.map(t => t.name).join(', ')}.`);
