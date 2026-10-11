@@ -60,7 +60,7 @@ export function viewFor(room, token) {
   return {
     code: room.code,
     state: room.state,
-    players: room.players.map(p => ({id: p.id, name: p.name, category: p.category, categories: categoriesOf(room, p)})),
+    players: room.players.map(p => ({id: p.id, name: p.name, category: p.category, categories: categoriesOf(room, p), left: Boolean(p.left)})),
     log: room.log.map(entry => ({...entry})),
     you: isHost
       ? {host: true}
@@ -68,7 +68,7 @@ export function viewFor(room, token) {
   };
 }
 
-function addLog(room, ok, text) {
+export function addLog(room, ok, text) {
   room.log.unshift({at: Date.now(), ok, text});
   room.log.length = Math.min(room.log.length, LOG_LENGTH);
 }
@@ -94,7 +94,8 @@ export function act(room, token, action, game, now = Date.now(), {anyCategories 
   // Only these fields are taken from the device. The server adds who and when.
   const {type, id, questionId, choice} = action ?? {};
   // teamSize lets the engine count a player who has not answered as 0 in the team average.
-  const teamSize = type === 'answer' || type === 'timeout' ? room.players.length : undefined;
+  // A player who left the game (see competition.mjs) no longer counts.
+  const teamSize = type === 'answer' || type === 'timeout' ? room.players.filter(p => !p.left).length : undefined;
   const stamped = {type, id, questionId, choice, now, player: player?.id, teamSize,
     anyCategories: type === 'confirm' && anyCategories ? true : undefined};
   for (const key of Object.keys(stamped)) if (stamped[key] === undefined) delete stamped[key];

@@ -365,18 +365,17 @@ test('server: confirming waits for two players on every team, then locks both pl
   assert.equal((await fetch(`${base}/api/rooms/${host.code}/teams`).then(r => r.json())).started, true);
 });
 
-test('server: after starting, players may join an existing team but not create a new one', async t => {
+test('server: after starting, the room is locked and nobody new can join', async t => {
   const base = await startServer(t);
   const {body: host} = await postJson(`${base}/api/rooms`, {});
   await joinHttpTeam(base, host.code, 'Red', ['Ana', 'Ben']);
   const actionUrl = `${base}/api/rooms/${host.code}/actions`;
   assert.equal((await postJson(actionUrl, {token: host.token, action: {type: 'confirm'}})).status, 200);
-  const rejected = await postJson(`${base}/api/rooms/${host.code}/join`, {name: 'Late', team: 'Blue'});
-  assert.equal(rejected.status, 409);
-  assert.match(rejected.body.error, /new teams can't join/);
-  const accepted = await postJson(`${base}/api/rooms/${host.code}/join`, {name: 'Late', team: 'Red'});
-  assert.equal(accepted.status, 200);
-  assert.equal(accepted.body.team, 'Red');
+  for (const team of ['Blue', 'Red']) {
+    const rejected = await postJson(`${base}/api/rooms/${host.code}/join`, {name: 'Late', team});
+    assert.equal(rejected.status, 423);
+    assert.match(rejected.body.error, /locked/);
+  }
 });
 
 test('server: a two-player team lets its first player select Respond controls', async t => {

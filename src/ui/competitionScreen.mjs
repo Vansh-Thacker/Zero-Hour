@@ -6,7 +6,7 @@
 import {BUSINESS_NAME} from '../config.mjs';
 import {brandBar, phaseTrack} from './app.mjs';
 import {timerRing} from './checkpointScreen.mjs';
-import {el, money, points, CATEGORIES} from './dom.mjs';
+import {el, money, points, CATEGORIES, isHere, presenceText, presenceClass} from './dom.mjs';
 import {confetti} from './effects.mjs';
 import {SQUADS, shortMoney} from './fun.mjs';
 import {howToPlay, openHowToPlayOnce} from './howToPlay.mjs';
@@ -39,6 +39,8 @@ export function renderCompetition(root, view, game, dispatch, extra = {}) {
     brandBar([
       el('span', {class: 'chip'}, el('span', {'aria-hidden': 'true'}, '🚩 '), 'Teams ', el('strong', {}, `${view.teams.length} / ${view.limits.maxTeams}`)),
       el('span', {class: 'chip'}, el('span', {'aria-hidden': 'true'}, '👥 '), 'Players ', el('strong', {}, String(view.players.length))),
+      // Once the night starts nobody new can join (src/server/competition.mjs), so say so.
+      el('span', {class: 'chip'}, state.confirmed ? '🔒 Room locked' : '🔓 Room open to join'),
       el('button', {class: 'chip chip-btn', type: 'button', 'data-key': 'help', 'aria-label': 'How to play',
         onclick: () => document.getElementById('how-to-play')?.showModal()}, '❔')]),
     howToPlay(data, view),
@@ -70,14 +72,14 @@ function lobby(view, {data}) {
     const chosen = team.state.selected.map(id => data.controls.find(c => c.id === id));
     const spent = chosen.reduce((sum, c) => sum + c.cost, 0);
     const covered = Object.fromEntries(CATEGORIES.map(cat => [cat, chosen.some(c => c.category === cat)]));
-    const short = Math.max(0, minTeamSize - team.players.length);
+    const short = Math.max(0, minTeamSize - team.players.filter(isHere).length);
     const ready = !short;   // the only rule is the team size: any plan within budget can be locked
     return el('article', {class: `panel team-card${ready ? ' is-ready' : ''}`},
       el('div', {class: 'team-head'},
         el('h3', {}, `🚩 ${team.name}`),
         el('span', {class: ready ? 'tag-ok' : 'tag-gap'}, ready ? '✅ Ready' : `⏳ Needs ${short} more`)),
-      el('ul', {class: 'team-players'}, team.players.map(p => el('li', {'data-cat': p.category},
-        avatar(p), el('span', {}, p.name), el('span', {class: 'team-squads'},
+      el('ul', {class: 'team-players'}, team.players.map(p => el('li', {'data-cat': p.category, class: presenceClass(p).trim() || null},
+        avatar(p), el('span', {}, p.name, presenceText(p)), el('span', {class: 'team-squads'},
           (p.categories ?? [p.category]).map(cat => `${SQUADS[cat].icon} ${SQUADS[cat].name}`).join(' + '))))),
       el('div', {class: 'budget-head'},
         el('span', {class: 'coins'}, el('span', {'aria-hidden': 'true'}, '💰 '), el('strong', {}, shortMoney(data.budget - spent)), ' left'),
@@ -155,7 +157,7 @@ function checkpoint(view, {bank}, rows) {
       el('h2', {}, '✍️ Answers so far'),
       el('ul', {class: 'team-answers'}, view.teams.map(team => {
         const answered = team.state.answers.filter(a => a.phase === state.phase).length;
-        const possible = team.players.length * team.state.checkpoint.questionIds.length;
+        const possible = team.players.filter(isHere).length * team.state.checkpoint.questionIds.length;
         const percent = possible ? Math.round(100 * answered / possible) : 0;
         return el('li', {},
           el('strong', {}, `🚩 ${team.name}`),

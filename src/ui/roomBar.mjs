@@ -3,7 +3,7 @@
 // avatar and what they're doing right now; on the host, every team with its players; and a live
 // feed of what just happened. Pictures and words only: the server holds the rules.
 
-import {el, CATEGORIES} from './dom.mjs';
+import {el, CATEGORIES, isHere, presenceText, presenceClass} from './dom.mjs';
 import {SQUADS} from './fun.mjs';
 
 const categoriesOf = p => p.categories ?? [p.category];
@@ -47,26 +47,31 @@ function squadSlots(players, you, state, data) {
     return el('li', {class: `squad-slot${members.length ? ' is-filled' : ''}`, 'data-cat': cat},
       el('span', {class: 'squad-name'}, `${SQUADS[cat].icon} ${SQUADS[cat].name}`, el('span', {class: 'visually-hidden'}, ` (${cat})`)),
       members.length
-        ? el('ul', {}, members.map(p => el('li', {class: 'member'},
+        ? el('ul', {}, members.map(p => el('li', {class: `member${presenceClass(p)}`},
           avatar(p),
-          el('span', {class: 'member-name'}, p.name, p.id === you.id ? ' (you)' : ''),
+          el('span', {class: 'member-name'}, p.name, p.id === you.id ? ' (you)' : presenceText(p)),
           state ? el('span', {class: 'member-status'}, status(p, state, data)) : null)))
         : el('span', {class: 'squad-empty'}, '⏳ Waiting for a player…'));
   }));
 }
 
 // The host: every team, with its players' avatars.
-function teamChips(teams, minTeamSize) {
+function teamChips(teams, minTeamSize, started) {
   if (!teams.length) {
     return el('ul', {class: 'room-squads room-teams', 'aria-label': 'Teams'},
       el('li', {class: 'squad-slot team-slot'}, el('span', {class: 'squad-empty'}, '⏳ Waiting for the first team…')));
   }
   return el('ul', {class: 'room-squads room-teams', 'aria-label': 'Teams'}, teams.map(t => {
-    const short = Math.max(0, minTeamSize - t.players.length);
+    const here = t.players.filter(isHere);
+    const short = started ? 0 : Math.max(0, minTeamSize - here.length);   // the size rule is only for starting
+    const gone = t.players.length - here.length;
     return el('li', {class: `squad-slot team-slot${short ? '' : ' is-filled'}`},
       el('span', {class: 'squad-name'}, `🚩 ${t.name}`),
-      el('span', {class: 'team-avatars'}, t.players.map(p => el('span', {title: p.name}, avatar(p), el('span', {class: 'visually-hidden'}, p.name)))),
-      el('span', {class: 'member-status'}, short ? `⏳ Needs ${short} more` : `✅ ${t.players.length} players`));
+      el('span', {class: 'team-avatars'}, t.players.map(p => el('span', {title: p.name + presenceText(p), class: presenceClass(p).trim() || null},
+        avatar(p), el('span', {class: 'visually-hidden'}, p.name + presenceText(p))))),
+      el('span', {class: 'member-status'}, short ? `⏳ Needs ${short} more` : `✅ ${here.length} player${here.length === 1 ? '' : 's'}`,
+        gone ? ` · 🚪 ${gone} left` : '',
+        t.players.some(p => p.online === false && !p.left) ? ` · 📴 ${t.players.filter(p => p.online === false && !p.left).length} offline` : ''));
   }));
 }
 
@@ -87,7 +92,7 @@ export function roomBar(room, data) {
     myTeam ? el('span', {class: 'room-team-name'}, `🚩 Team ${myTeam.name}`) : null);
 
   const people = you.host && (teams.length || limits)
-    ? teamChips(teams, limits?.minTeamSize ?? 1)
+    ? teamChips(teams, limits?.minTeamSize ?? 1, Boolean(state?.confirmed))
     : squadSlots(players, you, state, data);
 
   const feed = el('ul', {class: 'room-log', 'aria-label': 'Live activity', 'aria-live': 'polite'},

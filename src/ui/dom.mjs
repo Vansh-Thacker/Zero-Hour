@@ -49,3 +49,9 @@ export const seatId = room => (room && !room.you.host ? room.you.id : null);
 export function hostOnly(room, button, waiting) {
   return runsGame(room) ? button : el('p', {class: 'waiting', role: 'status'}, `⏳ ${waiting}`);
 }
+
+// Multiplayer presence, from the server. left: they left the game. online === false: their
+// screen is closed right now (they may be reloading). In words as well as a class, never colour alone.
+export const isHere = p => !p.left;
+export const presenceText = p => (p.left ? ' · 🚪 left' : p.online === false ? ' · 📴 offline' : '');
+export const presenceClass = p => (p.left ? ' is-left' : p.online === false ? ' is-offline' : '');

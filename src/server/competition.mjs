@@ -5,7 +5,7 @@
 // No network here: server.mjs calls these one at a time.
 
 import {createInitialState} from '../engine/state.mjs';
-import {act, createRoom, joinRoom, viewFor} from './rooms.mjs';
+import {act, addLog, createRoom, joinRoom, viewFor} from './rooms.mjs';
 import {randomUUID} from 'node:crypto';
 
 export const MAX_TEAMS = 15;
@@ -20,7 +20,8 @@ function refuse(status, message) {
 }
 
 export function createCompetition(code) {
-  return {code, hostToken: randomUUID(), teams: [], idle: createInitialState()};
+  // connections: how many live screens each seat has open, so the host can see who is really there.
+  return {code, hostToken: randomUUID(), teams: [], idle: createInitialState(), connections: new Map()};
 }
 
 /** The stage, phase and checkpoint clock: the same for every team, so the first team's will do. */
@@ -39,8 +40,10 @@ function findSeat(competition, token) {
 }
 
 /**
- * Join a team by name, making the team if it doesn't exist yet. New teams can only form before
- * the night starts; an existing team can still be joined later (its plan stays as it is).
+ * Join a team by name, making the team if it doesn't exist yet. Once the host starts the night
+ * the room is locked: nobody new can join until the host starts a new night. Players already in
+ * the room keep their seats: a refresh reconnects with the seat, and the same name in the same
+ * team gets its old seat back.
  */
 export function joinCompetition(competition, name, teamName = DEFAULT_TEAM) {
   // Check the player's name first, so a refused join never leaves an empty team behind
@@ -55,10 +58,16 @@ export function joinCompetition(competition, name, teamName = DEFAULT_TEAM) {
   // can't answer (team points are averaged over every player) and nobody's squad is reshuffled.
   const cleanName = name.trim().slice(0, NAME_LIMIT).toLowerCase();
   const returning = team?.players.find(p => p.name.toLowerCase() === cleanName);
-  if (returning) return {player: returning, team};
+  if (returning) {
+    if (returning.left) addLog(team, true, `${returning.name} came back.`);
+    returning.left = false;
+    return {player: returning, team};
+  }
+
+  // Once the night has started the room is locked: only players already in it can come back.
+  if (started(competition)) throw refuse(423, 'This room is locked: the night has already started. Ask the host to start a new night, or open a new room.');
 
   if (!team) {
-    if (started(competition)) throw refuse(409, `The night has started, so new teams can't join. Join one of: ${competition.teams.map(t => t.name).join(', ')}.`);
     if (competition.teams.length >= MAX_TEAMS) throw refuse(409, `This room already has the most teams (${MAX_TEAMS}). Join one of the teams that are here.`);
     team = createRoom(competition.code);
     team.hostToken = competition.hostToken;   // one host runs every team
@@ -70,11 +79,43 @@ export function joinCompetition(competition, name, teamName = DEFAULT_TEAM) {
   return {player, team};
 }
 
+/**
+ * A player leaves: "Leave room" on their phone, or their screen has been gone for a while.
+ * Before the night starts they are taken out of the team (and an empty team goes too), so the
+ * host never sees a ghost. Once the night has started they stay on the scoreboard marked as
+ * having left, and no longer count in their team's quiz average. Coming back with the same
+ * name and team gives them their seat again. Returns true if someone left.
+ */
+export function leaveCompetition(competition, token) {
+  if (token === competition.hostToken) throw refuse(400, 'The host cannot leave the room. Close the host screen to end it.');
+  const seat = findSeat(competition, token);
+  if (!seat) return false;
+  const {team, player} = seat;
+  if (!started(competition)) {
+    team.players.splice(team.players.indexOf(player), 1);
+    if (!team.players.length) competition.teams.splice(competition.teams.indexOf(team), 1);
+    else addLog(team, true, `${player.name} left the room.`);
+  } else if (!player.left) {
+    player.left = true;
+    addLog(team, true, `${player.name} left the game.`);
+  }
+  return true;
+}
+
+/** A screen opened (+1) or closed (-1) for this seat. Returns how many are still open. */
+export function trackConnection(competition, token, change) {
+  const count = Math.max(0, (competition.connections.get(token) ?? 0) + change);
+  if (count) competition.connections.set(token, count);
+  else competition.connections.delete(token);
+  return count;
+}
+
 // Why a team can't start yet, in words, or null if it's ready. The only rule is the team size:
 // a team may lock any plan within its budget, with or without all three categories.
 export function teamProblem(team) {
-  if (team.players.length < MIN_TEAM_SIZE) {
-    const short = MIN_TEAM_SIZE - team.players.length;
+  const active = team.players.filter(p => !p.left).length;
+  if (active < MIN_TEAM_SIZE) {
+    const short = MIN_TEAM_SIZE - active;
     return `${team.name} needs ${short} more player${short === 1 ? '' : 's'} (at least ${MIN_TEAM_SIZE} per team).`;
   }
   return null;
@@ -111,11 +152,19 @@ export function actCompetition(competition, token, action, game, now = Date.now(
 
 // What every screen needs to know about every team: who is in it and its game so far.
 // Game states hold no tokens, so they are safe to share; everything else is copied field by field.
+// online: the player has the game open right now. left: they chose to leave (or went away).
+function withPresence(competition, team, players) {
+  return players.map(p => {
+    const seat = team.players.find(member => member.id === p.id);
+    return {...p, online: (competition.connections.get(seat?.token) ?? 0) > 0};
+  });
+}
+
 function teamSummaries(competition) {
   return competition.teams.map(team => ({
     id: team.id,
     name: team.name,
-    players: viewFor(team, team.hostToken).players,
+    players: withPresence(competition, team, viewFor(team, team.hostToken).players),
     state: team.state,
   }));
 }
@@ -144,8 +193,10 @@ export function competitionView(competition, token) {
   }
   const seat = findSeat(competition, token);
   if (!seat) return null;
+  const own = viewFor(seat.team, token);
   return {
-    ...viewFor(seat.team, token),
+    ...own,
+    players: withPresence(competition, seat.team, own.players),
     code: competition.code,
     team: {id: seat.team.id, name: seat.team.name},
     teams,

@@ -3,7 +3,7 @@
 // player chooses their own category's controls and answers the checkpoint questions themselves.
 
 import {loadGameData} from './engine/loadData.mjs';
-import {clearSeat, currentSeat, joinGame} from './net/client.mjs';
+import {currentSeat, joinGame, leaveGame} from './net/client.mjs';
 import {showLiveRoom} from './net/liveRoom.mjs';
 import {loadExtras} from './ui/app.mjs';
 import {enableTilt} from './ui/effects.mjs';
@@ -51,7 +51,7 @@ function showJoin(view = {}) {
 
 function showRoom() {
   live = showLiveRoom(root, game, extras, {
-    extra: {onLeave: () => { clearSeat(); showJoin(); }},
+    extra: {onLeave: async () => { live?.close(); live = null; await leaveGame(); showJoin(); }},
     onLost: () => showJoin({error: 'That game has ended or your seat has gone. Join again with the code on the host screen.'}),
   });
 }

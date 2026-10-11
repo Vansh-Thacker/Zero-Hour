@@ -1207,6 +1207,9 @@ dialog.htp { width: min(880px, calc(100vw - 32px)); text-align: center; }
   .wall-track i { animation: none; }
 }
 
+.is-offline { opacity: 0.55; }
+.is-left { opacity: 0.4; text-decoration: line-through; }
+
 /* ---------- Small screens ---------- */
 
 @media (max-width: 860px) {

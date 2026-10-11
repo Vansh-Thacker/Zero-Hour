@@ -222,7 +222,9 @@ test('audit SSE: host and player receive the same live update without reload or 
   await hostEvents.next();
   await playerEvents.next();
   assert.equal((await action(room, player.token, {type: 'select', id: 'P3'})).status, 200);
-  const [hostView, playerView] = await Promise.all([hostEvents.next(), playerEvents.next()]);
+  // Views also arrive when someone comes online, so wait for the one that shows the purchase.
+  const purchase = async events => { for (;;) { const view = await events.next(); if (view.state.selected.length) return view; } };
+  const [hostView, playerView] = await Promise.all([purchase(hostEvents), purchase(playerEvents)]);
   assert.deepEqual(hostView.state.selected, ['P3']);
   assert.deepEqual(hostView.state, playerView.state);
   assert.equal(hostView.you.host, true);

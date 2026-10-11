@@ -39,6 +39,13 @@ export async function joinGame(code, name, team) {
 
 export const currentSeat = saved;
 
+// "Leave room": tell the server first, so the host stops showing this player, then forget the seat.
+export async function leaveGame() {
+  const {code, token} = saved();
+  if (code && token) await post(`/api/rooms/${encodeURIComponent(code)}/leave`, {token}).catch(() => null);
+  clearSeat();
+}
+
 export function clearSeat() {
   fallbackSeat = {};
   try { sessionStorage.removeItem(KEY); }

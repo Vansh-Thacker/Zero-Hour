@@ -6,7 +6,9 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {loadGameData} from '../engine/loadData.mjs';
 import {timeLeft} from '../engine/state.mjs';
-import {MAX_TEAMS, actCompetition, competitionView, createCompetition, joinCompetition, sharedState} from './competition.mjs';
+import {
+  MAX_TEAMS, actCompetition, competitionView, createCompetition, joinCompetition, leaveCompetition, sharedState, trackConnection,
+} from './competition.mjs';
 
 const root = await realpath(fileURLToPath(new URL('../../', import.meta.url)));
 const port = Number(process.env.PORT || 8080);
@@ -86,8 +88,26 @@ function openStream(req, res, room, token) {
   });
   const client = {res, token};
   streams.get(room.code).add(client);
-  send(client, room);
-  req.on('close', () => streams.get(room.code).delete(client));
+  trackConnection(room, token, +1);
+  broadcast(room);   // everyone sees this player come online
+  req.on('close', () => {
+    streams.get(room.code).delete(client);
+    if (trackConnection(room, token, -1) === 0) dropIfGone(room, token);
+    broadcast(room);
+  });
+}
+
+// A player's screens have all closed (tab shut, phone locked, network gone). Give them a moment
+// to come back, since a refresh reconnects within a second or two. If they don't, take them out
+// before the night starts, so the host never sees a ghost. Once the night has started they stay,
+// shown as offline, because their team's results include them.
+const GONE_AFTER_MS = 20_000;
+function dropIfGone(room, token) {
+  if (token === room.hostToken) return;
+  setTimeout(() => {
+    if (room.connections.get(token) || sharedState(room).confirmed) return;
+    if (leaveCompetition(room, token)) broadcast(room);
+  }, GONE_AFTER_MS).unref();
 }
 
 function joinAddresses() {
@@ -150,7 +170,7 @@ const server = http.createServer(async (req, res) => {
     let pathname;
     try { pathname = decodeURIComponent(url.pathname); } catch { return reply(res, 400, {error: 'That address is not valid.'}); }
     if (pathname.includes('\u0000')) return reply(res, 400, {error: 'That address is not valid.'});
-    const match = /^\/api\/rooms\/([^/]+)\/(join|events|actions|teams)$/.exec(pathname);
+    const match = /^\/api\/rooms\/([^/]+)\/(join|leave|events|actions|teams)$/.exec(pathname);
 
     if (req.method === 'POST' && pathname === '/api/rooms') {
       await readJson(req);
@@ -169,6 +189,12 @@ const server = http.createServer(async (req, res) => {
           started: sharedState(room).confirmed,
           maxTeams: MAX_TEAMS,
         });
+      }
+      if (match[2] === 'leave' && req.method === 'POST') {   // "Leave room" on a phone
+        const {token} = await readJson(req);
+        leaveCompetition(room, token);
+        reply(res, 200, {ok: true});
+        return broadcast(room);
       }
       if (match[2] === 'join' && req.method === 'POST') {
         const {name, team: teamName} = await readJson(req);

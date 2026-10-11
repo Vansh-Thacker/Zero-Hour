@@ -7,7 +7,8 @@ import {scoreSelection} from '../1-foundation/starter/controls.mjs';
 import {CHECKPOINT_SECONDS, POINTS_PER_SECURE_ANSWER} from '../src/config.mjs';
 import {loadGameData} from '../src/engine/loadData.mjs';
 import {
-  MAX_TEAMS, MIN_TEAM_SIZE, actCompetition, competitionView, createCompetition, joinCompetition, sharedState,
+  MAX_TEAMS, MIN_TEAM_SIZE, actCompetition, competitionView, createCompetition, joinCompetition, leaveCompetition, sharedState,
+  trackConnection,
 } from '../src/server/competition.mjs';
 import {scorePlan} from '../src/engine/scores.mjs';
 import {revealedUpTo, standings} from '../src/ui/standings.mjs';
@@ -178,10 +179,31 @@ test("locking the plans scores each team's own plan with the scoring module", ()
   assert.deepEqual(team(room, 'Blue').state.result, scoreSelection(data, ['P3', 'D3', 'R6']));
 });
 
-test('once the night has started, no new team can form, but a player can still join a team', () => {
+test('once the night has started the room is locked: nobody new can join any team', () => {
   const {room} = lockedTeams();
-  assert.throws(() => joinCompetition(room, 'Late', 'Green'), err => err.status === 409 && /Red, Blue/.test(err.message));
-  assert.doesNotThrow(() => joinCompetition(room, 'Late', 'Blue'));
+  for (const teamName of ['Green', 'Blue']) {
+    assert.throws(() => joinCompetition(room, 'Late', teamName), err => err.status === 423 && /locked/.test(err.message));
+  }
+  assert.deepEqual(room.teams.map(t => t.players.length), [2, 2]);
+  assert.equal(room.teams.length, 2);
+});
+
+test('players already in a locked room keep their seats and can still play', () => {
+  const {room, red} = lockedTeams();
+  assert.equal(competitionView(room, red[0].token).team.name, 'Red');
+});
+
+test('a player already in a locked room can come back with the same name and team, and gets the same seat', () => {
+  const {room, red} = lockedTeams();
+  const back = joinCompetition(room, 'ana', 'red').player;
+  assert.equal(back.id, red[0].id);
+  assert.equal(team(room, 'Red').players.length, 2);
+});
+
+test('a new night unlocks the room again', () => {
+  const {room, host} = lockedTeams();
+  actCompetition(room, host, {type: 'reset'}, game);
+  assert.doesNotThrow(() => joinCompetition(room, 'Late', 'Green'));
 });
 
 test('the host moves every team through the night together, with one shared clock', () => {
@@ -271,4 +293,62 @@ test('scorePlan still refuses a plan over budget, a control twice or an unknown 
   assert.throws(() => scorePlan(data, ['P2', 'D4', 'D5', 'P7']), /Over budget/);
   assert.throws(() => scorePlan(data, ['D3', 'D3']), /twice/);
   assert.throws(() => scorePlan(data, ['X9']), /not a control/);
+});
+
+// ================================================================ leaving, and no ghost players
+
+test('a player who leaves before the night starts disappears from the room, so the host sees no ghost', () => {
+  const {room, red} = twoTeams();
+  assert.equal(leaveCompetition(room, red[1].token), true);
+  assert.deepEqual(team(room, 'Red').players.map(p => p.name), ['Ana']);
+  assert.equal(competitionView(room, red[1].token), null);
+});
+
+test('when the last player of a team leaves, the empty team goes too', () => {
+  const {room, red} = twoTeams();
+  for (const p of red) leaveCompetition(room, p.token);
+  assert.deepEqual(room.teams.map(t => t.name), ['Blue']);
+});
+
+test('a team whose player left needs another player again before the night can start', () => {
+  const {room, red, host} = twoTeams();
+  leaveCompetition(room, red[1].token);
+  assert.throws(() => actCompetition(room, host, {type: 'confirm'}, game), /Red needs 1 more player/);
+});
+
+test('after the night starts, a player who leaves is marked as left and no longer counts in the team average', () => {
+  const {room, red, host} = lockedTeams();
+  actCompetition(room, host, {type: 'next'}, game, 2_000);
+  actCompetition(room, host, {type: 'next'}, game, 2_000);
+  leaveCompetition(room, red[1].token);
+  const view = competitionView(room, host).teams.find(t => t.name === 'Red');
+  assert.deepEqual(view.players.map(p => [p.name, p.left]), [['Ana', false], ['Ben', true]]);
+  const id = team(room, 'Red').state.checkpoint.questionIds[0];
+  const right = game.bank.questions.find(q => q.id === id).correct;
+  actCompetition(room, red[0].token, {type: 'answer', questionId: id, choice: right}, game, 3_000);
+  assert.equal(team(room, 'Red').state.behaviourPoints[0], POINTS_PER_SECURE_ANSWER);
+});
+
+test('a player who left can come back with the same name and team', () => {
+  const {room, red} = lockedTeams();
+  leaveCompetition(room, red[1].token);
+  const back = joinCompetition(room, 'Ben', 'Red').player;
+  assert.equal(back.id, red[1].id);
+  assert.equal(back.left, false);
+});
+
+test('the host cannot leave, and an unknown seat leaving changes nothing', () => {
+  const {room, host} = twoTeams();
+  assert.throws(() => leaveCompetition(room, host), err => err.status === 400);
+  assert.equal(leaveCompetition(room, 'not-a-seat'), false);
+  assert.equal(room.teams.length, 2);
+});
+
+test('the host sees who has the game open right now', () => {
+  const {room, red, host} = twoTeams();
+  trackConnection(room, red[0].token, +1);
+  const online = () => competitionView(room, host).teams.find(t => t.name === 'Red').players.map(p => p.online);
+  assert.deepEqual(online(), [true, false]);
+  trackConnection(room, red[0].token, -1);
+  assert.deepEqual(online(), [false, false]);
 });
