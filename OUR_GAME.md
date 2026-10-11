@@ -16,7 +16,7 @@ The same application supports a single-player game and a live team battle. A hos
 
 ## How to run it
 
-**Live deployment:** [team-20-vglm.onrender.com](https://team-20-vglm.onrender.com/). The free hosting sleeps after about 15 minutes without visitors, so the first load can take up to a minute.
+**Live deployment:** [team-20-1.onrender.com](https://team-20-1.onrender.com/). The free hosting sleeps after about 15 minutes without visitors, so the first load can take up to a minute.
 
 1. For a local run, install Node.js 20 or later. There are no npm dependencies, accounts or online services required for local play.
 2. In this repository, run `npm start` and open `http://127.0.0.1:8080/` (the `index.html` home screen). This **one server** runs both modes.

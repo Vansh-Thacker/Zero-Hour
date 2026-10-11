@@ -57,6 +57,6 @@ export function roomInvite({code, addresses = [], state}) {
     picture,
     el('p', {class: 'room-join'}, 'Open your phone camera, scan, then enter your name and team. Or join with the room code above.'),
     chooser, link,
-    el('p', {class: 'room-join'}, 'For a laptop-hosted game, use the same Wi-Fi or hotspot. If scanning cannot connect, choose the laptop’s Wi-Fi address.'),
+    el('p', {class: 'room-join room-join-help'}, 'For a laptop-hosted game, use the same Wi-Fi or hotspot. If scanning cannot connect, choose the laptop’s Wi-Fi address.'),
     status);
 }

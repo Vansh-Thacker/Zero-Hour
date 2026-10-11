@@ -4,8 +4,8 @@ import {phoneAddress, joinLinks, phoneJoinLinks} from '../src/net/joinLinks.mjs'
 import {joinQrImage, roomInvite} from '../src/ui/joinQr.mjs';
 
 test('QR: deployed HTTPS origin takes priority over internal adapter addresses', () => {
-  assert.deepEqual(phoneJoinLinks('https://zero-hour.example', ['http://10.0.0.1:8080'], 'VAULT-42'),
-    ['https://zero-hour.example/play.html?code=VAULT-42']);
+  assert.deepEqual(phoneJoinLinks('https://team-20-1.onrender.com', ['http://10.0.0.1:8080'], 'VAULT-42'),
+    ['https://team-20-1.onrender.com/play.html?code=VAULT-42']);
 });
 test('QR: host opened at a LAN address keeps the actual port', () => {
   assert.deepEqual(phoneJoinLinks('http://192.168.1.12:8189', [], 'VAULT-11'),
