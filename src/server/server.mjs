@@ -62,7 +62,7 @@ function newCode() {
 }
 
 function findRoom(code, res) {
-  const room = rooms.get(code);
+  const room = rooms.get(code.toUpperCase());   // "vault-20" and "VAULT-20" are the same room
   if (!room) reply(res, 404, {error: `No game with code ${code}. Check the code on the host screen.`});
   return room;
 }
@@ -129,6 +129,12 @@ async function serveFile(req, res, pathname) {
     res.writeHead(403);
     return res.end('Forbidden');
   }
+  // Check the file actually found too: on Windows "\" is also a folder separator, so
+  // "/src%5c..%5c.git%5cHEAD" passes the check above but resolves inside .git.
+  if (path.relative(root, file).split(path.sep).some(part => part.startsWith('.'))) {
+    res.writeHead(404);
+    return res.end('Not found');
+  }
   const body = await readFile(file);
   res.writeHead(200, {
     'Content-Type': mime[path.extname(file).toLowerCase()] || 'application/octet-stream',
@@ -141,7 +147,9 @@ async function serveFile(req, res, pathname) {
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://localhost');
-    const pathname = decodeURIComponent(url.pathname);
+    let pathname;
+    try { pathname = decodeURIComponent(url.pathname); } catch { return reply(res, 400, {error: 'That address is not valid.'}); }
+    if (pathname.includes('\u0000')) return reply(res, 400, {error: 'That address is not valid.'});
     const match = /^\/api\/rooms\/([^/]+)\/(join|events|actions|teams)$/.exec(pathname);
 
     if (req.method === 'POST' && pathname === '/api/rooms') {
