@@ -10,7 +10,7 @@ import {enableTilt} from './ui/effects.mjs';
 import {joinScreen, nameProblem} from './ui/startScreens.mjs';
 
 const root = document.getElementById('app');
-const [game, extras] = await Promise.all([loadGameData(), loadExtras()]);
+const [game, extras] = await Promise.all([loadGameData({moreTopics: true}), loadExtras()]);
 let live = null;
 
 // The username from the home page, so players aren't asked twice.

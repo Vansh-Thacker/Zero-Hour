@@ -34,6 +34,45 @@ export function pickQuestions(bank, phaseId, count) {
   return picked.sort(byTierThenId);
 }
 
+// The questions for one checkpoint when the host has chosen the quiz topics.
+// The chosen topics' questions are shuffled with the night's seed (so a new night gets new
+// questions, but every team and phone in one night gets the same ones), mixed so the topics take
+// turns, then dealt out: checkpoint 1 gets the first `count`, checkpoint 2 the next, and so on.
+// Questions only come round again when the topics have fewer than count x 4 between them.
+export function pickTopicQuestions(bank, topics, seed, checkpoint, count) {
+  const random = seeded(seed);
+  const shuffle = list => {
+    const copy = [...list];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  };
+  const groups = shuffle(topics.filter(t => bank.questions.some(q => q.category === t)))
+    .map(topic => shuffle(bank.questions.filter(q => q.category === topic).sort((a, b) => a.id.localeCompare(b.id))));
+  const pool = [];
+  for (let round = 0; groups.some(g => g.length > round); round++) {
+    for (const group of groups) if (group[round]) pool.push(group[round]);
+  }
+  if (!pool.length) return [];
+  const picked = [];
+  for (let i = 0; i < Math.min(count, pool.length); i++) picked.push(pool[(checkpoint * count + i) % pool.length]);
+  return picked.sort(byTierThenId);
+}
+
+// A small seeded random number generator (mulberry32): the same seed always gives the same numbers.
+function seeded(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 // --- Marking ----------------------------------------------------------------------------
 
 // One answer: secure answers earn points, anything else earns none.

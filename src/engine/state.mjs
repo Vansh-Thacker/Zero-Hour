@@ -10,7 +10,7 @@ import {scoreSelection} from '../../1-foundation/starter/controls.mjs';
 import {scorePlan} from './scores.mjs';
 import {QUESTIONS_PER_CHECKPOINT} from '../config.mjs';
 import {
-  pickQuestions, markAnswer, teamBehaviourPoints,
+  pickQuestions, pickTopicQuestions, markAnswer, teamBehaviourPoints,
   startTimer, timeLeft, pauseTimer, resumeTimer, isPaused, isExpired,
 } from '../checkpoint/checkpoint.mjs';
 
@@ -49,7 +49,11 @@ function selectProblem(data, state, id) {
 
 function startCheckpoint(game, state, now) {
   const phaseId = game.data.phases[state.phase].id;
-  const questions = pickQuestions(game.bank, phaseId, QUESTIONS_PER_CHECKPOINT);
+  // quiz: the topics the host chose for this night, and the night's seed. Without it, each
+  // checkpoint uses the brief's story questions for its phase.
+  const questions = state.quiz
+    ? pickTopicQuestions(game.bank, state.quiz.topics, state.quiz.seed, state.phase, QUESTIONS_PER_CHECKPOINT)
+    : pickQuestions(game.bank, phaseId, QUESTIONS_PER_CHECKPOINT);
   return {questionIds: questions.map(q => q.id), timer: startTimer(now), expired: false};
 }
 
@@ -137,7 +141,8 @@ export function reduce(game, state, action) {
       try {
         // anyCategories: set by the server in a team battle, where a team may skip a category.
         const result = action.anyCategories ? scorePlan(data, state.selected) : scoreSelection(data, state.selected);
-        return {...state, confirmed: true, result, stage: 'story', error: null};
+        const quiz = action.quiz ? {quiz: action.quiz} : {};   // the host's quiz topics, set by the server
+        return {...state, ...quiz, confirmed: true, result, stage: 'story', error: null};
       } catch (e) {
         return {...state, error: e.message};
       }

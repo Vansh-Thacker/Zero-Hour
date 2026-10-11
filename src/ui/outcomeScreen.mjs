@@ -1,8 +1,11 @@
 // Outcome screen: stars, the scores (kept separate, then added together) and badges.
 // The night report and the debrief of each phase open as pop-ups, so the page stays short.
+// On a phone in multiplayer they are not shown: each player downloads their own debrief as a PDF
+// (with their own answers) to read later, so the end of the game stays quick and shared.
 // The debrief is built here from the same state the night report reads; tests/debrief.test.mjs checks
 // Mo's buildDebrief() gives the same scores, so both always agree with the engine.
 
+import {downloadDebrief} from '../debrief/debriefPdf.mjs';
 import {el, points, hostOnly} from './dom.mjs';
 import {nightReport, outcomeVault} from './nightReport.mjs';
 import {badges, nightStars} from './fun.mjs';
@@ -61,10 +64,22 @@ export function outcomeScreen(state, {data, bank}, dispatch, extras, room) {
       : 'Phase by phase: what helped, what was worth considering, and why each answer was secure.')),
   el('span', {class: 'report-go', 'aria-hidden': 'true'}, 'Open →'));
 
+  const download = el('button', {class: 'panel report-button is-download', type: 'button', 'data-key': 'download-debrief',
+    onclick: () => downloadDebrief({data, bank}, state, room)},
+  el('span', {class: 'report-icon', 'aria-hidden': 'true'}, '📄'),
+  el('span', {class: 'report-text'},
+    el('strong', {}, 'Download debrief'),
+    el('span', {}, room ? 'A PDF with your answers, the secure answers and why, and how your team’s wall held. Read it later.'
+      : 'Save the night report and the debrief as a PDF to read later.')),
+  el('span', {class: 'report-go', 'aria-hidden': 'true'}, 'PDF ↓'));
+
+  const onPhone = room && !room.you.host;
   return [
     hero, teamResults, scores, shelf,
-    el('section', {class: 'report-buttons', 'aria-label': 'Reports'}, open(report, 'open-report'), open(details, 'open-debrief')),
-    report, details,
+    onPhone
+      ? el('section', {class: 'report-buttons is-single', 'aria-label': 'Your debrief'}, download)
+      : el('section', {class: 'report-buttons', 'aria-label': 'Reports'}, open(report, 'open-report'), open(details, 'open-debrief'), download),
+    onPhone ? null : report, onPhone ? null : details,
     el('div', {class: 'actions'}, hostOnly(room,
       el('button', {class: 'btn btn-primary', type: 'button', 'data-key': 'reset', onclick: () => dispatch({type: 'reset'})},
         '↻ Play again'),

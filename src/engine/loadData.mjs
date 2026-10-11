@@ -50,12 +50,25 @@ function validateQuestions(bank, data) {
 }
 
 // Return the same {data, bank} shape used by the reducer in Node and browsers.
-export async function loadGameData() {
-  const [data, bank] = await Promise.all([
+// moreTopics: also add our own questions on extra topics (data/more-questions.json), which the
+// host can choose in the team battle. They are checked by the same rules as the supplied bank.
+export async function loadGameData({moreTopics = false} = {}) {
+  const [data, bank, more] = await Promise.all([
     loadJson(DATA_PATHS.challenge),
     loadJson(DATA_PATHS.questions),
+    moreTopics ? loadJson(DATA_PATHS.moreQuestions) : null,
   ]);
   validateData(data);
   validateQuestions(bank, data);
-  return {data, bank};
+  if (!more) return {data, bank};
+  const merged = {...bank, questions: [...bank.questions, ...(more.questions ?? [])]};
+  validateQuestions(merged, data);
+  return {data, bank: merged};
+}
+
+// Every quiz topic in the bank, with how many questions it has, in the bank's order.
+export function quizTopics(bank) {
+  const counts = new Map();
+  for (const q of bank.questions) counts.set(q.category, (counts.get(q.category) ?? 0) + 1);
+  return [...counts].map(([name, questions]) => ({name, questions}));
 }

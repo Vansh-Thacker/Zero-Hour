@@ -12,7 +12,7 @@ import {
 
 const root = await realpath(fileURLToPath(new URL('../../', import.meta.url)));
 const port = Number(process.env.PORT || 8080);
-const game = await loadGameData(); // challenge.json and questions.json, checked once at start
+const game = await loadGameData({moreTopics: true}); // challenge.json, questions.json and our extra topics, checked once at start
 const rooms = new Map();
 const streams = new Map();
 const mime = {

@@ -27,13 +27,14 @@ On PowerShell, use `npm.cmd start` and `npm.cmd test` if the `npm` script is blo
 
 ## Walkthrough for the demo
 
-1. Start at `/index.html`, choose **Multiplayer → Host**, and create a room. Keep the room code visible on the host tab.
+1. Start at `/index.html`, choose **Multiplayer → Host**, and create a room. Keep the room code visible on the host tab. Open the **Quiz topics** drop-down and tick a few topics (for example Phishing, Ransomware & Malware and Payment & Invoice Fraud), or leave it empty for the story questions.
 2. Open four separate player tabs at `/play.html` (or use phones). Join the first two as **Red** and the next two as **Blue**, using the same room code. The host should show both teams and four players without a reload.
 3. For a valid shared purchase, Red's first player buys **P3** (£200,000) and **R1** (£50,000); Red's second player buys **D3** (£100,000). Both Red players and the host should see Red's updated plan and £2,650,000 remaining. Blue's budget remains £3,000,000.
 4. For an invalid move, Red's Detect player tries a Prevent control. The server refuses it because that player does not own that role. To show the shared budget rule instead, let Red spend close to £3,000,000 and try a control that costs more than the remaining amount; the purchase is refused and the basket stays valid.
 5. Give Blue a different plan, such as **P2** (£1,000,000), **D4** (£1,000,000) and **R4** (£400,000), bought by the players assigned those categories. Both teams are now distinct and under budget.
 6. On the host screen, **Confirm**. Both plans lock together. The host then advances through **story → reveal → checkpoint**. Every player sees their own team's results; the host sees the teams side by side and the standings.
-7. Have both Red players answer one checkpoint question differently. The team receives the average behaviour points for that question. The host can pause and resume the shared two-minute timer. Continue through all four phases to the outcome and final podium.
+7. Have both Red players answer one checkpoint question differently. The team receives the average behaviour points for that question. The host's **Who has answered?** panel shows each team's progress and every player still answering. The host can pause and resume the shared two-minute timer. Continue through all four phases to the outcome and final podium.
+8. On a player tab, the outcome shows the scores and a **Download debrief** button instead of the debrief pop-ups. The PDF has that player's own answers, the secure answer and explanation for each question, the night report and the team's place.
 
 For a shorter presentation, use just two teams of two, one valid purchase, one rejected purchase, the first reveal and one checkpoint answer. The full night is available for questions afterward.
 
@@ -49,11 +50,11 @@ We chose one reducer and one server-owned state per team instead of allowing eac
 
 ## How the questions change the game
 
-After each phase's story and reveal, a 120-second checkpoint asks four questions selected from `questions.json`. Story-linked questions appear first; topic-matched questions fill any gaps. Each player answers on their own screen and sees the supplied explanation. Correct answers add behaviour points separately from the defence-control score. At the outcome, both parts contribute to the total. The host can pause the clock, and missing answers earn zero when time expires.
+After each phase's story and reveal, a 120-second checkpoint asks four questions. By default they come from `questions.json`: story-linked questions appear first; topic-matched questions fill any gaps. In a team battle the host can instead choose the quiz topics from a drop-down of 18: the 10 in the supplied bank and 8 more that we wrote in the same format in `data/more-questions.json` (Ransomware & Malware, Software Updates & Patching, Removable Media & USB, AI, Deepfakes & Impersonation, Insider Threats, Incident Reporting, Cloud & File Sharing, and Payment & Invoice Fraud), each with one question per difficulty tier. The chosen topics' questions are shuffled with a seed the server picks when the plans are locked, so every team gets the same questions, each checkpoint still goes easiest first, no question repeats in a night when there are at least 16 to choose from, and a new night deals new questions. The supplied questions file is unchanged. Each player answers on their own screen and sees the supplied explanation. Correct answers add behaviour points separately from the defence-control score. At the outcome, both parts contribute to the total. The host can pause the clock, and missing answers earn zero when time expires.
 
 ## Tests
 
-Run `npm test` (`npm.cmd test` in PowerShell). The suite covers supplied scoring and question data, engine transitions, budget and category rules, phase scores, checkpoint selection and timing, team averages, debrief, standings, role and host permissions, independent team budgets, room/API errors, Server-Sent Events, reconnection, and simultaneous purchases. See `tests/` and `1-foundation/tests/` for the cases.
+Run `npm test` (`npm.cmd test` in PowerShell). The suite covers supplied scoring and question data, engine transitions, budget and category rules, phase scores, checkpoint selection and timing, host-chosen quiz topics, team averages, debrief and its PDF download, standings, role and host permissions, independent team budgets, room/API errors, Server-Sent Events, reconnection, and simultaneous purchases. See `tests/` and `1-foundation/tests/` for the cases.
 
 A useful regression case sends two purchases against the last of a shared team budget. Only the first can succeed; the second must see the updated balance. This directly checks the multiplayer rule most likely to fail if devices kept their own copies of state.
 

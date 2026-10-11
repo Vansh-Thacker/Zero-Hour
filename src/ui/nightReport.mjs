@@ -23,18 +23,11 @@ export function outcomeVault(data, bank, state) {
       el('span', {}, ` · ${summary.reached} of ${summary.attacks} attacks reached it`)));
 }
 
-export function nightReport(data, bank, state) {
+// The report in words: the rating, then what worked, what was lacking and what would have done
+// better. Pure, so the downloadable debrief (src/debrief/debriefPdf.mjs) says exactly the same.
+export function reportLines(data, bank, state) {
   const s = nightSummary(data, bank, state);
   const rating = RATING[s.rating];
-
-  const strip = el('ol', {class: 'night-strip', 'aria-label': 'How the wall held in each phase'},
-    s.phases.map(p => el('li', {class: `is-${p.level}`},
-      el('span', {class: 'night-time'}, p.time),
-      el('strong', {}, p.title),
-      el('span', {class: 'night-meter', role: 'meter', 'aria-label': `Phase ${p.n + 1} wall`, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': p.wallPercent},
-        el('i', {style: `--fill:${p.wallPercent}%`})),
-      el('span', {class: 'night-level'}, `${LEVEL[p.level]} · ${p.wallPercent}%`),
-      el('span', {class: 'night-split'}, `${p.heldByControls} by controls + ${p.heldByPeople} by people`))));
 
   const worked = [
     `Best phase: ${s.strongest.time}, ${s.strongest.title}. Your wall held ${s.strongest.wallPercent}%.`,
@@ -67,6 +60,21 @@ export function nightReport(data, bank, state) {
   better.push(s.suggestion
     ? 'Try another game with these changes and watch the wall in each phase.'
     : 'Try another game and aim for all-secure answers to patch the wall further.');
+
+  return {summary: s, rating, worked, lacking, better};
+}
+
+export function nightReport(data, bank, state) {
+  const {summary: s, rating, worked, lacking, better} = reportLines(data, bank, state);
+
+  const strip = el('ol', {class: 'night-strip', 'aria-label': 'How the wall held in each phase'},
+    s.phases.map(p => el('li', {class: `is-${p.level}`},
+      el('span', {class: 'night-time'}, p.time),
+      el('strong', {}, p.title),
+      el('span', {class: 'night-meter', role: 'meter', 'aria-label': `Phase ${p.n + 1} wall`, 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': p.wallPercent},
+        el('i', {style: `--fill:${p.wallPercent}%`})),
+      el('span', {class: 'night-level'}, `${LEVEL[p.level]} · ${p.wallPercent}%`),
+      el('span', {class: 'night-split'}, `${p.heldByControls} by controls + ${p.heldByPeople} by people`))));
 
   const card = (kind, title, lines) => el('article', {class: `panel night-card is-${kind}`},
     el('h3', {}, title), el('ul', {}, lines.map(line => el('li', {}, line))));

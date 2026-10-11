@@ -1,0 +1,727 @@
+{
+  "name": "Zero Hour extra topics",
+  "version": "1.0.0",
+  "about": "32 extra behaviour questions written by team 20, in the same shape as questions.json, on topics the supplied bank does not cover. The host can pick them in the team battle. All are general (phase_id is null).",
+  "questions": [
+    {
+      "id": "X01",
+      "category": "Ransomware & Malware",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Recognise Ransomware",
+      "question": "Your screen suddenly shows a message saying your files are locked and you must pay to get them back. What is this most likely to be?",
+      "options": {
+        "A": "A software update",
+        "B": "Ransomware",
+        "C": "A printer error",
+        "D": "A password reminder"
+      },
+      "correct": "B",
+      "explanation": "Ransomware locks or encrypts files and demands payment. Recognising it quickly means it can be reported and contained before it spreads.",
+      "difficulty_driver": "Fear",
+      "phase_id": null,
+      "related_controls": [
+        "P1",
+        "R4",
+        "P5"
+      ]
+    },
+    {
+      "id": "X02",
+      "category": "Ransomware & Malware",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Avoid Unexpected Attachments",
+      "question": "An email from an unknown sender has an attachment called \"Invoice.pdf.exe\". What is the warning sign?",
+      "options": {
+        "A": "The file name has two extensions and ends in .exe, so it is a program",
+        "B": "Invoices are always safe",
+        "C": "It was sent during working hours",
+        "D": "The email is short"
+      },
+      "correct": "A",
+      "explanation": "A double extension ending in .exe hides a program behind a harmless-looking name. Opening it can install malware.",
+      "difficulty_driver": "Curiosity",
+      "phase_id": null,
+      "related_controls": [
+        "P1",
+        "R4",
+        "P5"
+      ]
+    },
+    {
+      "id": "X03",
+      "category": "Ransomware & Malware",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Isolate and Report",
+      "question": "You think you may have opened a malicious file and your laptop is acting strangely. What should you do first?",
+      "options": {
+        "A": "Keep working and see if it gets better",
+        "B": "Restart it several times",
+        "C": "Disconnect from the network and report it to IT security straight away",
+        "D": "Delete the file and tell nobody"
+      },
+      "correct": "C",
+      "explanation": "Disconnecting limits the spread and reporting quickly lets the security team respond. Hiding it gives malware more time to reach other systems.",
+      "difficulty_driver": "Human Error",
+      "phase_id": null,
+      "related_controls": [
+        "P1",
+        "R4",
+        "P5"
+      ]
+    },
+    {
+      "id": "X04",
+      "category": "Ransomware & Malware",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Never Pay or Bypass the Process",
+      "question": "A manager says the team should quietly pay a ransom from a project budget so the deadline is not missed. What is the secure response?",
+      "options": {
+        "A": "Pay quickly to save time",
+        "B": "Pay half now and half later",
+        "C": "Contact the attackers to negotiate",
+        "D": "Escalate to the incident response team and follow the agreed plan"
+      },
+      "correct": "D",
+      "explanation": "Ransom decisions belong to the incident response plan, not an individual team. Paying does not guarantee recovery and may fund further attacks.",
+      "difficulty_driver": "Authority + Urgency",
+      "phase_id": null,
+      "related_controls": [
+        "P1",
+        "R4",
+        "P5"
+      ]
+    },
+    {
+      "id": "X05",
+      "category": "Software Updates & Patching",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Install Updates Promptly",
+      "question": "Your laptop says security updates are ready to install. What is the best action?",
+      "options": {
+        "A": "Postpone them for months",
+        "B": "Install them as soon as is practical",
+        "C": "Turn off automatic updates",
+        "D": "Only update when something breaks"
+      },
+      "correct": "B",
+      "explanation": "Security updates fix weaknesses attackers already know about. Delaying them leaves the door open.",
+      "difficulty_driver": "Convenience",
+      "phase_id": null,
+      "related_controls": [
+        "P3",
+        "P1"
+      ]
+    },
+    {
+      "id": "X06",
+      "category": "Software Updates & Patching",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Spot Fake Update Pop-ups",
+      "question": "While browsing a news site, a pop-up says \"Your browser is out of date, click here to download the update\". What is the risk?",
+      "options": {
+        "A": "None, pop-ups are always genuine",
+        "B": "It might slow the page down",
+        "C": "It may be a fake update that installs malware",
+        "D": "It will change your homepage"
+      },
+      "correct": "C",
+      "explanation": "Genuine updates come through the system or the official app, not website pop-ups. Fake updates are a common way to deliver malware.",
+      "difficulty_driver": "Urgency",
+      "phase_id": null,
+      "related_controls": [
+        "P3",
+        "P1"
+      ]
+    },
+    {
+      "id": "X07",
+      "category": "Software Updates & Patching",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Use Approved Software Only",
+      "question": "You need a tool for a task and find a free version on an unfamiliar website. What should you do?",
+      "options": {
+        "A": "Request it through IT or use the approved software catalogue",
+        "B": "Download it as it is free",
+        "C": "Ask a colleague to install it for you",
+        "D": "Install it on your personal device and transfer files"
+      },
+      "correct": "A",
+      "explanation": "Approved software is checked and kept up to date. Unknown downloads can carry malware or never receive security fixes.",
+      "difficulty_driver": "Convenience",
+      "phase_id": null,
+      "related_controls": [
+        "P3",
+        "P1"
+      ]
+    },
+    {
+      "id": "X08",
+      "category": "Software Updates & Patching",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Do Not Skip Updates Under Pressure",
+      "question": "A colleague asks you to keep delaying a critical update on a control-room PC because restarting is inconvenient. What should you do?",
+      "options": {
+        "A": "Delay it indefinitely",
+        "B": "Uninstall the update service",
+        "C": "Ignore the update messages",
+        "D": "Agree a planned maintenance window with IT so it is installed safely"
+      },
+      "correct": "D",
+      "explanation": "Critical systems still need patching. Planning a window keeps operations running while closing known weaknesses.",
+      "difficulty_driver": "Workplace Pressure",
+      "phase_id": null,
+      "related_controls": [
+        "P3",
+        "P1"
+      ]
+    },
+    {
+      "id": "X09",
+      "category": "Removable Media & USB",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Do Not Plug In Unknown Devices",
+      "question": "You find a USB stick in the car park labelled \"Salaries 2026\". What should you do?",
+      "options": {
+        "A": "Plug it in to find the owner",
+        "B": "Hand it to IT security or reception without plugging it in",
+        "C": "Take it home",
+        "D": "Plug it into a spare computer"
+      },
+      "correct": "B",
+      "explanation": "Dropped USB sticks are a known trick to get malware inside a building. Curiosity is exactly what the attacker is counting on.",
+      "difficulty_driver": "Curiosity",
+      "phase_id": null,
+      "related_controls": [
+        "P1",
+        "P5"
+      ]
+    },
+    {
+      "id": "X10",
+      "category": "Removable Media & USB",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Question Free Gifts",
+      "question": "A visitor at a conference hands out free USB chargers and memory sticks with a supplier logo. What is the risk?",
+      "options": {
+        "A": "They are always safe because they are branded",
+        "B": "They may run out of charge",
+        "C": "They could contain malware or act as a keyboard to type commands",
+        "D": "They might be the wrong colour"
+      },
+      "correct": "C",
+      "explanation": "Some devices look like storage or chargers but carry malicious code. Only use devices supplied or approved by your organisation.",
+      "difficulty_driver": "Trust",
+      "phase_id": null,
+      "related_controls": [
+        "P1",
+        "P5"
+      ]
+    },
+    {
+      "id": "X11",
+      "category": "Removable Media & USB",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Use Approved Encrypted Storage",
+      "question": "You need to move a large file to a colleague in another office. What is the most secure option?",
+      "options": {
+        "A": "Use the approved secure file-sharing service",
+        "B": "Copy it to a personal USB stick",
+        "C": "Post a printed copy",
+        "D": "Upload it to a personal cloud account"
+      },
+      "correct": "A",
+      "explanation": "Approved services protect and track the data. Personal USB sticks are easily lost and are rarely encrypted.",
+      "difficulty_driver": "Convenience",
+      "phase_id": null,
+      "related_controls": [
+        "P1",
+        "P5"
+      ]
+    },
+    {
+      "id": "X12",
+      "category": "Removable Media & USB",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Refuse Unverified Devices",
+      "question": "A contractor says their laptop has broken and asks to plug their own USB drive into your work PC to print a document urgently. What do you do?",
+      "options": {
+        "A": "Let them, they are in a hurry",
+        "B": "Plug it in but do not open any files",
+        "C": "Copy the file to your desktop first",
+        "D": "Politely refuse and direct them to IT or an approved way to share the file"
+      },
+      "correct": "D",
+      "explanation": "An unknown drive can infect your PC the moment it connects. Being helpful should never mean bypassing device controls.",
+      "difficulty_driver": "Desire to Help",
+      "phase_id": null,
+      "related_controls": [
+        "P1",
+        "P5"
+      ]
+    },
+    {
+      "id": "X13",
+      "category": "AI, Deepfakes & Impersonation",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Know Deepfakes Exist",
+      "question": "Which statement about voice and video calls is true today?",
+      "options": {
+        "A": "Video calls cannot be faked",
+        "B": "Only famous people can be impersonated",
+        "C": "Voices and faces can be convincingly faked with AI",
+        "D": "A familiar voice always proves who is calling"
+      },
+      "correct": "C",
+      "explanation": "AI tools can copy a voice from a short recording and fake a face on video. Familiar does not automatically mean genuine.",
+      "difficulty_driver": "Awareness",
+      "phase_id": null,
+      "related_controls": [
+        "P5",
+        "R1"
+      ]
+    },
+    {
+      "id": "X14",
+      "category": "AI, Deepfakes & Impersonation",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Notice Odd Requests",
+      "question": "Your director appears on a short video call asking you to move money urgently, but the picture is blurry and they refuse to turn the camera on properly. What is the warning sign?",
+      "options": {
+        "A": "The call happened in the afternoon",
+        "B": "An urgent, unusual request with excuses not to be seen clearly",
+        "C": "The director used your first name",
+        "D": "The call used the company system"
+      },
+      "correct": "B",
+      "explanation": "Pressure plus an unusual request plus avoiding normal checks are classic signs of impersonation, whatever the voice sounds like.",
+      "difficulty_driver": "Authority + Urgency",
+      "phase_id": null,
+      "related_controls": [
+        "P5",
+        "R1"
+      ]
+    },
+    {
+      "id": "X15",
+      "category": "AI, Deepfakes & Impersonation",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Verify Through Another Channel",
+      "question": "You receive a voice note that sounds exactly like your manager, asking for a customer list. What should you do?",
+      "options": {
+        "A": "Call your manager back on a known number to confirm",
+        "B": "Send the list as the voice is familiar",
+        "C": "Reply to the voice note asking if it is really them",
+        "D": "Forward the voice note to the team"
+      },
+      "correct": "A",
+      "explanation": "Checking through a separate, trusted channel defeats voice cloning. Replying to the same channel just reaches the attacker.",
+      "difficulty_driver": "Trust + Familiarity",
+      "phase_id": null,
+      "related_controls": [
+        "P5",
+        "R1"
+      ]
+    },
+    {
+      "id": "X16",
+      "category": "AI, Deepfakes & Impersonation",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Keep Sensitive Data Out of Public AI Tools",
+      "question": "A colleague suggests pasting a confidential incident report into a free public AI chatbot to summarise it quickly before a meeting. What is the secure choice?",
+      "options": {
+        "A": "Paste it, it saves time",
+        "B": "Paste only the first half",
+        "C": "Use only approved AI tools and keep confidential data out of public ones",
+        "D": "Paste it from a personal account instead"
+      },
+      "correct": "C",
+      "explanation": "Public AI tools may store or reuse what you type. Confidential data should only go into tools your organisation has approved.",
+      "difficulty_driver": "Deadline Pressure",
+      "phase_id": null,
+      "related_controls": [
+        "P5",
+        "R1"
+      ]
+    },
+    {
+      "id": "X17",
+      "category": "Insider Threats",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Recognise Insider Risk",
+      "question": "What is an insider threat?",
+      "options": {
+        "A": "A risk from someone inside the organisation who misuses their access",
+        "B": "A virus that lives inside a computer",
+        "C": "A storm damaging the building",
+        "D": "A customer complaint"
+      },
+      "correct": "A",
+      "explanation": "Insider threats come from people with legitimate access, whether deliberate or accidental. Everyone plays a part in noticing them.",
+      "difficulty_driver": "Awareness",
+      "phase_id": null,
+      "related_controls": [
+        "D1",
+        "D5",
+        "P5"
+      ]
+    },
+    {
+      "id": "X18",
+      "category": "Insider Threats",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Notice Unusual Behaviour",
+      "question": "A colleague who is leaving next week is downloading large amounts of customer data they do not normally use. What does this suggest?",
+      "options": {
+        "A": "They are being extra productive",
+        "B": "Nothing, it is normal",
+        "C": "Possible data theft that should be reported",
+        "D": "They need a faster laptop"
+      },
+      "correct": "C",
+      "explanation": "Large, unusual downloads before someone leaves are a common warning sign. Reporting lets the right team look into it fairly.",
+      "difficulty_driver": "Familiarity",
+      "phase_id": null,
+      "related_controls": [
+        "D1",
+        "D5",
+        "P5"
+      ]
+    },
+    {
+      "id": "X19",
+      "category": "Insider Threats",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Do Not Share Your Access",
+      "question": "A colleague whose account is locked asks to use your login for the afternoon. What should you do?",
+      "options": {
+        "A": "Share it just this once",
+        "B": "Write it down for them",
+        "C": "Log in for them and leave the PC unlocked",
+        "D": "Refuse and suggest they contact the IT service desk"
+      },
+      "correct": "D",
+      "explanation": "Shared logins mean any action is recorded against you, and they break the access controls that protect data.",
+      "difficulty_driver": "Helping Colleague",
+      "phase_id": null,
+      "related_controls": [
+        "D1",
+        "D5",
+        "P5"
+      ]
+    },
+    {
+      "id": "X20",
+      "category": "Insider Threats",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Report Concerns Through the Right Channel",
+      "question": "You notice a well-liked senior colleague copying confidential plans to a personal email address. Several people say it is probably fine. What should you do?",
+      "options": {
+        "A": "Say nothing to avoid awkwardness",
+        "B": "Report it confidentially through the agreed reporting route",
+        "C": "Confront them in front of the team",
+        "D": "Post about it on a team chat"
+      },
+      "correct": "B",
+      "explanation": "Reporting through the proper route protects you, the organisation and the colleague, who may have an innocent explanation.",
+      "difficulty_driver": "Social Pressure",
+      "phase_id": null,
+      "related_controls": [
+        "D1",
+        "D5",
+        "P5"
+      ]
+    },
+    {
+      "id": "X21",
+      "category": "Incident Reporting",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Know Why Reporting Matters",
+      "question": "Why should you report a suspected security incident quickly?",
+      "options": {
+        "A": "So you can be blamed",
+        "B": "Early reporting limits the damage and helps others",
+        "C": "It is only needed for big incidents",
+        "D": "Reporting is optional"
+      },
+      "correct": "B",
+      "explanation": "The sooner the security team knows, the faster they can contain an attack. Small reports often reveal big problems.",
+      "difficulty_driver": "Awareness",
+      "phase_id": null,
+      "related_controls": [
+        "R1",
+        "R2",
+        "D1"
+      ]
+    },
+    {
+      "id": "X22",
+      "category": "Incident Reporting",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Report Even Small Mistakes",
+      "question": "You clicked a link in a suspicious email but nothing seemed to happen. What is the right thing to do?",
+      "options": {
+        "A": "Report it anyway, as something may have happened in the background",
+        "B": "Ignore it because nothing happened",
+        "C": "Wait a week to see",
+        "D": "Delete the email and forget it"
+      },
+      "correct": "A",
+      "explanation": "Many attacks run silently. A quick report lets experts check, and organisations want honest reports, not hidden mistakes.",
+      "difficulty_driver": "Human Error",
+      "phase_id": null,
+      "related_controls": [
+        "R1",
+        "R2",
+        "D1"
+      ]
+    },
+    {
+      "id": "X23",
+      "category": "Incident Reporting",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Use the Official Reporting Route",
+      "question": "You receive a phishing email at work. What is the best way to report it?",
+      "options": {
+        "A": "Forward it to all colleagues as a warning",
+        "B": "Reply to the sender saying you know it is fake",
+        "C": "Use the official report-phishing button or process",
+        "D": "Post a screenshot on social media"
+      },
+      "correct": "C",
+      "explanation": "The official route sends the email to the people who can block it for everyone. Forwarding or replying can spread the risk.",
+      "difficulty_driver": "Desire to Help",
+      "phase_id": null,
+      "related_controls": [
+        "R1",
+        "R2",
+        "D1"
+      ]
+    },
+    {
+      "id": "X24",
+      "category": "Incident Reporting",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Report Despite Embarrassment",
+      "question": "You realise you sent a file with customer details to the wrong external address. Your team leader is busy and you are worried about getting into trouble. What should you do?",
+      "options": {
+        "A": "Hope the person deletes it",
+        "B": "Wait until the end of the month",
+        "C": "Ask the recipient to keep quiet",
+        "D": "Report it immediately so the data breach process can start"
+      },
+      "correct": "D",
+      "explanation": "Data breaches often have legal time limits for reporting. Acting at once reduces harm, and honesty is valued over hiding mistakes.",
+      "difficulty_driver": "Workplace Pressure",
+      "phase_id": null,
+      "related_controls": [
+        "R1",
+        "R2",
+        "D1"
+      ]
+    },
+    {
+      "id": "X25",
+      "category": "Cloud & File Sharing",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Check Who Can See Shared Files",
+      "question": "You share a folder using a link set to \"Anyone with the link can view\". What is the risk?",
+      "options": {
+        "A": "Nobody else can see it",
+        "B": "Anyone who gets the link, inside or outside the organisation, can open it",
+        "C": "Only your manager can see it",
+        "D": "The files will be deleted"
+      },
+      "correct": "B",
+      "explanation": "Open links can be forwarded or found. Share with named people instead whenever the data is not public.",
+      "difficulty_driver": "Convenience",
+      "phase_id": null,
+      "related_controls": [
+        "P7",
+        "P4"
+      ]
+    },
+    {
+      "id": "X26",
+      "category": "Cloud & File Sharing",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Spot Fake Sharing Notifications",
+      "question": "An email says a colleague shared a document with you, but the sign-in page it opens has a slightly misspelled address. What should you do?",
+      "options": {
+        "A": "Do not enter your password; report it as phishing",
+        "B": "Enter your password to see the document",
+        "C": "Try a different password",
+        "D": "Forward it to the colleague to open"
+      },
+      "correct": "A",
+      "explanation": "Fake sharing alerts are a common way to steal passwords. Always check the address before signing in.",
+      "difficulty_driver": "Familiarity + Urgency",
+      "phase_id": null,
+      "related_controls": [
+        "P7",
+        "P4"
+      ]
+    },
+    {
+      "id": "X27",
+      "category": "Cloud & File Sharing",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Use Approved Services",
+      "question": "A partner company asks you to upload project files to their personal cloud storage account. What is the best response?",
+      "options": {
+        "A": "Upload everything to save time",
+        "B": "Upload only some files",
+        "C": "Use your organisation's approved file-sharing service instead",
+        "D": "Email the files from a personal account"
+      },
+      "correct": "C",
+      "explanation": "Approved services keep control of the data and record who accessed it. Personal accounts sit outside that protection.",
+      "difficulty_driver": "Trust",
+      "phase_id": null,
+      "related_controls": [
+        "P7",
+        "P4"
+      ]
+    },
+    {
+      "id": "X28",
+      "category": "Cloud & File Sharing",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Remove Access When It Is No Longer Needed",
+      "question": "A supplier's contract ended last month but they still have access to a shared folder with live operational data. Your colleague says it is too much work to change. What should you do?",
+      "options": {
+        "A": "Leave it in case they need it again",
+        "B": "Change the folder name",
+        "C": "Ask the supplier to promise not to look",
+        "D": "Remove their access or ask the folder owner to do it now"
+      },
+      "correct": "D",
+      "explanation": "Old access is an easy route in for attackers. Removing it when it is no longer needed is a simple, powerful control.",
+      "difficulty_driver": "Workplace Pressure",
+      "phase_id": null,
+      "related_controls": [
+        "P7",
+        "P4"
+      ]
+    },
+    {
+      "id": "X29",
+      "category": "Payment & Invoice Fraud",
+      "tier": 1,
+      "tier_label": "Spot the Risk",
+      "secure_behaviour": "Notice Changed Bank Details",
+      "question": "A supplier emails to say their bank details have changed for the next payment. What is the risk?",
+      "options": {
+        "A": "None, suppliers change banks often",
+        "B": "It could be invoice fraud redirecting money to criminals",
+        "C": "The payment will be late",
+        "D": "The email may be too long"
+      },
+      "correct": "B",
+      "explanation": "Changing bank details by email is one of the most common frauds. Criminals often hack or copy a real supplier's email.",
+      "difficulty_driver": "Trust",
+      "phase_id": null,
+      "related_controls": [
+        "P6",
+        "P5",
+        "R1"
+      ]
+    },
+    {
+      "id": "X30",
+      "category": "Payment & Invoice Fraud",
+      "tier": 2,
+      "tier_label": "Read the Signs",
+      "secure_behaviour": "Spot Lookalike Addresses",
+      "question": "An invoice arrives from \"accounts@lochside-energy.co\" instead of the usual \".co.uk\" address. What does this suggest?",
+      "options": {
+        "A": "A lookalike address that may be fraudulent",
+        "B": "A new office",
+        "C": "A spelling mistake by IT",
+        "D": "Nothing important"
+      },
+      "correct": "A",
+      "explanation": "Attackers register addresses that differ by a letter or ending. Small differences deserve a careful check.",
+      "difficulty_driver": "Assumption",
+      "phase_id": null,
+      "related_controls": [
+        "P6",
+        "P5",
+        "R1"
+      ]
+    },
+    {
+      "id": "X31",
+      "category": "Payment & Invoice Fraud",
+      "tier": 3,
+      "tier_label": "Choose Your Response",
+      "secure_behaviour": "Verify Payments by Phone",
+      "question": "You are asked to update a supplier's bank details. What is the secure way to confirm the change?",
+      "options": {
+        "A": "Reply to the email asking if it is genuine",
+        "B": "Check the email signature",
+        "C": "Call the supplier on a number you already have on file",
+        "D": "Call the number given in the email"
+      },
+      "correct": "C",
+      "explanation": "Use contact details you already trust, never those in the request itself, which the attacker controls.",
+      "difficulty_driver": "Time Pressure",
+      "phase_id": null,
+      "related_controls": [
+        "P6",
+        "P5",
+        "R1"
+      ]
+    },
+    {
+      "id": "X32",
+      "category": "Payment & Invoice Fraud",
+      "tier": 4,
+      "tier_label": "Pressure Test",
+      "secure_behaviour": "Follow the Payment Process Under Pressure",
+      "question": "Someone claiming to be the chief executive emails asking for an urgent confidential payment today and tells you not to involve finance. What should you do?",
+      "options": {
+        "A": "Pay it, the chief executive has authority",
+        "B": "Pay a smaller amount first",
+        "C": "Reply asking for more details then pay",
+        "D": "Follow the normal approval process and verify the request independently"
+      },
+      "correct": "D",
+      "explanation": "Secrecy, urgency and authority together are the hallmarks of CEO fraud. Genuine leaders expect the process to be followed.",
+      "difficulty_driver": "Authority + Urgency",
+      "phase_id": null,
+      "related_controls": [
+        "P6",
+        "P5",
+        "R1"
+      ]
+    }
+  ]
+}

@@ -9,6 +9,7 @@ import {chooseScreen} from '../src/ui/chooseScreen.mjs';
 import {storyScreen} from '../src/ui/storyScreen.mjs';
 import {revealScreen} from '../src/ui/revealScreen.mjs';
 import {outcomeScreen} from '../src/ui/outcomeScreen.mjs';
+import {debriefBlocks} from '../src/debrief/debriefPdf.mjs';
 import {roomBar} from '../src/ui/roomBar.mjs';
 import {nameProblem, homeScreen, joinScreen, nameScreen, hostStartScreen} from '../src/ui/startScreens.mjs';
 import {LOGO, SCENE, PHASE_ART, controlRender} from '../src/ui/assets.mjs';
@@ -255,7 +256,7 @@ test('reveal renderer keeps control names and scores, and does not mutate game i
   assert.ok(find(tree, n => n.attributes.role === 'img' && n.attributes['aria-label']?.includes('attacks held back')).length);
 });
 
-test('outcome separates scores and groups multiplayer answers once per question', () => {
+test('outcome separates scores; on a phone the debrief is a PDF that groups answers once per question', () => {
   const state = base(); state.stage = 'outcome'; state.phase = 3; state.checkpoint = null;
   state.behaviourPoints = [1, 0, 0, 0];
   state.answers = [{phase: 0, questionId: q.id, player: 'alice', choice: q.correct, correct: true},
@@ -266,8 +267,14 @@ test('outcome separates scores and groups multiplayer answers once per question'
   assert.equal(find(cards[0], n => n.attributes['data-count-to'] !== undefined)[0].attributes['data-count-to'], String(state.result.total));
   assert.equal(find(cards[1], n => n.attributes['data-count-to'] !== undefined)[0].attributes['data-count-to'], '1');
   assert.equal(find(cards[2], n => n.attributes['data-count-to'] !== undefined)[0].attributes['data-count-to'], String(state.result.total + 1));
-  assert.equal(text(tree).split(q.explanation).length - 1, 1);
-  assert.ok(text(tree).includes('1 of 2 secure')); assert.equal(keyed(tree, 'reset'), undefined);
+  // Phones get no debrief pop-ups, only the download button; the PDF holds the debrief.
+  assert.equal(text(tree).includes(q.explanation), false);
+  assert.equal(keyed(tree, 'open-debrief'), undefined);
+  assert.ok(keyed(tree, 'download-debrief')); assert.equal(keyed(tree, 'reset'), undefined);
+  const pdfText = debriefBlocks(game, freeze(state), phone).map(b => b.text).join(' ');
+  assert.equal(pdfText.split(q.explanation).length - 1, 1);
+  assert.ok(pdfText.includes('1 of 2 secure'));
+  assert.ok(pdfText.includes(`Your answer: ${q.correct}.`));   // Alice's own answer
 });
 
 test('vault SVGs have distinct gradient IDs and an explicit status/damage label', () => {
