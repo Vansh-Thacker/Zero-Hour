@@ -4,7 +4,7 @@ Zero Hour is Team 20's cyber security game for the ScottishPower StrathHack chal
 
 The game runs in **single-player** mode or as a live **team battle**. One host runs the night; players join with a room code and build separate plans for their teams. See [OUR_GAME.md](OUR_GAME.md) for the hand-in notes, architecture, limits and a demo walkthrough.
 
-**Live deployment:** The current version is deployed [here](https://team-20-vglm.onrender.com/).
+**Live deployment:** The current version is deployed [here](https://team-20-1.onrender.com/).
 
 ## Run
 

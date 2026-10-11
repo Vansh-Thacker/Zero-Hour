@@ -1295,3 +1295,28 @@ dialog.htp { width: min(880px, calc(100vw - 32px)); text-align: center; }
 .report-buttons { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 .report-buttons.is-single { grid-template-columns: 1fr; }
 .report-button.is-download { border-color: rgba(38, 191, 100, 0.5); }
+
+/* Host lobby: a locally generated QR and the existing room-code join option. */
+.room-invite {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "title qr" "intro qr" "network qr" "link qr" "help qr" "status qr";
+  gap: 10px 20px; align-items: start; min-width: 0; width: 100%; margin-top: 10px;
+}
+.room-invite-title { grid-area: title; font-size: 1.1rem; color: var(--text); }
+.room-qr { display: block; width: 240px; height: 240px; max-width: 100%; object-fit: contain;
+  grid-area: qr; background: #fff; border: 1px solid #fff; image-rendering: pixelated; }
+.room-qr[hidden] { display: none; }
+.room-invite p { margin: 0; }
+.room-invite > .room-join { grid-area: intro; }
+.room-invite > .room-join-help { grid-area: help; }
+.room-invite > a { grid-area: link; overflow-wrap: anywhere; font-size: 0.85rem; }
+.room-network { grid-area: network; display: grid; gap: 5px; font-size: 0.85rem; color: var(--muted); }
+.room-network select { width: 100%; max-width: 340px; padding: 8px; border: 1px solid var(--line-strong);
+  border-radius: 8px; background: var(--panel); color: var(--text); font: inherit; }
+.room-network select:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.room-qr-status { grid-area: status; }
+.room-qr-status:empty { display: none; }
+@media (max-width: 600px) {
+  .room-invite { grid-template-columns: minmax(0, 1fr); grid-template-areas: "title" "qr" "intro" "network" "link" "help" "status"; }
+  .room-qr { justify-self: center; }
+}

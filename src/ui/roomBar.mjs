@@ -5,6 +5,7 @@
 
 import {el, CATEGORIES, isHere, presenceText, presenceClass} from './dom.mjs';
 import {SQUADS} from './fun.mjs';
+import {roomInvite} from './joinQr.mjs';
 
 const categoriesOf = p => p.categories ?? [p.category];
 
@@ -77,16 +78,13 @@ function teamChips(teams, minTeamSize, started) {
 
 export function roomBar(room, data) {
   const {code, you, players, log = [], notice, addresses = [], onLeave, state, team: myTeam, teams = [], limits} = room;
-  // Prefer a home or hotspot address (192.168.x / 10.x) over a virtual adapter's (172.x).
-  const joinUrl = addresses.find(url => !/\/\/172\./.test(url)) ?? addresses[0];
   const mine = you.host ? [] : categoriesOf(you);
 
   const codeBox = el('div', {class: 'room-seat'},
     el('span', {class: 'eyebrow'}, 'Room code'),
     el('strong', {class: 'room-code'}, code),
     you.host
-      ? el('span', {class: 'room-join'}, '📱 Join on your phone: ',
-        joinUrl ? el('a', {href: joinUrl, target: '_blank', rel: 'noopener'}, joinUrl.replace(/^https?:\/\//, '')) : 'open play.html')
+      ? roomInvite({code, addresses, state})
       : el('span', {class: 'room-you'}, avatar(you),
         `${you.name} · ${mine.map(cat => `${SQUADS[cat].icon} ${SQUADS[cat].name}`).join(' + ')}`),
     myTeam ? el('span', {class: 'room-team-name'}, `🚩 Team ${myTeam.name}`) : null);
