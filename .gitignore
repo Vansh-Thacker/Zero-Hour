@@ -1,6 +1,18 @@
+# Dependencies and build output
 node_modules/
-.DS_Store
+coverage/
+
+# Logs (includes audit-results.log)
 *.log
-# Office lock files, created while a document is open
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Office lock files (open PowerPoint/Excel/Word files)
 ~$*
-MULTIPLAYER_PRESENTATION.md
+
+# Local secrets
+.env
