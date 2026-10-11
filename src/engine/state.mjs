@@ -34,7 +34,8 @@ export function createInitialState() {
 const pounds = n => '£' + n.toLocaleString('en-GB');
 
 // Returns a readable reason if the control cannot be added, or null if it can.
-// TODO: replace with canSelect() from selection.mjs once Rayyan's helper lands.
+// The engine checks picks itself, so every refusal reads the same way in the game.
+// (selection.mjs's canSelect() gives the same yes/no answer and is tested on its own.)
 function selectProblem(data, state, id) {
   if (state.confirmed) return 'The choice is confirmed and can no longer change.';
   const control = data.controls.find(c => c.id === id);

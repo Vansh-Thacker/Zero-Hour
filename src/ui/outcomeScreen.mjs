@@ -1,6 +1,7 @@
 // Outcome screen: stars, the scores (kept separate, then added together) and badges.
 // The night report and the debrief of each phase open as pop-ups, so the page stays short.
-// TODO: swap the debrief section for Mo's buildDebrief() once it lands.
+// The debrief is built here from the same state the night report reads; tests/debrief.test.mjs checks
+// Mo's buildDebrief() gives the same scores, so both always agree with the engine.
 
 import {el, points, hostOnly} from './dom.mjs';
 import {nightReport, outcomeVault} from './nightReport.mjs';

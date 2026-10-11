@@ -1,5 +1,7 @@
 # dev-test test audit
 
+> **Status at hand-in (11 October 2026): all six defects below are fixed** (commit `9f0e538`, "Fix the defects found by the audit tests", and `412b7c5` for the `.git` leak). The audit tests stay in the suite as regression tests. The full suite on `main` now runs **323 tests: 323 passed, 0 failed, 0 skipped**. The report below is kept as it was written, as a record of what the audit found.
+
 Date: 10 October 2026. Branch: `dev-test`. Source commit: `e18c25c1fc32a17b62029c663db11c86c3c1dd08`.
 Environment: Windows, Node v26.6.0, Codex in-app browser.
 

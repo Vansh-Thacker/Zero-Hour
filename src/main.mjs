@@ -12,7 +12,8 @@ import {homeScreen, multiScreen, nameScreen, nameProblem} from './ui/startScreen
 
 const root = document.getElementById('app');
 
-// TODO: replace with loadGameData() from engine/loadData.mjs once Rayyan's helper lands.
+// Single player loads the two data files directly; the scenario is checked with validateData() below.
+// (The multiplayer pages use loadGameData() from engine/loadData.mjs, which also checks the questions.)
 async function loadJson(path) {
   const response = await fetch(path);
   if (!response.ok) throw new Error(`Could not load ${path} (${response.status}).`);

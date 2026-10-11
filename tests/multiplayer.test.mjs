@@ -461,6 +461,8 @@ test('server: players cannot use host actions and host cannot answer', async t =
   assert.equal((await firstView(base, host.code, host.token)).view.state.stage, 'choose');
 });
 
+const CLOCK_STEP_MS = 50;
+
 test('server: host confirmation locks purchases and advances every seat to a checkpoint', async t => {
   const base = await startServer(t);
   const {host, players, action} = await httpTeam(base);
@@ -478,8 +480,10 @@ test('server: host confirmation locks purchases and advances every seat to a che
     assert.equal(view.state.stage, 'checkpoint');
     assert.deepEqual(view.state.selected, ['P3', 'D3', 'R1']);
     assert.equal(view.state.checkpoint.questionIds.length, 4);
-    assert.ok(view.state.checkpoint.timer.startedAt >= beforeCheckpoint);
-    assert.ok(view.state.checkpoint.timer.startedAt <= afterCheckpoint);
+    // The server and this test are separate processes, and Windows clocks tick in steps of about
+    // 15 ms, so allow that much either side. A device's own "now: 0" would be far outside this.
+    assert.ok(view.state.checkpoint.timer.startedAt >= beforeCheckpoint - CLOCK_STEP_MS);
+    assert.ok(view.state.checkpoint.timer.startedAt <= afterCheckpoint + CLOCK_STEP_MS);
   }
 });
 

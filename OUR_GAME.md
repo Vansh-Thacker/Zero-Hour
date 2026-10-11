@@ -3,8 +3,8 @@
 ## Team
 
 - **Team:** Team 20 — Tejas, Rayyan, Ghassan, Vansh and Mo.
-- **Game:** Zero Hour. **Fictional business:** Fictional Energy Co. Both names are set in `src/config.mjs`.
-- **Level:** Foundation game with the multiplayer Stretch capability and an incident-room-inspired heist presentation.
+- **Game:** Zero Hour. **Fictional business:** Lochside Energy. Both names are set in one place, `src/config.mjs` (`GAME_NAME` and `BUSINESS_NAME`).
+- **Level:** Foundation game with the multiplayer Stretch capability and a vault-heist presentation of our own (a defence wall, attacks and a safe that cracks), drawn from the player's choices.
 
 ## What we built
 
@@ -16,7 +16,7 @@ The same application supports a single-player game and a live team battle. A hos
 
 ## How to run it
 
-**Live deployment:** [Replace this with the deployed game link](https://REPLACE-WITH-YOUR-DEPLOYED-URL.example/).
+**Live deployment:** [team-20-vglm.onrender.com](https://team-20-vglm.onrender.com/). The free hosting sleeps after about 15 minutes without visitors, so the first load can take up to a minute.
 
 1. For a local run, install Node.js 20 or later. There are no npm dependencies, accounts or online services required for local play.
 2. In this repository, run `npm start` and open `http://127.0.0.1:8080/` (the `index.html` home screen). This **one server** runs both modes.
@@ -43,7 +43,7 @@ For a shorter presentation, use just two teams of two, one valid purchase, one r
 - `src/engine/state.mjs` contains `createInitialState()` and the pure `reduce(game, state, action)` transition. It holds the stage, phase, selected control IDs, confirmation and scoring result, checkpoint, answers and behaviour points. The engine enforces the budget, lock, answer and timer rules. `src/engine/actions.mjs` checks action shapes; `selection.mjs`, `scores.mjs` and `loadData.mjs` provide focused helpers.
 - `src/checkpoint/checkpoint.mjs` deterministically picks four questions per phase, prioritising story-linked questions and then suitable topics. Questions progress through the difficulty tiers. A secure answer earns 2 points; a wrong or missed answer earns 0. In a team, points are averaged across all members, including anyone who did not answer. The timer runs for at most 120 seconds and the host may pause it.
 - `src/server/server.mjs` is the **single** Node server for static files and room APIs. `src/server/competition.mjs` manages the teams in a room. `src/server/rooms.mjs` applies role and host permissions to one team's actions before calling the engine. The server assigns the acting player and time; it does not trust those values from a phone. Requests are processed one at a time, so the second simultaneous purchase checks the budget left after the first.
-- `src/net/client.mjs` sends actions and keeps each tab's seat for refresh. Server-Sent Events push a fresh view after changes; reconnection receives the current state. `src/main.mjs` runs single player locally. `src/host.mjs` and `src/play.mjs` connect the host and players to the server. `src/ui/` draws the incident-room-style screens, defence wall, standings and debrief. Screens read state and dispatch actions; they do not calculate scores.
+- `src/net/client.mjs` sends actions and keeps each tab's seat for refresh. Server-Sent Events push a fresh view after changes; reconnection receives the current state. `src/main.mjs` runs single player locally. `src/host.mjs` and `src/play.mjs` connect the host and players to the server. `src/ui/` draws the vault-heist screens, defence wall, standings and debrief. Screens read state and dispatch actions; they do not calculate scores.
 
 We chose one reducer and one server-owned state per team instead of allowing each screen to change a local copy. This keeps the phone and host views consistent, makes concurrent budget checks safe, and lets tests exercise the rules without a browser. Teams share only the host's phase and clock; their baskets, answers and scores remain separate.
 
@@ -62,7 +62,8 @@ A useful regression case sends two purchases against the last of a shared team b
 - Rooms and seats live in server memory. Restarting the server ends every room; there is no saved game database.
 - When running locally, phones must be able to reach the host laptop over the network. Some venue Wi-Fi networks isolate devices; a hotspot or separate tabs on one laptop works for a local demo.
 - Room codes and per-seat tokens are sufficient for a local demo, but this is not an account or authentication system for a public internet deployment.
-- The incident-room look is implemented in `src/ui/`. The separate optional `src/theme/` module is still a placeholder; the game does not depend on it.
+- The vault-heist look is implemented in `src/ui/`. The separate optional `src/theme/` module is a placeholder; the game does not depend on it, and the browser console shows two harmless 404s while it checks for the optional theme files.
+- On the free hosting, restarting or sleeping ends every open room, the same as restarting a local server.
 
 ## Where AI tools helped
 
