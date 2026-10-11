@@ -6,7 +6,7 @@
 
 import {createInitialState} from '../engine/state.mjs';
 import {act, createRoom, joinRoom, viewFor} from './rooms.mjs';
-import {randomUUID} from 'node:crypto';
+import {randomInt, randomUUID} from 'node:crypto';
 
 export const MAX_TEAMS = 15;
 export const MIN_TEAM_SIZE = 2;
@@ -20,7 +20,23 @@ function refuse(status, message) {
 }
 
 export function createCompetition(code) {
-  return {code, hostToken: randomUUID(), teams: [], idle: createInitialState()};
+  // topics: the quiz topics the host chose. Empty means the brief's story questions for each phase.
+  return {code, hostToken: randomUUID(), teams: [], idle: createInitialState(), topics: []};
+}
+
+const TOPIC_LIMIT = 30;
+
+// The host chooses the quiz topics before the night starts. Only topics in the question bank count.
+function chooseTopics(competition, topics, game) {
+  if (started(competition)) throw refuse(409, 'The night has started. Choose the quiz topics before you lock the plans.');
+  if (!Array.isArray(topics) || topics.length > TOPIC_LIMIT || topics.some(t => typeof t !== 'string')) {
+    throw refuse(400, 'Choose the quiz topics from the list.');
+  }
+  const known = new Set(game.bank.questions.map(q => q.category));
+  const unknown = topics.find(t => !known.has(t));
+  if (unknown) throw refuse(400, `"${unknown.slice(0, 60)}" is not a quiz topic.`);
+  competition.topics = [...new Set(topics)];
+  return sharedState(competition);
 }
 
 /** The stage, phase and checkpoint clock: the same for every team, so the first team's will do. */
@@ -92,6 +108,7 @@ export function actCompetition(competition, token, action, game, now = Date.now(
   }
 
   const type = action?.type;
+  if (type === 'topics') return chooseTopics(competition, action.topics, game);
   if (!HOST_ACTIONS.has(type)) {
     // Let the team rules give the usual answer (host can't buy or answer, malformed actions are refused).
     if (!competition.teams.length) throw refuse(400, 'That is not something the game can do.');
@@ -105,7 +122,10 @@ export function actCompetition(competition, token, action, game, now = Date.now(
     const problems = competition.teams.map(teamProblem).filter(Boolean);
     if (problems.length) throw refuse(409, `Not every team is ready. ${problems.join(' ')}`);
   }
-  for (const team of competition.teams) act(team, token, action, game, now, {anyCategories: true});
+  // One seed for the whole night, so every team gets the same questions, and a new night new ones.
+  const quiz = type === 'confirm' && competition.topics.length
+    ? {topics: competition.topics, seed: randomInt(1, 2 ** 31)} : undefined;
+  for (const team of competition.teams) act(team, token, action, game, now, {anyCategories: true, quiz});
   return sharedState(competition);
 }
 
@@ -138,6 +158,7 @@ export function competitionView(competition, token) {
       players: teams.flatMap(team => team.players.map(p => ({...p, team: team.name}))),
       log,
       teams,
+      topics: competition.topics,
       limits: {maxTeams: MAX_TEAMS, minTeamSize: MIN_TEAM_SIZE},
       you: {host: true},
     };
@@ -149,6 +170,7 @@ export function competitionView(competition, token) {
     code: competition.code,
     team: {id: seat.team.id, name: seat.team.name},
     teams,
+    topics: competition.topics,
     limits: {maxTeams: MAX_TEAMS, minTeamSize: MIN_TEAM_SIZE},
   };
 }

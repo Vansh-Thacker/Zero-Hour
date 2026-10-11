@@ -80,7 +80,7 @@ function addLog(room, ok, text) {
  *   Players: select / deselect (own role only), answer (during a checkpoint)
  *   Host:    confirm, next, pause, resume, timeout, reset
  */
-export function act(room, token, action, game, now = Date.now(), {anyCategories = false} = {}) {
+export function act(room, token, action, game, now = Date.now(), {anyCategories = false, quiz} = {}) {
   const isHost = token === room.hostToken;
   const player = room.players.find(member => member.token === token);
   if (!isHost && !player) throw refuse(403, 'This seat is not part of this game.');
@@ -96,7 +96,8 @@ export function act(room, token, action, game, now = Date.now(), {anyCategories 
   // teamSize lets the engine count a player who has not answered as 0 in the team average.
   const teamSize = type === 'answer' || type === 'timeout' ? room.players.length : undefined;
   const stamped = {type, id, questionId, choice, now, player: player?.id, teamSize,
-    anyCategories: type === 'confirm' && anyCategories ? true : undefined};
+    anyCategories: type === 'confirm' && anyCategories ? true : undefined,
+    quiz: type === 'confirm' ? quiz : undefined};   // the host's quiz topics (team battle)
   for (const key of Object.keys(stamped)) if (stamped[key] === undefined) delete stamped[key];
   if (!isValidAction(stamped)) throw fail(400, 'That is not something the game can do.');
 

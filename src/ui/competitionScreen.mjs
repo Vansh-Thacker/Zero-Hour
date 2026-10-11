@@ -4,6 +4,7 @@
 // Reads the server's view only; every button sends an action back through dispatch().
 
 import {BUSINESS_NAME} from '../config.mjs';
+import {quizTopics} from '../engine/loadData.mjs';
 import {brandBar, phaseTrack} from './app.mjs';
 import {timerRing} from './checkpointScreen.mjs';
 import {el, money, points, CATEGORIES} from './dom.mjs';
@@ -18,6 +19,7 @@ import {vaultSafe} from './vaultSafe.mjs';
 
 const VAULT_WORD = {secure: '✓ Vault secure', damaged: '◆ Vault damaged', breached: '✖ Vault breached'};
 let resetArmed = false;
+let topicsOpen = false; // the quiz topic list stays open while the screen redraws
 let lastStage = null;   // to play a sound and throw confetti when the stage changes
 
 export function renderCompetition(root, view, game, dispatch, extra = {}) {
@@ -26,7 +28,7 @@ export function renderCompetition(root, view, game, dispatch, extra = {}) {
   const upTo = revealedUpTo(state);
   const rows = standings(data, view.teams, upTo);
 
-  const content = !state.confirmed ? lobby(view, game)
+  const content = !state.confirmed ? lobby(view, game, dispatch)
     : state.stage === 'story' ? story(view, game, rows)
     : state.stage === 'reveal' ? reveal(view, game, rows)
     : state.stage === 'checkpoint' ? checkpoint(view, game, rows)
@@ -64,7 +66,7 @@ const avatar = p => el('span', {class: 'avatar', 'data-cat': p.category, 'aria-h
 
 // ---------------------------------------------------------------- before the night: teams form
 
-function lobby(view, {data}) {
+function lobby(view, {data, bank}, dispatch) {
   const {minTeamSize, maxTeams} = view.limits;
   const cards = view.teams.map(team => {
     const chosen = team.state.selected.map(id => data.controls.find(c => c.id === id));
@@ -99,10 +101,44 @@ function lobby(view, {data}) {
           el('li', {}, el('span', {'aria-hidden': 'true'}, '💰'), `${shortMoney(data.budget)} per team`),
           el('li', {}, el('span', {'aria-hidden': 'true'}, '👥'), `${minTeamSize}+ players a team, up to ${maxTeams} teams`),
           el('li', {}, el('span', {'aria-hidden': 'true'}, '🛡️🔍🚒'), 'Skip a squad and attacks find the gap')))),
+    topicPicker(view, bank, dispatch),
     view.teams.length
       ? el('div', {class: 'team-grid'}, cards)
       : el('p', {class: 'panel waiting'}, '⏳ Waiting for the first team. Players enter the room code and a team name on their phones.'),
   ];
+}
+
+// The host picks the quiz topics: a drop-down list of every topic, tick as many as you like.
+// None ticked: each quiz uses the brief's questions that match its attack (story mode).
+function topicPicker(view, bank, dispatch) {
+  const all = quizTopics(bank);
+  const chosen = new Set(view.topics ?? []);
+  const choose = names => dispatch({type: 'topics', topics: all.map(t => t.name).filter(name => names.includes(name))});
+  const toggle = name => choose(chosen.has(name) ? [...chosen].filter(n => n !== name) : [...chosen, name]);
+  const questions = all.filter(t => chosen.has(t.name)).reduce((sum, t) => sum + t.questions, 0);
+
+  return el('section', {class: 'panel topic-box', 'aria-labelledby': 'topics-title'},
+    el('div', {class: 'topic-head'},
+      el('h2', {id: 'topics-title'}, '🎯 Quiz topics'),
+      el('span', {class: chosen.size ? 'tag-ok' : 'tag-gap'},
+        chosen.size ? `${chosen.size} topic${chosen.size === 1 ? '' : 's'} · ${questions} questions` : '📖 Story mode')),
+    el('p', {class: 'topic-note'}, chosen.size
+      ? `Each quiz mixes ${chosen.size === 1 ? 'questions on this topic' : 'these topics'}, easiest first. Every new night deals new questions${questions < 16 ? ' (with under 16 questions, some come round again)' : ''}.`
+      : 'No topics chosen: each quiz asks the questions that match its attack. Choose topics to set your own quiz.'),
+    el('details', {class: 'topic-drop', open: topicsOpen, ontoggle: event => { topicsOpen = event.currentTarget.open; }},
+      el('summary', {'data-key': 'topics-open'}, chosen.size ? `${chosen.size} of ${all.length} topics chosen` : `Choose from ${all.length} topics`),
+      el('div', {class: 'topic-menu'},
+        el('div', {class: 'topic-tools'},
+          el('button', {class: 'btn btn-ghost btn-small', type: 'button', 'data-key': 'topics-all', onclick: () => choose(all.map(t => t.name))}, '✓ All topics'),
+          el('button', {class: 'btn btn-ghost btn-small', type: 'button', 'data-key': 'topics-none', disabled: !chosen.size, onclick: () => choose([])}, '📖 Story mode')),
+        el('ul', {class: 'topic-list'}, all.map(t => el('li', {},
+          el('label', {class: `topic-option${chosen.has(t.name) ? ' is-on' : ''}`},
+            el('input', {type: 'checkbox', checked: chosen.has(t.name), 'data-key': `topic-${t.name}`, onchange: () => toggle(t.name)}),
+            el('span', {}, t.name),
+            el('small', {}, `${t.questions} q`))))))),
+    chosen.size ? el('ul', {class: 'topic-chips', 'aria-label': 'Chosen topics'}, all.filter(t => chosen.has(t.name)).map(t =>
+      el('li', {}, el('button', {type: 'button', class: 'topic-chip', 'data-key': `chip-${t.name}`, 'aria-label': `Remove ${t.name}`,
+        onclick: () => toggle(t.name)}, t.name, el('span', {'aria-hidden': 'true'}, ' ✕'))))) : null);
 }
 
 // ---------------------------------------------------------------- during the night
@@ -151,20 +187,44 @@ function checkpoint(view, {bank}, rows) {
           el('li', {}, '✓ Secure answers earn points'),
           el('li', {}, '🧱 And patch your team’s wall'))),
       el('div', {class: 'timer'}, timerRing(state.checkpoint))),
-    el('section', {class: 'panel'},
-      el('h2', {}, '✍️ Answers so far'),
-      el('ul', {class: 'team-answers'}, view.teams.map(team => {
-        const answered = team.state.answers.filter(a => a.phase === state.phase).length;
-        const possible = team.players.length * team.state.checkpoint.questionIds.length;
-        const percent = possible ? Math.round(100 * answered / possible) : 0;
-        return el('li', {},
-          el('strong', {}, `🚩 ${team.name}`),
-          el('span', {class: 'answer-track', role: 'img', 'aria-label': `${answered} of ${possible} answers`}, el('i', {style: `width:${percent}%`})),
-          el('span', {class: 'answer-count'}, `${answered} of ${possible}${answered === possible && possible ? ' ✅' : ''}`),
-          el('span', {class: 'answer-points'}, `🧠 ${points(team.state.behaviourPoints[state.phase])} pts`));
-      }))),
-    el('p', {class: 'lead'}, `Topics: ${state.checkpoint.questionIds.map(id => bank.questions.find(q => q.id === id).category).join(', ')}.`),
+    answerWatch(view),
+    el('p', {class: 'lead'}, `Topics: ${[...new Set(state.checkpoint.questionIds.map(id => bank.questions.find(q => q.id === id).category))].join(', ')}.`),
   ];
+}
+
+// Who has answered: each team's progress, then every player with how many they have answered,
+// so the host can see at a glance which team and which person is still to answer.
+function answerWatch(view) {
+  const {state} = view;
+  const over = state.checkpoint.expired;
+  let waitingCount = 0;
+  const rows = view.teams.map(team => {
+    const total = team.state.checkpoint.questionIds.length;
+    const mine = p => team.state.answers.filter(a => a.phase === state.phase && a.player === p.id).length;
+    const answered = team.players.reduce((sum, p) => sum + mine(p), 0);
+    const possible = team.players.length * total;
+    const percent = possible ? Math.round(100 * answered / possible) : 0;
+    const waiting = team.players.filter(p => mine(p) < total);
+    waitingCount += waiting.length;
+    return el('li', {class: `team-answer${waiting.length ? '' : ' is-done'}`},
+      el('strong', {}, `🚩 ${team.name}`),
+      el('span', {class: 'answer-track', role: 'img', 'aria-label': `${answered} of ${possible} answers`}, el('i', {style: `width:${percent}%`})),
+      el('span', {class: 'answer-count'}, `${answered} of ${possible}${waiting.length ? '' : ' ✅'}`),
+      el('span', {class: 'answer-points'}, `🧠 ${points(team.state.behaviourPoints[state.phase])} pts`),
+      el('ul', {class: 'who-answered', 'aria-label': `${team.name} players`}, team.players.map(p => {
+        const done = mine(p);
+        return el('li', {class: `who${done === total ? ' is-done' : ''}`, 'data-cat': p.category},
+          avatar(p), el('span', {class: 'who-name'}, p.name),
+          el('span', {class: 'who-count'}, done === total ? '✅ Done' : `${over ? '✖' : '⏳'} ${done} of ${total}`));
+      })));
+  });
+  return el('section', {class: 'panel'},
+    el('div', {class: 'topic-head'},
+      el('h2', {}, '✍️ Who has answered?'),
+      el('span', {class: waitingCount ? 'tag-gap' : 'tag-ok', role: 'status'}, waitingCount
+        ? `${over ? '✖' : '⏳'} ${waitingCount} player${waitingCount === 1 ? '' : 's'} ${over ? 'missed out' : 'still answering'}`
+        : '✅ Everyone has answered')),
+    el('ul', {class: 'team-answers'}, rows));
 }
 
 // ---------------------------------------------------------------- the end: every team side by side

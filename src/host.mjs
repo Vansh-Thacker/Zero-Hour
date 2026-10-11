@@ -10,7 +10,7 @@ import {enableTilt} from './ui/effects.mjs';
 import {hostStartScreen} from './ui/startScreens.mjs';
 
 const root = document.getElementById('app');
-const [game, extras] = await Promise.all([loadGameData(), loadExtras()]);
+const [game, extras] = await Promise.all([loadGameData({moreTopics: true}), loadExtras()]);
 
 function showStart(view = {}) {
   root.replaceChildren(hostStartScreen(view, async () => {
