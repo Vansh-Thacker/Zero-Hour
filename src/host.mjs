@@ -8,6 +8,7 @@ import {showLiveRoom} from './net/liveRoom.mjs';
 import {loadExtras} from './ui/app.mjs';
 import {enableTilt} from './ui/effects.mjs';
 import {hostStartScreen} from './ui/startScreens.mjs';
+import {phoneAddress, phoneJoinLinks} from './net/joinLinks.mjs';
 
 const root = document.getElementById('app');
 const [game, extras] = await Promise.all([loadGameData({moreTopics: true}), loadExtras()]);
@@ -26,15 +27,13 @@ function showStart(view = {}) {
 // Wi-Fi addresses. Opened at any other address (the deployed site, or the laptop's own IP),
 // that address is the one phones can reach: behind a host like Render, the server's own
 // addresses are internal and no phone could open them.
-const ONLY_THIS_DEVICE = new Set(['localhost', '127.0.0.1', '[::1]']);
-
 async function joinAddresses(code) {
-  const withCode = url => `${url}?code=${encodeURIComponent(code)}`;
-  const here = new URL('/play.html', location.origin).href;
-  if (!ONLY_THIS_DEVICE.has(location.hostname)) return [withCode(here)];
+  if (phoneAddress(location.origin)) return phoneJoinLinks(location.origin, [], code);
   try {
-    const {addresses} = await fetch('/api/join-addresses').then(r => r.json());
-    return (addresses.length ? addresses : [here]).map(withCode);
+    const response = await fetch('/api/join-addresses');
+    if (!response.ok) return [];
+    const {addresses} = await response.json();
+    return phoneJoinLinks(location.origin, addresses, code);
   } catch {
     return [];
   }
