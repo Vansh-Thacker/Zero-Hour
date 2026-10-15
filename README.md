@@ -1,5 +1,7 @@
 # Zero Hour
 
+> 🥈 **2nd place at Strath Hack 2026** in the ScottishPower "Defend Your Network" cyber security challenge.
+
 Zero Hour is Team 20's cyber security game for the ScottishPower StrathHack challenge. Protect a fictional energy company with a £3,000,000 defence budget, watch an overnight attack unfold across four phases, then answer behaviour questions before the clock runs out.
 
 The game runs in **single-player** mode or as a live **team battle**. One host runs the night; players join with a room code and build separate plans for their teams. See [OUR_GAME.md](OUR_GAME.md) for the hand-in notes, architecture, limits and a demo walkthrough.
